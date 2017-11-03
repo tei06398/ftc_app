@@ -1,15 +1,16 @@
-package org.usfirst.ftc.exampleteam.yourcodehere;
+package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.*;
-import org.swerverobotics.library.SynchronousOpMode;
-import org.swerverobotics.library.interfaces.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * Created by Gabriel Kammer on 10/17/16
  */
 @TeleOp(name = "Relic Recovery Official Tele-Op Mode")
-public class RRTeleOp extends SynchronousOpMode {
+public class RRTeleOp extends OpMode {
     /* Declare here any fields you might find useful. */
     protected DcMotor motorLeft = null;
     protected DcMotor motorRight = null; //declares motors
@@ -21,6 +22,13 @@ public class RRTeleOp extends SynchronousOpMode {
     protected ColorSensor cSensor = null;
     protected Servo lSweeper = null;
     protected Servo rSweeper = null;
+
+    public void loop(){
+        //filler
+    }
+    public void init(){
+        //filler
+    }
 
     @Override
     public void main() throws InterruptedException {
