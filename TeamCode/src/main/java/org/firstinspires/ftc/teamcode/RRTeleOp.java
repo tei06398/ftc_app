@@ -50,8 +50,8 @@ public class RRTeleOp extends OpMode {
         } catch (Exception e) {}
 
         this.buttonPusher.setDirection(Servo.Direction.REVERSE);
-        this.motorLeft.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        this.motorRight.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        this.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLeft.setDirection(DcMotor.Direction.REVERSE);
 
 
