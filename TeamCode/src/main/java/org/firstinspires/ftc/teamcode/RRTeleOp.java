@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
