@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Created by Gabriel Kammer on 10/17/16, revised by Jeffrey Huang 11/7/2017
+ * Last Modified 11/7/2017
  */
 @TeleOp(name = "Relic Recovery Official Tele-Op Mode")
 public class RRTeleOp extends OpMode {
