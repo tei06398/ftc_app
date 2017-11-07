@@ -11,165 +11,83 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name = "Relic Recovery Official Tele-Op Mode")
 public class RRTeleOp extends OpMode {
     /* Declare here any fields you might find useful. */
-    protected DcMotor motorLeft = null;
-    protected DcMotor motorRight = null; //declares motors
-    protected DcMotor centerOmni = null;
-    protected DcMotor catapult = null;
-    protected DcMotor ballPicker = null;
-    protected Servo buttonPusher = null;
-    protected UltrasonicSensor ultrasonic = null;
-    protected ColorSensor cSensor = null;
-    protected Servo lSweeper = null;
-    protected Servo rSweeper = null;
+    protected DcMotor motorLF = null;
+    protected DcMotor motorRF = null; //declares motors
+    protected DcMotor motorLB = null;
+    protected DcMotor motorRB = null;
+    //protected DcMotor ballPicker = null;
+    //protected Servo buttonPusher = null;
+    //protected UltrasonicSensor ultrasonic = null;
+    //protected ColorSensor cSensor = null;
+    //protected Servo lSweeper = null;
+    //protected Servo rSweeper = null;
 
     public void loop(){
         //filler
 
-        double driveSpeedRatio = 1; //sets the top speed for drive train
-        double correctedSpeedRatio; //sets a correction factor for accuracy mode
-        double catapultSpeed = 0.25; //sets top catapult speed
-        double ballPickerSpeed = 0.25; //sets top ball picker speed
-        double buttonPusherPosition = 1;
-        double lSweeperPosition = 0;
-        double rSweeperPosition = 0;
+        final double MAX_SPEED_RATIO = 1; //sets the top speed for drive train
 
         //SET DRIVE POWER: gamepad1 right trigger
-        if (this.gamepad1.right_trigger > 0.5) {
-            correctedSpeedRatio = 0.35;
-        } else {
-            correctedSpeedRatio = driveSpeedRatio;
+        //sets a correction factor for accuracy mode
+        final double SPEED_RATIO = this.gamepad1.right_trigger > 0.5 ? 0.35 : MAX_SPEED_RATIO;
+
+        //the base powers for all 4 motors
+        double powerLF = 0;
+        double powerLB = 0;
+        double powerRF = 0;
+        double powerRB = 0;
+
+        //Controls orientation of robot
+        if (this.gamepad1.right_stick_x > 0.1) {
+            powerLF += 1;
+            powerLB += 1;
+            powerRF += 1;
+            powerRB += 1;
+        } else if (this.gamepad1.right_stick_x < -0.1) {
+            powerLF -= 1;
+            powerLB -= 1;
+            powerRF -= 1;
+            powerRB -= 1;
         }
 
-        //SET MOTOR POWER: gamepad1 left and right sticks
-        if (this.gamepad1.left_stick_y > 0.1) {
-            this.motorLeft.setPower(-correctedSpeedRatio);
-        } else if (this.gamepad1.left_stick_y < -0.1) {
-            this.motorLeft.setPower(correctedSpeedRatio);
-        } else {
-            this.motorLeft.setPower(0);
-        }
-        if (this.gamepad1.right_stick_y > 0.1) {
-            this.motorRight.setPower(-correctedSpeedRatio);
-        } else if (this.gamepad1.right_stick_y < -0.1) {
-            this.motorRight.setPower(correctedSpeedRatio);
-        } else {
-            this.motorRight.setPower(0);
+        //Controls linear movement of robot
+        //if (Math.abs(this.gamepad1.left_stick_x) > 0.1 || Math.abs(this.gamepad1.left_stick_y) > 0.1) {
+        double angle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+        // speeds for each of the axes that the robot can move
+        double speed1 = Math.cos(45-angle);
+        double speed2 = Math.sin(45-angle);
+
+        // so there's going to be a speed that's always maximum
+        double divider = Math.max(Math.abs(speed1), Math.abs(speed2));
+
+        powerLF += speed1/divider;
+        powerRB += -speed1/divider;
+        powerLB += -speed2/divider;
+        powerRF += speed2/divider;
+
+        double maxRawPower = Math.max(Math.max(powerLF, powerLB), Math.max(powerRF, powerRB));
+        if (maxRawPower != 0) {
+            this.motorLF.setPower(powerLF / maxRawPower * SPEED_RATIO);
+            this.motorLB.setPower(powerLB / maxRawPower * SPEED_RATIO);
+            this.motorRF.setPower(powerRF / maxRawPower * SPEED_RATIO);
+            this.motorRB.setPower(powerRB / maxRawPower * SPEED_RATIO);
         }
 
-        //SET MIDDLE OMNI POWER: gamepad1 dpad left and right
-        if (this.gamepad1.dpad_left) {
-            centerOmni.setPower(1.0);
-        } else if (this.gamepad1.dpad_right) {
-            centerOmni.setPower(-1.0);
-        } else {
-            centerOmni.setPower(0);
-        }
-
-        //RUN CATAPULT: Gamepad2 right trigger and bumper
-        if (this.gamepad2.right_bumper) {
-            this.catapult.setPower(catapultSpeed);
-        } else if (this.gamepad2.right_trigger > 0.5) {
-            this.catapult.setPower(-catapultSpeed);
-        } else {
-            this.catapult.setPower(0);
-        }
-
-        //RUN BALL PICKER: Gamepad2 left trigger and bumper
-        if (this.gamepad2.left_bumper) {
-            if (lSweeperPosition > 0.4) {
-                lSweeper.setPosition(0.4);
-            }
-            if (rSweeperPosition < 0.3) {
-                rSweeper.setPosition(0.3);
-            }
-            this.ballPicker.setPower(ballPickerSpeed);
-        } else if (this.gamepad2.left_trigger > 0.5) {
-            if (lSweeperPosition > 0.4) {
-                lSweeper.setPosition(0.4);
-            }
-            if (rSweeperPosition < 0.3) {
-                rSweeper.setPosition(0.3);
-            }
-            this.ballPicker.setPower(-ballPickerSpeed);
-        } else {
-            this.ballPicker.setPower(0);
-        }
-
-        //RUN BUTTON PUSHER: Gamepad2 dpad up and down
-        if (gamepad2.dpad_up) {
-            buttonPusherPosition = Math.max(0, buttonPusherPosition - 0.05);
-            buttonPusher.setPosition(buttonPusherPosition);
-        } else if (gamepad2.dpad_down) {
-            buttonPusherPosition = Math.min(1, buttonPusherPosition + 0.05);
-            buttonPusher.setPosition(buttonPusherPosition);
-        }
-
-        //RUN SWEEPERS: Gamepad2 left stick up and down
-        if (gamepad2.left_stick_y > 0.5 && !this.gamepad2.left_bumper && this.gamepad2.left_trigger <= 0.5) {
-            lSweeperPosition = Math.min(.84, lSweeperPosition + 0.05);
-            rSweeperPosition = -83 * lSweeperPosition / 79 + 1663 / 1580;
-            lSweeper.setPosition(Math.min(lSweeperPosition, 0.55));
-            rSweeper.setPosition(rSweeperPosition);
-        } else if (gamepad2.left_stick_y < -0.5 && !this.gamepad2.left_bumper && this.gamepad2.left_trigger <= 0.5) {
-            lSweeperPosition = Math.max(0.05, lSweeperPosition - 0.05);
-            rSweeperPosition = -83 * lSweeperPosition / 79 + 1663 / 1580;
-            lSweeper.setPosition(Math.min(lSweeperPosition, 0.55));
-            rSweeper.setPosition(rSweeperPosition);
-        }
-
-        //CODE FOR SMALL NUDGE MOVEMENTS:
-        if (this.gamepad1.right_bumper) {
-            this.motorLeft.setPower(driveSpeedRatio);
-            this.motorRight.setPower(-driveSpeedRatio);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            this.motorLeft.setPower(0);
-            this.motorRight.setPower(0);
-        }
-        if (this.gamepad1.left_bumper) {
-            this.motorLeft.setPower(-driveSpeedRatio);
-            this.motorRight.setPower(driveSpeedRatio);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            this.motorLeft.setPower(0);
-            this.motorRight.setPower(0);
-        }
-
-        telemetry.addData("Left Sweeper: ", lSweeperPosition);
-        telemetry.addData("Right Sweeper: ", rSweeperPosition);
-        telemetry.addData("Red: ", cSensor.red());
-        telemetry.addData("Green: ", cSensor.green());
-        telemetry.addData("Blue: ", cSensor.blue());
-        telemetry.addData("Ultrasonic: ", ultrasonic.getUltrasonicLevel());
         telemetry.update();
     }
 
     public void init(){
-        //filler
 
-        this.motorLeft = this.hardwareMap.dcMotor.get("lMotor");
-        this.motorRight = this.hardwareMap.dcMotor.get("rMotor"); //instantiates
-        this.catapult = this.hardwareMap.dcMotor.get("catapult");
-        this.ballPicker = this.hardwareMap.dcMotor.get("ballPicker");
-        this.buttonPusher = this.hardwareMap.servo.get("buttonPusher");
-        this.ultrasonic = this.hardwareMap.ultrasonicSensor.get("ultrasonic");
-        this.cSensor = this.hardwareMap.colorSensor.get("cSensor");
-        this.lSweeper = this.hardwareMap.servo.get("lSweeper");
-        this.rSweeper = this.hardwareMap.servo.get("rSweeper");
-        try {
-            this.centerOmni = this.hardwareMap.dcMotor.get("centerOmni");
-        } catch (Exception e) {}
+        //Instantiates motors and servos, sets operating mode
+        this.motorLF = this.hardwareMap.dcMotor.get("lfMotor");
+        this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
+        this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
+        this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
+        this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        this.buttonPusher.setDirection(Servo.Direction.REVERSE);
-        this.motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.motorLeft.setDirection(DcMotor.Direction.REVERSE);
 
     }
 
