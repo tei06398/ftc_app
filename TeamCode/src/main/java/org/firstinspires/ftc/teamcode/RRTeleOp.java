@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-/**
- * Created by Gabriel Kammer on 10/17/16
- */
 @TeleOp(name = "Relic Recovery Official Tele-Op Mode")
 public class RRTeleOp extends OpMode {
     /* Declare here any fields you might find useful. */
@@ -15,15 +11,8 @@ public class RRTeleOp extends OpMode {
     protected DcMotor motorRF = null; //declares motors
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
-    //protected DcMotor ballPicker = null;
-    //protected Servo buttonPusher = null;
-    //protected UltrasonicSensor ultrasonic = null;
-    //protected ColorSensor cSensor = null;
-    //protected Servo lSweeper = null;
-    //protected Servo rSweeper = null;
 
     public void loop(){
-        //filler
 
         final double MAX_SPEED_RATIO = 1; //sets the top speed for drive train
 
@@ -37,7 +26,7 @@ public class RRTeleOp extends OpMode {
         double powerRF = 0;
         double powerRB = 0;
 
-        //Controls orientation of robot
+        //Right Stick: Controls orientation of robot
         if (this.gamepad1.right_stick_x > 0.1) {
             powerLF += 1;
             powerLB += 1;
@@ -50,7 +39,7 @@ public class RRTeleOp extends OpMode {
             powerRB -= 1;
         }
 
-        //Controls linear movement of robot
+        //Left Stick: Controls linear movement of robot
         //if (Math.abs(this.gamepad1.left_stick_x) > 0.1 || Math.abs(this.gamepad1.left_stick_y) > 0.1) {
         double angle = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
         // speeds for each of the axes that the robot can move
