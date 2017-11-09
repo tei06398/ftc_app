@@ -16,13 +16,6 @@ public class RRTeleOp extends OpMode {
     protected DcMotor motorRF = null;
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
-    
-    //protected DcMotor ballPicker = null;
-    //protected Servo buttonPusher = null;
-    //protected UltrasonicSensor ultrasonic = null;
-    //protected ColorSensor cSensor = null;
-    //protected Servo lSweeper = null;
-    //protected Servo rSweeper = null;
 
     public void loop(){
         //filler
