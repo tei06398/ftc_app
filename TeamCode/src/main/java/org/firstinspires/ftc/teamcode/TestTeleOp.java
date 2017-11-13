@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 /**
  * Last Modified 11/13/2017
  */
-@TeleOp(name = "Relic Recovery Official Tele-Op Mode")
+@TeleOp(name = "Test Mode")
 public class TestTeleOp extends OpMode {
     /* Declare here any fields you might find useful. */
     // Declares motors

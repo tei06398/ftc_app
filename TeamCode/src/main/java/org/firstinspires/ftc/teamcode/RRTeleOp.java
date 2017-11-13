@@ -58,9 +58,9 @@ public class RRTeleOp extends OpMode {
             // so there's always going to be a speed that's 1
             double divider = Math.max(Math.abs(speed1), Math.abs(speed2));
 
-            powerLF += speed1 / divider;
-            powerRB += -speed1 / divider;
-            powerLB += -speed2 / divider;
+            powerLF += -speed1 / divider;
+            powerRB += speed1 / divider;
+            powerLB += speed2 / divider;
             powerRF += speed2 / divider;
         }
         
@@ -74,7 +74,13 @@ public class RRTeleOp extends OpMode {
             this.motorLB.setPower(powerLB / maxRawPower * SPEED_RATIO);
             this.motorRF.setPower(powerRF / maxRawPower * SPEED_RATIO);
             this.motorRB.setPower(powerRB / maxRawPower * SPEED_RATIO);
+        } else {
+            this.motorLF.setPower(0);
+            this.motorLB.setPower(0);
+            this.motorRF.setPower(0);
+            this.motorRB.setPower(0);
         }
+
         telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
         telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
         telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
