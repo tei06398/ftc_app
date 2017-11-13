@@ -75,7 +75,13 @@ public class RRTeleOp extends OpMode {
             this.motorRF.setPower(powerRF / maxRawPower * SPEED_RATIO);
             this.motorRB.setPower(powerRB / maxRawPower * SPEED_RATIO);
         }
-
+        telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
+        telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
+        telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
+        telemetry.addData("powerLF: ", powerLF);
+        telemetry.addData("powerRB: ", powerRB);
+        telemetry.addData("powerLB: ", powerLB);
+        telemetry.addData("powerRF: ", powerRF);
         telemetry.update();
     }
 
@@ -90,9 +96,5 @@ public class RRTeleOp extends OpMode {
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
     }
-
-
 }
