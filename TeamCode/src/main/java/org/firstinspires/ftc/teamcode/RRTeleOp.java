@@ -66,7 +66,7 @@ public class RRTeleOp extends OpMode {
             double speedY = Math.sin(angle - Math.PI / 4);
 
             // so there's always going to be a speed that's +-1
-            double divider = Math.max(Math.abs(speed1), Math.abs(speed2));
+            double divider = Math.max(Math.abs(speedX), Math.abs(speedY));
 
             powerLF += speedX / divider;
             powerRB -= speedX / divider;
