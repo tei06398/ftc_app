@@ -26,14 +26,30 @@ public class RobotDriving {
             throw new IllegalStateException("All motors must be set before creating a Steering object");
         return new Steering();
     }
-
+    
+    public void stopAllMotors() {
+        motorLF.setPower(0);
+        motorLB.setPower(0);
+        motorRF.setPower(0);
+        motorRB.setPower(0);
+    }
+    
+    public void wait(double seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            // maybe have a better exception handling system?
+            throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
+        }
+    }
+    
     // An inner class that manages the repeated recalculation of motor powers.
     public class Steering {
-        public double powerLF = 0;
-        public double powerLB = 0;
-        public double powerRF = 0;
-        public double powerRB = 0;
-        public double speedRatio = MAX_SPEED_RATIO;
+        private double powerLF = 0;
+        private double powerLB = 0;
+        private double powerRF = 0;
+        private double powerRB = 0;
+        private double speedRatio = MAX_SPEED_RATIO;
 
         public Steering() {
         }
@@ -108,7 +124,11 @@ public class RobotDriving {
         public void down() {
             move(270);
         }
-
+        
+        public void setTime(double time) {
+            this.time = time;
+        }
+        
         // Actually makes the motors spin. You must call this once all the movements are set for anything to happen.
         public void finishSteering() {
             // The maximum base power.
@@ -122,10 +142,14 @@ public class RobotDriving {
                 motorRF.setPower(powerRF / maxRawPower * speedRatio);
                 motorRB.setPower(powerRB / maxRawPower * speedRatio);
             } else {
-                motorLF.setPower(0);
-                motorLB.setPower(0);
-                motorRF.setPower(0);
-                motorRB.setPower(0);
+                stopAllMotors();
+            }
+            
+            if (time != 0) {
+                wait(time);
+                
+                // stop all the motors at the end of the motion.
+                stopAllMotors();
             }
         }
     }
