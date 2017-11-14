@@ -10,6 +10,8 @@ public class RobotDriving {
     }
     
     public Steering getSteering() {
+        if (motorLF == null || motorLB == null || motorRF == null || motorRB == null) throw new IllegalStateException("All motors must be set before creating a Steering object");
+        
         return new Steering();
     }
     
@@ -46,6 +48,14 @@ public class RobotDriving {
             addToAllPowers(isClockwise ? 1 : -1);
         }
         
+        public void turnClockwise() {
+            turn(true);
+        }
+        
+        public void turnCounterclockwise() {
+            turn(false);
+        }
+        
         // **Angle is in radians, not degrees.**
         public void moveRadians(double angle) {
             double speedX = Math.cos(angle - Math.PI / 4);
@@ -64,6 +74,12 @@ public class RobotDriving {
         public void move(double angle) {
             moveRadians(Math.toRadians(angle));
         }
+        
+        public void moveDegrees(double angle) {
+            move(angle);
+        }
+        
+        /* Utilities for those who don't want to calculate angles */
         
         public void right() {
             move(0);
