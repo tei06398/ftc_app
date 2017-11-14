@@ -60,17 +60,18 @@ public class RRTeleOp extends OpMode {
         if (Math.abs(this.gamepad1.left_stick_x) > 0.1 || Math.abs(this.gamepad1.left_stick_y) > 0.1) {
             double angle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x);
             telemetry.addData("angle: ", angle);
+            
             // speeds for each of the axes that the robot can move
-            double speed1 = Math.cos(3.1415/4-angle);
-            double speed2 = Math.sin(3.1415/4-angle);
+            double speedX = Math.cos(angle - Math.PI / 4);
+            double speedY = Math.sin(angle - Math.PI / 4);
 
-            // so there's always going to be a speed that's 1
+            // so there's always going to be a speed that's +-1
             double divider = Math.max(Math.abs(speed1), Math.abs(speed2));
 
-            powerLF -= speed1 / divider;
-            powerRB += speed1 / divider;
-            powerLB += speed2 / divider;
-            powerRF -= speed2 / divider;
+            powerLF += speedX / divider;
+            powerRB -= speedX / divider;
+            powerLB += speedY / divider;
+            powerRF -= speedY / divider;
         }
         
         // The maximum base power.
