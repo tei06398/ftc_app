@@ -16,6 +16,7 @@ public class RRTeleOp extends OpMode {
     protected DcMotor motorRF = null;
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
+    protected DcMotor motorWinch = null;
 
     public void loop(){
         //filler
@@ -47,6 +48,13 @@ public class RRTeleOp extends OpMode {
             powerRB -= 1;
         }
 
+        if(gamepad1.a){
+            motorWinch.setPower(0.5);
+        }
+        else{
+            motorWinch.setPower(0);
+        }
+
         //Controls linear movement of robot
         // Only actually move if the joystick is offset.
         if (Math.abs(this.gamepad1.left_stick_x) > 0.1 || Math.abs(this.gamepad1.left_stick_y) > 0.1) {
@@ -59,10 +67,10 @@ public class RRTeleOp extends OpMode {
             // so there's always going to be a speed that's 1
             double divider = Math.max(Math.abs(speed1), Math.abs(speed2));
 
-            powerLF += speed1 / divider;
-            powerRB -= speed1 / divider;
-            powerLB -= speed2 / divider;
-            powerRF += speed2 / divider;
+            powerLF -= speed1 / divider;
+            powerRB += speed1 / divider;
+            powerLB += speed2 / divider;
+            powerRF -= speed2 / divider;
         }
         
         // The maximum base power.
@@ -99,6 +107,7 @@ public class RRTeleOp extends OpMode {
         this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
+        this.motorWinch = this.hardwareMap.dcMotor.get("winchMotor");
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
