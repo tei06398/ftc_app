@@ -36,7 +36,7 @@ public class RobotDriving {
     
     public void wait(double seconds) {
         try {
-            Thread.sleep(seconds * 1000);
+            Thread.sleep((long)seconds * 1000);
         } catch (InterruptedException e) {
             // maybe have a better exception handling system?
             throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
@@ -50,6 +50,7 @@ public class RobotDriving {
         private double powerRF = 0;
         private double powerRB = 0;
         private double speedRatio = MAX_SPEED_RATIO;
+        private double time;
 
         public Steering() {
         }
@@ -146,8 +147,12 @@ public class RobotDriving {
             }
             
             if (time != 0) {
-                wait(time);
-                
+                try {
+                    wait((long)time);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
+                }
+
                 // stop all the motors at the end of the motion.
                 stopAllMotors();
             }
