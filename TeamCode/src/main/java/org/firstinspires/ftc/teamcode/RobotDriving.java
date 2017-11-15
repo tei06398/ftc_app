@@ -2,6 +2,20 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+/*
+    A utility class for robot driving.
+    Use it like this:
+    RobotDriving rd = new RobotDriving();
+    rd.setMotorLF( [motor object] );
+    rd.setMotorLB( [motor object] );
+    ...
+    
+    RobotDriving.TimedSteering ts = rd.getSteering();
+    
+    ts.forward(1); // forward for 1 sec
+    ts.turnClockwise(0.2); // clockwise for 2 sec
+    ts.move(30, 2); // move at 30 degree angle for 2 sec
+*/
 public class RobotDriving {
     private DcMotor motorLF = null;
     private DcMotor motorLB = null;
@@ -9,7 +23,12 @@ public class RobotDriving {
     private DcMotor motorRB = null;
     final double MAX_SPEED_RATIO = 1;
     final double MIN_SPEED_RATIO = 0.35;
-
+    
+    public void setMotorLF(DcMotor motorLF) { this.motorLF = motorLF; }
+    public void setMotorLB(DcMotor motorLB) { this.motorLB = motorLB; }
+    public void setMotorRF(DcMotor motorRF) { this.motorRF = motorLB; }
+    public void setMotorRB(DcMotor motorRB) { this.motorRB = motorLB; }
+    
     public RobotDriving() { //In case you still want the default constructor, for some reason, Jeffrey
 
     }
@@ -27,6 +46,12 @@ public class RobotDriving {
         return new Steering();
     }
     
+    public TimedSteering getTimedSteering() {
+        if (motorLF == null || motorLB == null || motorRF == null || motorRB == null)
+            throw new IllegalStateException("All motors must be set before creating a Steering object");
+        return new TimedSteering();
+    }
+    
     public void stopAllMotors() {
         motorLF.setPower(0);
         motorLB.setPower(0);
@@ -36,7 +61,7 @@ public class RobotDriving {
     
     public void wait(double seconds) {
         try {
-            Thread.sleep((long)seconds * 1000);
+            Thread.sleep((long) (seconds * 1000));
         } catch (InterruptedException e) {
             // maybe have a better exception handling system?
             throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
@@ -50,11 +75,12 @@ public class RobotDriving {
         private double powerRF = 0;
         private double powerRB = 0;
         private double speedRatio = MAX_SPEED_RATIO;
-        private double time;
 
         public Steering() {
         }
-
+        
+        /* UTILITIES */
+        
         public void setSpeedRatio(double speedRatio) {
             this.speedRatio = speedRatio;
         }
@@ -72,19 +98,9 @@ public class RobotDriving {
             powerRF += power;
             powerRB += power;
         }
-
-        public void turn(boolean isClockwise) {
-            addToAllPowers(isClockwise ? 1 : -1);
-        }
-
-        public void turnClockwise() {
-            turn(true);
-        }
-
-        public void turnCounterclockwise() {
-            turn(false);
-        }
-
+        
+        /* LINEAR MOVEMENT */
+        
         // **Angle is in radians, not degrees.**
         public void moveRadians(double angle) {
             double speedX = Math.cos(angle - Math.PI / 4);
@@ -108,27 +124,21 @@ public class RobotDriving {
             move(angle);
         }
         
-        /* Utilities for those who don't want to calculate angles */
-
-        public void right() {
-            move(0);
+        /* ROTATION */
+        
+        public void turn(boolean isClockwise) {
+            addToAllPowers(isClockwise ? 1 : -1);
         }
 
-        public void up() {
-            move(90);
+        public void turnClockwise() {
+            turn(true);
         }
 
-        public void left() {
-            move(180);
-        }
-
-        public void down() {
-            move(270);
+        public void turnCounterclockwise() {
+            turn(false);
         }
         
-        public void setTime(double time) {
-            this.time = time;
-        }
+        /* MISC */
         
         // Actually makes the motors spin. You must call this once all the movements are set for anything to happen.
         public void finishSteering() {
@@ -146,15 +156,79 @@ public class RobotDriving {
                 stopAllMotors();
             }
             
+            setAllPowers(0);
+        }
+    }
+    
+    // An inner class that handles _timed_ steering: ie. "move forward for 3 seconds, then stop" vs. "move forward until you get the next command"
+    // Every movement is finished when it is created. There's no need to call "finishSteering()." However, this means that this class can't do two motions
+    // at once (ie. move AND rotate).
+    public class TimedSteering extends Steering {
+        private double time = 0;
+        
+        public TimedSteering() {
+            super();
+        }
+        
+        /* LINEAR MOVEMENT */
+        
+        public void moveRadians(double angle, double time) {
+            super.moveRadians(angle);
+            this.time = time;
+            finishSteering();
+        }
+        
+        public void move(double angle, double time) {
+            super.move(angle);
+            this.time = time;
+            finishSteering();
+        }
+        
+        public void moveDegrees(double angle, double time) {
+            move(angle, time);
+        }
+        
+        public void right(double time) { move(0, time); finishSteering(); }
+        public void forward(double time) { move(90, time); finishSteering(); }
+        public void left(double time) { move(180, time); finishSteering(); }
+        public void backward(double time) { move(270, time); finishSteering(); }
+        
+        /* ROTATION */
+        
+        public void turn(boolean isClockwise, double time) {
+            super.turn(isClockwise);
+            this.time = time;
+            finishSteering();
+        }
+        
+        public void turnClockwise(double time) {
+            super.turnClockwise();
+            this.time = time;
+            finishSteering();
+        }
+        
+        public void turnCounterclockwise(double time) {
+            super.turnCounterclockwise();
+            this.time = time;
+            finishSteering();
+        }
+        
+        /* MISC */
+        
+        // NO NEED TO CALL THIS DIRECTLY. It is automatically done after every steering operation with a time. 
+        public void finishSteering() {
+            super.finishSteering();
+            
             if (time != 0) {
-                try {
-                    wait((long)time);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
-                }
+                // You don't need any exception handling here because wait(time) "converts"
+                // an InterruptedException to a RuntimeException. :)
+                wait(time);
 
-                // stop all the motors at the end of the motion.
+                // Stop all the motors at the end of the motion.
                 stopAllMotors();
+                
+                // Reset time.
+                time = 0;
             }
         }
     }
