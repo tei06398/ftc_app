@@ -32,7 +32,9 @@ public class RobotDriving {
     public RobotDriving() { //In case you still want the default constructor, for some reason, Jeffrey
 
     }
-
+    
+    // The big problem with this is that someone might scramble up the motor order (ie. put the LB motor in the LF argument slot)
+    // and it would be a pain to debug.
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB) {
         motorLF = LF;
         motorLB = LB;
@@ -57,6 +59,23 @@ public class RobotDriving {
         motorLB.setPower(0);
         motorRF.setPower(0);
         motorRB.setPower(0);
+    }
+    
+    // Easy test for the motors. The test should make the robot spin clockwise for 5 seconds, then counterclockwise for 5 seconds.
+    public void testMotors() {
+        motorLF.setPower(1);
+        motorLB.setPower(1);
+        motorRF.setPower(1);
+        motorRB.setPower(1);
+        
+        wait(5);
+        
+        motorLF.setPower(-1);
+        motorLB.setPower(-1);
+        motorRF.setPower(-1);
+        motorRB.setPower(-1);
+        
+        wait(5);
     }
     
     public void wait(double seconds) {
