@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 
@@ -10,8 +11,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
  */
 @Autonomous(name = "Relic Recovery Official Auton Mode")
 public class RRAuton extends LinearOpMode {
+    //Declares Motors
+    protected DcMotor motorLF = null;
+    protected DcMotor motorRF = null;
+    protected DcMotor motorLB = null;
+    protected DcMotor motorRB = null;
 
-    VuforiaLocalizer vuforia;
+
+    private VuforiaLocalizer vuforia;
 
     char readVuMark(VuforiaTrackable relicTemplate) {
         RelicRecoveryVuMark vuMark = null;
@@ -41,8 +48,28 @@ public class RRAuton extends LinearOpMode {
         }
         return '!';
     }
+
     @Override
     public void runOpMode() throws InterruptedException {
+        //Sets up Motors
+        this.motorLF = this.hardwareMap.dcMotor.get("lfMotor");
+        this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
+        this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
+        this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
+        this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //Makes RobotDriving Object
+        RobotDriving robotDriving = new RobotDriving();
+        robotDriving.setMotorLF(motorLF);
+        robotDriving.setMotorRF(motorRF);
+        robotDriving.setMotorLB(motorLB);
+        robotDriving.setMotorRB(motorRB);
+
+        RobotDriving.TimedSteering ts = robotDriving.getTimedSteering();
+
         //Tell Vuforia to display video feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -76,20 +103,25 @@ public class RRAuton extends LinearOpMode {
                 total++;
             }
         }
+        RobotDriving rd = new RobotDriving();
         if (pictograph == '!') {
             telemetry.addData("Pictograph", "Unreliable");
             //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
         } else if (pictograph == 'l') {
             telemetry.addData("Pictograph", "Left");
+            ts.left(0.5); //Just for Physical Representation of Scan Result
         } else if (pictograph == 'r') {
             telemetry.addData("Pictograph", "Right");
+            ts.right(0.5); //Just for Physical Representation of Scan Result
         } else if (pictograph == 'c') {
             telemetry.addData("Pictograph", "Center");
+            ts.forward(0.5); //Just for Physical Representation of Scan Result
         } else {
             telemetry.addData("Pictograph", "ERROR");
             //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
         }
         telemetry.update();
+        ts.finishSteering();
 
         //TODO: For Friday, (or maybe earlier,) begin work on either Color Detection for the Jewels or Motion for Placing Cube in CryptoBox
     }
