@@ -62,12 +62,9 @@ public class RRAuton extends LinearOpMode {
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //Makes RobotDriving Object
-        RobotDriving robotDriving = new RobotDriving();
-        robotDriving.setMotorLF(motorLF);
-        robotDriving.setMotorRF(motorRF);
-        robotDriving.setMotorLB(motorLB);
-        robotDriving.setMotorRB(motorRB);
+        RobotDriving robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB);
 
+        //Gets TimedSteering Object
         RobotDriving.TimedSteering ts = robotDriving.getTimedSteering();
 
         //Tell Vuforia to display video feed
