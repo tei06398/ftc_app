@@ -33,7 +33,7 @@ public class RRTeleOp extends OpMode {
             steering.turnCounterclockwise();
         }
 
-        if(gamepad1.a){
+        if(this.gamepad2.a){
             motorWinch.setPower(0.5);
         }
         else{
