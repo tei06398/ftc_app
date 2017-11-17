@@ -21,8 +21,8 @@ public class RobotDriving {
     private DcMotor motorLB = null;
     private DcMotor motorRF = null;
     private DcMotor motorRB = null;
-    final double MAX_SPEED_RATIO = 1;
-    final double MIN_SPEED_RATIO = 0.35;
+    public static final double MAX_SPEED_RATIO = 1;
+    public static final double MIN_SPEED_RATIO = 0.35;
     
     public void setMotorLF(DcMotor motorLF) { this.motorLF = motorLF; }
     public void setMotorLB(DcMotor motorLB) { this.motorLB = motorLB; }

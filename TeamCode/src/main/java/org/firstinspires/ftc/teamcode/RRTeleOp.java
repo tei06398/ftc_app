@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import static org.firstinspires.ftc.teamcode.RobotDriving.MAX_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.RobotDriving.MIN_SPEED_RATIO;
+
 /**
  * Last Modified 11/7/2017
  */
@@ -43,7 +46,7 @@ public class RRTeleOp extends OpMode {
             double angle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x);
             telemetry.addData("angle: ", angle);
             
-            steering.move(angle);
+            steering.moveRadians(angle);
         }
         
         steering.finishSteering();
