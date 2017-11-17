@@ -62,7 +62,7 @@ public class RRAuton extends LinearOpMode {
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //Makes RobotDriving Object
-        RobotDriving robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB);
+        RobotDriving robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry);
 
         //Gets TimedSteering Object
         RobotDriving.TimedSteering ts = robotDriving.getTimedSteering();
@@ -90,6 +90,7 @@ public class RRAuton extends LinearOpMode {
         relicTrackables.activate();
 
         //Get a semi-reliable reading of the Pictograph
+        while(this.opModeIsActive()) {
         int total = 0;
         char pictograph = 'E';
         while (total<3) {
@@ -100,26 +101,19 @@ public class RRAuton extends LinearOpMode {
                 total++;
             }
         }
-        RobotDriving rd = new RobotDriving();
         if (pictograph == '!') {
             telemetry.addData("Pictograph", "Unreliable");
             //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
         } else if (pictograph == 'l') {
             telemetry.addData("Pictograph", "Left");
-            ts.left(0.5); //Just for Physical Representation of Scan Result
         } else if (pictograph == 'r') {
             telemetry.addData("Pictograph", "Right");
-            ts.right(0.5); //Just for Physical Representation of Scan Result
         } else if (pictograph == 'c') {
             telemetry.addData("Pictograph", "Center");
-            ts.forward(0.5); //Just for Physical Representation of Scan Result
         } else {
             telemetry.addData("Pictograph", "ERROR");
             //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
         }
         telemetry.update();
-        ts.finishSteering();
-
-        //TODO: For Friday, (or maybe earlier,) begin work on either Color Detection for the Jewels or Motion for Placing Cube in CryptoBox
-    }
+    }}
 }

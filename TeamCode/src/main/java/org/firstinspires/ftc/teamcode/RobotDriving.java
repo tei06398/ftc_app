@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /*
     A utility class for robot driving.
@@ -17,46 +18,36 @@ import com.qualcomm.robotcore.hardware.DcMotor;
     ts.move(30, 2); // move at 30 degree angle for 2 sec
 */
 public class RobotDriving {
-    private DcMotor motorLF = null;
-    private DcMotor motorLB = null;
-    private DcMotor motorRF = null;
-    private DcMotor motorRB = null;
+    private DcMotor motorLF;
+    private DcMotor motorLB;
+    private DcMotor motorRF;
+    private DcMotor motorRB;
+    private Telemetry telemetry;
     public static final double MAX_SPEED_RATIO = 1;
     public static final double MIN_SPEED_RATIO = 0.35;
-    
-    public void setMotorLF(DcMotor motorLF) { this.motorLF = motorLF; }
-    public void setMotorLB(DcMotor motorLB) { this.motorLB = motorLB; }
-    public void setMotorRF(DcMotor motorRF) { this.motorRF = motorLB; }
-    public void setMotorRB(DcMotor motorRB) { this.motorRB = motorLB; }
-    
-    public RobotDriving() { //In case you still want the default constructor, for some reason, Jeffrey
 
-    }
-    
     // The big problem with this is that someone might scramble up the motor order (ie. put the LB motor in the LF argument slot)
     // and it would be a pain to debug.
-    public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB) {
+    public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
         motorLF = LF;
         motorLB = LB;
         motorRF = RF;
         motorRB = RB;
+        this.telemetry = telemetry;
     }
 
     public Steering getSteering() {
-        if (motorLF == null || motorLB == null || motorRF == null || motorRB == null)
-            throw new IllegalStateException("All motors must be set before creating a Steering object");
         return new Steering();
     }
     
     public TimedSteering getTimedSteering() {
-        if (motorLF == null || motorLB == null || motorRF == null || motorRB == null)
-            throw new IllegalStateException("All motors must be set before creating a Steering object");
         return new TimedSteering();
     }
     
     public void stopAllMotors() {
         motorLF.setPower(0);
         motorLB.setPower(0);
+        motorRF.setPower(0);
         motorRF.setPower(0);
         motorRB.setPower(0);
     }
@@ -71,7 +62,7 @@ public class RobotDriving {
         try {
             wait(5);
         } catch (InterruptedException e) {
-            throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
+            e.printStackTrace();
         }
 
         motorLF.setPower(-1);
@@ -82,18 +73,18 @@ public class RobotDriving {
         try {
             wait(5);
         } catch (InterruptedException e) {
-            throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
+            e.printStackTrace();
         }
     }
     
-    public void wait(double seconds) {
+    /*public void wait(double seconds) {
         try {
             Thread.sleep((long) (seconds * 1000));
         } catch (InterruptedException e) {
             // maybe have a better exception handling system?
-            throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
+            e.printStackTrace();
         }
-    }
+    }*/
     
     // An inner class that manages the repeated recalculation of motor powers.
     public class Steering {
@@ -130,12 +121,15 @@ public class RobotDriving {
         
         // **Angle is in radians, not degrees.**
         public void moveRadians(double angle) {
-            double speedX = Math.cos(angle - Math.PI / 4);
-            double speedY = Math.sin(angle - Math.PI / 4);
+            double speedX = Math.cos(angle - Math.toRadians(45));
+            double speedY = Math.sin(angle - Math.toRadians(45));
+
+            telemetry.addData("speed x: ", speedX);
+            telemetry.addData("speed y: ", speedY);
 
             // so there's always going to be a speed that's +-1
             double divider = Math.max(Math.abs(speedX), Math.abs(speedY));
-
+            telemetry.addData("divider: ", divider);
             powerLF += speedX / divider;
             powerRB -= speedX / divider;
             powerLB += speedY / divider;
@@ -175,6 +169,7 @@ public class RobotDriving {
             // Now, actually set the powers for the motors. Dividing by maxRawPower makes the "biggest" power +-1, and multiplying by speedRatio
             // makes the maximum power speedRatio.
             if (maxRawPower != 0) {
+                telemetry.addData("max raw power: ", maxRawPower);
                 motorLF.setPower(powerLF / maxRawPower * speedRatio);
                 motorLB.setPower(powerLB / maxRawPower * speedRatio);
                 motorRF.setPower(powerRF / maxRawPower * speedRatio);
@@ -249,11 +244,11 @@ public class RobotDriving {
             if (time != 0) {
                 // You don't need any exception handling here because wait(time) "converts"
                 // an InterruptedException to a RuntimeException. :)
-                try {
+                /*try {
                     wait((long) time);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
-                }
+                    e.printStackTrace();
+                }*/
 
                 // Stop all the motors at the end of the motion.
                 stopAllMotors();

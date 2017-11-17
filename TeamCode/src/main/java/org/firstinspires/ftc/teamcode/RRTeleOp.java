@@ -47,14 +47,16 @@ public class RRTeleOp extends OpMode {
             telemetry.addData("angle: ", angle);
             
             steering.moveRadians(angle);
+        } else {
+            telemetry.addData("angle: ", 0);
         }
         
         steering.finishSteering();
 
-        /*telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
+        telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
         telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
         telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
-        telemetry.addData("powerLF: ", powerLF);
+        /*telemetry.addData("powerLF: ", powerLF);
         telemetry.addData("powerRB: ", powerRB);
         telemetry.addData("powerLB: ", powerLB);
         telemetry.addData("powerRF: ", powerRF);*/
@@ -74,12 +76,7 @@ public class RRTeleOp extends OpMode {
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         
-        robotDriving = new RobotDriving();
-        
-        robotDriving.setMotorLF(motorLF);
-        robotDriving.setMotorRF(motorRF);
-        robotDriving.setMotorLB(motorLB);
-        robotDriving.setMotorRB(motorRB);
+        robotDriving = new RobotDriving(motorLF,motorLB,motorRF,motorRB,telemetry);
         
         steering = robotDriving.getSteering();
     }
