@@ -67,15 +67,23 @@ public class RobotDriving {
         motorLB.setPower(1);
         motorRF.setPower(1);
         motorRB.setPower(1);
-        
-        wait(5);
-        
+
+        try {
+            wait(5);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
+        }
+
         motorLF.setPower(-1);
         motorLB.setPower(-1);
         motorRF.setPower(-1);
         motorRB.setPower(-1);
-        
-        wait(5);
+
+        try {
+            wait(5);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
+        }
     }
     
     public void wait(double seconds) {
@@ -241,7 +249,11 @@ public class RobotDriving {
             if (time != 0) {
                 // You don't need any exception handling here because wait(time) "converts"
                 // an InterruptedException to a RuntimeException. :)
-                wait(time);
+                try {
+                    wait((long) time);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("Thread interrupted at RobotDriving.Steering.finishSteering()");
+                }
 
                 // Stop all the motors at the end of the motion.
                 stopAllMotors();
