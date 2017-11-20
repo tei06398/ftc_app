@@ -16,22 +16,19 @@ public class TestTeleOp extends OpMode {
     protected DcMotor motorRF = null;
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
-
     public void loop(){
-        if (this.gamepad1.a) {
-            this.motorLB.setPower(1);
-        }
-        if (this.gamepad1.b) {
-            this.motorLF.setPower(1);
-        }
-        if (this.gamepad1.x) {
-            this.motorRB.setPower(1);
-        }
-        if (this.gamepad1.y) {
-            this.motorRF.setPower(1);
-        }
+        double position = 0;
+
+        if (this.gamepad1.y) position += 10;
+        if (this.gamepad1.a) position -= 10;
+
+        this.glyphterServo.setPosition(position);
+
+        telemetry.addData("Position: ", position);
         telemetry.update();
     }
+
+    protected Servo glyphterServo = null;
 
     public void init(){
 
@@ -40,6 +37,7 @@ public class TestTeleOp extends OpMode {
         this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
+        this.glyphterServo = this.hardwareMap.servo.get("glyphterServo");
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
