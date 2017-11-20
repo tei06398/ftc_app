@@ -20,8 +20,11 @@ public class RRTeleOp extends OpMode {
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
     protected DcMotor motorWinch = null;
+    protected Servo servoGlyphter = null;
+    protected Servo servoJewelTipper = null;
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
+    protected GunnerFunction gunnerFunction;
 
     public void loop() {
         steering.setSpeedRatio((this.gamepad1.right_trigger > 0.5) ? MIN_SPEED_RATIO : MAX_SPEED_RATIO);
@@ -33,11 +36,12 @@ public class RRTeleOp extends OpMode {
             steering.turnCounterclockwise();
         }
 
-        if(this.gamepad2.a){
-            motorWinch.setPower(0.5);
-        }
-        else{
-            motorWinch.setPower(0);
+        if (this.gamepad2.dpad_up) {
+            gunnerFunction.upWinch();
+        } else if (this.gamepad2.dpad_down) {
+            gunnerFunction.downWinch();
+        } else {
+            gunnerFunction.stopWinch();
         }
 
         //Controls linear movement of robot
@@ -71,12 +75,15 @@ public class RRTeleOp extends OpMode {
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
         this.motorWinch = this.hardwareMap.dcMotor.get("winchMotor");
+        this.servoGlyphter = this.hardwareMap.servo.get("glyphterServo");
+        this.servoJewelTipper = this.hardwareMap.servo.get("jewelTipperServo");
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         
         robotDriving = new RobotDriving(motorLF,motorLB,motorRF,motorRB,telemetry);
+        gunnerFunction = new GunnerFunction(motorWinch, servoGlyphter, servoJewelTipper, telemetry);
         
         steering = robotDriving.getSteering();
     }
