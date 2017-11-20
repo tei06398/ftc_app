@@ -121,6 +121,15 @@ public class RobotDriving {
         
         // **Angle is in radians, not degrees.**
         public void moveRadians(double angle) {
+
+            // This "fixes" a really annoying bug where the left and right controls are inverted. We don't know where it
+            // is, so we just inverted the angle by reflecting it over the y-axis.
+            if (angle >= 0) {
+                angle = Math.PI - angle;
+            } else {
+                angle = -Math.PI - angle;
+            }
+
             double speedX = Math.cos(angle - Math.toRadians(45));
             double speedY = Math.sin(angle - Math.toRadians(45));
 
@@ -169,6 +178,11 @@ public class RobotDriving {
             // Now, actually set the powers for the motors. Dividing by maxRawPower makes the "biggest" power +-1, and multiplying by speedRatio
             // makes the maximum power speedRatio.
             if (maxRawPower != 0) {
+                telemetry.addData("power lf: ", powerLF);
+                telemetry.addData("power lb: ", powerLB);
+                telemetry.addData("power rf: ", powerRF);
+                telemetry.addData("power rb: ", powerRB);
+
                 telemetry.addData("max raw power: ", maxRawPower);
                 motorLF.setPower(powerLF / maxRawPower * speedRatio);
                 motorLB.setPower(powerLB / maxRawPower * speedRatio);
