@@ -10,6 +10,10 @@ public class GunnerFunction {
     private Servo jewelServo;
     private Telemetry telemetry;
 
+    // put in actual values later
+    private static final int GLYPHTER_SERVO_CLOSE_POS = 0;
+    private static final int GLYPHTER_SERVO_OPEN_POS = 100;
+
     GunnerFunction(DcMotor winch, Servo glyphter, Servo jewel, Telemetry t) {
         winchMotor = winch;
         glyphterServo = glyphter;
@@ -27,5 +31,13 @@ public class GunnerFunction {
 
     public void stopWinch() {
         winchMotor.setPower(0);
+    }
+
+    public void openGlyphter() {
+        glyphterServo.setPosition(GLYPHTER_SERVO_OPEN_POS);
+    }
+
+    public void closeGlyphter() {
+        glyphterServo.setPosition(GLYPHTER_SERVO_CLOSE_POS);
     }
 }
