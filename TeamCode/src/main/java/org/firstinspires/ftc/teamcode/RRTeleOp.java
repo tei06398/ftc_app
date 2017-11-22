@@ -44,6 +44,9 @@ public class RRTeleOp extends OpMode {
             gunnerFunction.stopWinch();
         }
 
+        if (this.gamepad2.left_bumper) gunnerFunction.closeGlyphter();
+        if (this.gamepad2.right_bumper) gunnerFunction.openGlyphter();
+
         //Controls linear movement of robot
         // Only actually move if the joystick is offset.
         if (Math.abs(this.gamepad1.left_stick_x) > 0.1 || Math.abs(this.gamepad1.left_stick_y) > 0.1) {
