@@ -16,6 +16,8 @@ public class TestTeleOp extends OpMode {
     protected DcMotor motorRF = null;
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
+    protected Servo glyphterServo = null;
+
     public void loop(){
         double position = 0;
 
@@ -28,10 +30,7 @@ public class TestTeleOp extends OpMode {
         telemetry.update();
     }
 
-    protected Servo glyphterServo = null;
-
     public void init(){
-
         //Instantiates motors and servos, sets operating mode
         this.motorLF = this.hardwareMap.dcMotor.get("lfMotor");
         this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
@@ -42,9 +41,5 @@ public class TestTeleOp extends OpMode {
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
     }
-
-
 }
