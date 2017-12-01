@@ -20,6 +20,7 @@ public class RRTeleOp extends OpMode {
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
     protected DcMotor motorWinch = null;
+    protected DcMotor motorRelicSlide = null;
     protected Servo servoGlyphter = null;
     protected Servo servoJewelTipper = null;
     protected RobotDriving robotDriving;
@@ -29,13 +30,26 @@ public class RRTeleOp extends OpMode {
     public void loop() {
         steering.setSpeedRatio((this.gamepad1.right_trigger > 0.5) ? MIN_SPEED_RATIO : MAX_SPEED_RATIO);
 
-        //Controls orientation of robot
+        // GAMEPAD 1 (DRIVER)
+        // Right stick: turn
         if (this.gamepad1.right_stick_x > 0.1) {
             steering.turnClockwise();
         } else if (this.gamepad1.right_stick_x < -0.1) {
             steering.turnCounterclockwise();
         }
 
+        // Left stick: driving
+        if (Math.abs(this.gamepad1.left_stick_x) > 0.1 || Math.abs(this.gamepad1.left_stick_y) > 0.1) {
+            double angle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x);
+            telemetry.addData("angle: ", angle);
+
+            steering.moveRadians(angle);
+        } else {
+            telemetry.addData("angle: ", 0);
+        }
+
+        // GAMEPAD 2 (GUNNER)
+        // Up/down keys: winch
         if (this.gamepad2.dpad_up) {
             gunnerFunction.upWinch();
         } else if (this.gamepad2.dpad_down) {
@@ -44,29 +58,16 @@ public class RRTeleOp extends OpMode {
             gunnerFunction.stopWinch();
         }
 
+        // Left bumper: close glyphter
+        // Right bumper: open glyphter
         if (this.gamepad2.left_bumper) gunnerFunction.closeGlyphter();
         if (this.gamepad2.right_bumper) gunnerFunction.openGlyphter();
 
-        //Controls linear movement of robot
-        // Only actually move if the joystick is offset.
-        if (Math.abs(this.gamepad1.left_stick_x) > 0.1 || Math.abs(this.gamepad1.left_stick_y) > 0.1) {
-            double angle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x);
-            telemetry.addData("angle: ", angle);
-            
-            steering.moveRadians(angle);
-        } else {
-            telemetry.addData("angle: ", 0);
-        }
-        
         steering.finishSteering();
 
         telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
         telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
         telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
-        /*telemetry.addData("powerLF: ", powerLF);
-        telemetry.addData("powerRB: ", powerRB);
-        telemetry.addData("powerLB: ", powerLB);
-        telemetry.addData("powerRF: ", powerRF);*/
         telemetry.update();
     }
 
@@ -78,6 +79,7 @@ public class RRTeleOp extends OpMode {
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
         this.motorWinch = this.hardwareMap.dcMotor.get("winchMotor");
+        this.motorRelicSlide = this.hardwareMap.dcMotor.get("relicSlide");
         this.servoGlyphter = this.hardwareMap.servo.get("glyphterServo");
         this.servoJewelTipper = this.hardwareMap.servo.get("jewelTipperServo");
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -86,7 +88,7 @@ public class RRTeleOp extends OpMode {
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         
         robotDriving = new RobotDriving(motorLF,motorLB,motorRF,motorRB,telemetry);
-        gunnerFunction = new GunnerFunction(motorWinch, servoGlyphter, servoJewelTipper, telemetry);
+        gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoJewelTipper, telemetry);
         
         steering = robotDriving.getSteering();
     }

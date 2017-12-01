@@ -17,6 +17,7 @@ public class TestTeleOp extends OpMode {
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
     protected Servo glyphterServo = null;
+    protected UltrasonicSensor ultrasonic1 = null;
 
     public void loop(){
         double position = 0;
@@ -27,6 +28,7 @@ public class TestTeleOp extends OpMode {
         this.glyphterServo.setPosition(position);
 
         telemetry.addData("Position: ", position);
+        telemetry.addData("Ultrasonic: ", ultrasonic1.getUltrasonicLevel());
         telemetry.update();
     }
 
@@ -37,6 +39,7 @@ public class TestTeleOp extends OpMode {
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
         this.glyphterServo = this.hardwareMap.servo.get("glyphterServo");
+        this.ultrasonic1 = this.hardwareMap.ultrasonicSensor.get("ultrasonic1");
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

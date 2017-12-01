@@ -1,10 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.hardware.camera2.CameraAccessException;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.videoio.VideoCapture;
 
 /**
  * Created 11/13/2017
@@ -16,6 +21,7 @@ public class RRAuton extends LinearOpMode {
     protected DcMotor motorRF = null;
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
+    protected UltrasonicSensor ultrasonic1 = null;
 
 
     private VuforiaLocalizer vuforia;
@@ -56,11 +62,51 @@ public class RRAuton extends LinearOpMode {
         this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
+        this.ultrasonic1 = this.hardwareMap.ultrasonicSensor.get("ultrasonic1");
+
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        VideoCapture camera = new VideoCapture(0);
+        Mat frame = new Mat();
+        if(!camera.isOpened()) {
+            telemetry.addData("Camera working", "false");
+        } else {
+            telemetry.addData("Camera working", "true");
+            while (!gamepad2.x) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    // Shouldn't happen
+                }
+
+                if (camera.read(frame)) {
+                    final int HEIGHT = frame.rows();
+                    final int WIDTH = frame.cols();
+
+                    int ballCol = (int) (WIDTH * 0.67);
+                    int ballRow = (int) (HEIGHT * 0.75);
+
+                    double blueWeight = 0;
+                    double redWeight = 0;
+                    for (int row = (int) (HEIGHT * 0.5); row < HEIGHT; row += 10) {
+                        for (int col = (int) (WIDTH * 0.33); col < WIDTH; col += 10) {
+                            double distWeight = Math.abs(ballRow - row) + Math.abs(ballCol - col);
+
+                            blueWeight += frame.get(row, col)[0] / (distWeight + 20);
+                            redWeight += frame.get(row, col)[2] / (distWeight + 20);
+                        }
+                    }
+                    telemetry.addData("Red: ", redWeight);
+                    telemetry.addData("Blue: ", blueWeight);
+                    telemetry.addData("Color: ", redWeight > blueWeight ? "RED" : "BLUE");
+                }
+            }
+            camera.release();
+        }
         //Makes RobotDriving Object
         RobotDriving robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry);
 
