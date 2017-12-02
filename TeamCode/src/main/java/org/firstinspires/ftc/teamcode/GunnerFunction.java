@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -14,8 +16,9 @@ public class GunnerFunction {
     // put in actual values later
     private static final int GLYPHTER_SERVO_CLOSE_POS = 0;
     private static final int GLYPHTER_SERVO_OPEN_POS = 100;
-    private static final int GLYPHTER_ROTATION_SERVO_NORMAL_POS = 0;
-    private static final int GLYPHTER_ROTATION_SERVO_ROTATED_POS = 100;
+    private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 0.4;
+    private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0.6;
+    private boolean isRotated = false;
 
     GunnerFunction(DcMotor motorWinch, DcMotor motorRelicSlide, Servo servoGlyphter, Servo servoGlyphterRotation, Telemetry telemetry) {
         this.motorWinch = motorWinch;
@@ -46,22 +49,28 @@ public class GunnerFunction {
     }
 
     public void expandRelicSlide() {
-        motorRelicSlide.setPower(0.5);
+        motorRelicSlide.setPower(0.2);
     }
 
     public void retractRelicSlide() {
-        motorRelicSlide.setPower(-0.5);
+        motorRelicSlide.setPower(-0.2);
     }
 
     public void stopRelicSlide() {
         motorRelicSlide.setPower(0);
     }
 
+/// changed Servo to CRServo, different methods to be called
     public void rotateGlyphter() {
-        servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_ROTATED_POS);
-    }
-
-    public void unrotateGlyphter() {
-        servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_NORMAL_POS);
+        telemetry.addData("isRotated", isRotated);
+        telemetry.update();
+        if(isRotated){
+            servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_NORMAL_POS);
+            isRotated = false;
+        }
+        else{
+            servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_ROTATED_POS);
+            isRotated = true;
+        }
     }
 }
