@@ -22,7 +22,7 @@ public class RRTeleOp extends OpMode {
     protected DcMotor motorWinch = null;
     protected DcMotor motorRelicSlide = null;
     protected Servo servoGlyphter = null;
-    protected Servo servoJewelTipper = null;
+    protected Servo servoGlyphterRotation = null;
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
     protected GunnerFunction gunnerFunction;
@@ -63,6 +63,19 @@ public class RRTeleOp extends OpMode {
         if (this.gamepad2.left_bumper) gunnerFunction.closeGlyphter();
         if (this.gamepad2.right_bumper) gunnerFunction.openGlyphter();
 
+        // Left trigger required for endgame functions
+        if (this.gamepad2.left_trigger > 0) {
+            // Y: expand relic slide
+            // X: retract
+            if (this.gamepad2.y) gunnerFunction.expandRelicSlide();
+            if (this.gamepad2.x) gunnerFunction.retractRelicSlide();
+
+            // B: rotate glyphter
+            // A: unrotate
+            if (this.gamepad2.b) gunnerFunction.rotateGlyphter();
+            if (this.gamepad2.a) gunnerFunction.unrotateGlyphter();
+        }
+
         steering.finishSteering();
 
         telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
@@ -79,16 +92,16 @@ public class RRTeleOp extends OpMode {
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
         this.motorWinch = this.hardwareMap.dcMotor.get("winchMotor");
-        this.motorRelicSlide = this.hardwareMap.dcMotor.get("relicSlide");
+        this.motorRelicSlide = this.hardwareMap.dcMotor.get("relicSlideMotor");
         this.servoGlyphter = this.hardwareMap.servo.get("glyphterServo");
-        this.servoJewelTipper = this.hardwareMap.servo.get("jewelTipperServo");
+        this.servoGlyphterRotation = this.hardwareMap.servo.get("glyphterRotationServo");
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         
         robotDriving = new RobotDriving(motorLF,motorLB,motorRF,motorRB,telemetry);
-        gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoJewelTipper, telemetry);
+        gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoGlyphterRotation, telemetry);
         
         steering = robotDriving.getSteering();
     }
