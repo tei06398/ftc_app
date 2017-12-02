@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.hardware.camera2.CameraAccessException;
+import android.widget.TextView;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
@@ -68,8 +71,9 @@ public class RRAuton extends LinearOpMode {
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        ((TextView)((FtcRobotControllerActivity) this.hardwareMap.appContext).findViewById(R.id.tvStatusString)).setText("TEST TEST");
+        OpenCVLoader.initDebug(); // if this fails, try commented line below
+        //System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // if crashes at this line, change parameter to libopencv_java3 or opencv_java3
         VideoCapture camera = new VideoCapture(0);
         Mat frame = new Mat();
         if(!camera.isOpened()) {
