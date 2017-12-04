@@ -1,21 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.app.Activity;
-import android.hardware.camera2.CameraAccessException;
-import android.widget.TextView;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import com.vuforia.Frame;
-import com.vuforia.Image;
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
+/* OpenCV Code Block Imports
+import android.app.Activity;
+import android.hardware.camera2.CameraAccessException;
+import android.widget.TextView;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.*;
 import org.opencv.videoio.VideoCapture;
-
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+*/
 /**
  * Created 11/13/2017
  */
@@ -27,7 +27,7 @@ public class RRAuton extends LinearOpMode {
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
     protected UltrasonicSensor ultrasonic1 = null;
-    protected VideoCapture camera = null;
+    //protected VideoCapture camera = null;
 
 
     private VuforiaLocalizer vuforia;
@@ -101,9 +101,11 @@ public class RRAuton extends LinearOpMode {
         //Wait for OpMode Init Button to be Pressed
         waitForStart();
 
-
+        /* THE OPENCV CODE BLOCK
         telemetry.addData("Reached checkpoint", "1");
         telemetry.update();
+
+
         //((TextView)((FtcRobotControllerActivity) this.hardwareMap.appContext).findViewById(R.id.tvStatusString)).setText("TEST TEST");
         //OpenCVLoader.initDebug(); // if this fails, try commented line below
 
@@ -167,7 +169,7 @@ public class RRAuton extends LinearOpMode {
             }
             camera.release();
         }
-
+        */
         //Activate the VuMark Dataset as Current Tracked Object
         relicTrackables.activate();
 
