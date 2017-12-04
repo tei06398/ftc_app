@@ -22,12 +22,11 @@ public class RobotDriving {
     private DcMotor motorLB;
     private DcMotor motorRF;
     private DcMotor motorRB;
-    private Telemetry telemetry;
-    public static final double MAX_SPEED_RATIO = 1;
-    public static final double MIN_SPEED_RATIO = 0.35;
 
-    // The big problem with this is that someone might scramble up the motor order (ie. put the LB motor in the LF argument slot)
-    // and it would be a pain to debug.
+    private Telemetry telemetry;
+    public static final double MAX_SPEED_RATIO = 0.5;
+    public static final double MIN_SPEED_RATIO = 0.3;
+
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
         motorLF = LF;
         motorLB = LB;
@@ -44,39 +43,6 @@ public class RobotDriving {
         return new TimedSteering();
     }
     
-    public void stopAllMotors() {
-        motorLF.setPower(0);
-        motorLB.setPower(0);
-        motorRF.setPower(0);
-        motorRF.setPower(0);
-        motorRB.setPower(0);
-    }
-    
-    // Easy test for the motors. The test should make the robot spin clockwise for 5 seconds, then counterclockwise for 5 seconds.
-    public void testMotors() {
-        motorLF.setPower(1);
-        motorLB.setPower(1);
-        motorRF.setPower(1);
-        motorRB.setPower(1);
-
-        try {
-            wait(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        motorLF.setPower(-1);
-        motorLB.setPower(-1);
-        motorRF.setPower(-1);
-        motorRB.setPower(-1);
-
-        try {
-            wait(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    
     /*public void wait(double seconds) {
         try {
             Thread.sleep((long) (seconds * 1000));
@@ -88,17 +54,25 @@ public class RobotDriving {
     
     // An inner class that manages the repeated recalculation of motor powers.
     public class Steering {
+        private static final double ACCELERATION_WEIGHT_TO_PREVIOUS = 0.5;
+
         private double powerLF = 0;
         private double powerLB = 0;
         private double powerRF = 0;
         private double powerRB = 0;
+
+        private NumericalAcceleration accelLF = new NumericalAcceleration(ACCELERATION_WEIGHT_TO_PREVIOUS);
+        private NumericalAcceleration accelLB = new NumericalAcceleration(ACCELERATION_WEIGHT_TO_PREVIOUS);
+        private NumericalAcceleration accelRF = new NumericalAcceleration(ACCELERATION_WEIGHT_TO_PREVIOUS);
+        private NumericalAcceleration accelRB = new NumericalAcceleration(ACCELERATION_WEIGHT_TO_PREVIOUS);
+
         private double speedRatio = MAX_SPEED_RATIO;
 
         public Steering() {
         }
-        
+
         /* UTILITIES */
-        
+
         public void setSpeedRatio(double speedRatio) {
             this.speedRatio = speedRatio;
         }
@@ -116,9 +90,9 @@ public class RobotDriving {
             powerRF += power;
             powerRB += power;
         }
-        
+
         /* LINEAR MOVEMENT */
-        
+
         // **Angle is in radians, not degrees.**
         public void moveRadians(double angle) {
 
@@ -153,9 +127,9 @@ public class RobotDriving {
         public void moveDegrees(double angle) {
             move(angle);
         }
-        
+
         /* ROTATION */
-        
+
         public void turn(boolean isClockwise) {
             addToAllPowers(isClockwise ? 1 : -1);
         }
@@ -167,9 +141,9 @@ public class RobotDriving {
         public void turnCounterclockwise() {
             turn(false);
         }
-        
+
         /* MISC */
-        
+
         // Actually makes the motors spin. You must call this once all the movements are set for anything to happen.
         public void finishSteering() {
             // The maximum base power.
@@ -184,15 +158,22 @@ public class RobotDriving {
                 telemetry.addData("power rb: ", powerRB);
 
                 telemetry.addData("max raw power: ", maxRawPower);
-                motorLF.setPower(powerLF / maxRawPower * speedRatio);
-                motorLB.setPower(powerLB / maxRawPower * speedRatio);
-                motorRF.setPower(powerRF / maxRawPower * speedRatio);
-                motorRB.setPower(powerRB / maxRawPower * speedRatio);
+                powerMotors(powerLF / maxRawPower * speedRatio,
+                        powerLB / maxRawPower * speedRatio,
+                        powerRF / maxRawPower * speedRatio,
+                        powerRB / maxRawPower * speedRatio);
             } else {
-                stopAllMotors();
+                powerMotors(0, 0, 0, 0);
             }
-            
+
             setAllPowers(0);
+        }
+
+        public void powerMotors(double lf, double lb, double rf, double rb) {
+            motorLF.setPower(accelLF.applyAmount(lf));
+            motorLB.setPower(accelLB.applyAmount(lb));
+            motorRF.setPower(accelRF.applyAmount(rf));
+            motorRB.setPower(accelRB.applyAmount(rb));
         }
     }
     
@@ -265,7 +246,7 @@ public class RobotDriving {
                 }*/
 
                 // Stop all the motors at the end of the motion.
-                stopAllMotors();
+                // NOT ACTUALLY USING THIS CLASS. stopAllMotors();
                 
                 // Reset time.
                 time = 0;

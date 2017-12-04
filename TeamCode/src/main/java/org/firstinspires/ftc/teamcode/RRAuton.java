@@ -7,15 +7,7 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
-/* OpenCV Code Block Imports
-import android.app.Activity;
-import android.hardware.camera2.CameraAccessException;
-import android.widget.TextView;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.core.*;
-import org.opencv.videoio.VideoCapture;
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-*/
+
 /**
  * Created 11/13/2017
  */
@@ -101,75 +93,6 @@ public class RRAuton extends LinearOpMode {
         //Wait for OpMode Init Button to be Pressed
         waitForStart();
 
-        /* THE OPENCV CODE BLOCK
-        telemetry.addData("Reached checkpoint", "1");
-        telemetry.update();
-
-
-        //((TextView)((FtcRobotControllerActivity) this.hardwareMap.appContext).findViewById(R.id.tvStatusString)).setText("TEST TEST");
-        //OpenCVLoader.initDebug(); // if this fails, try commented line below
-
-        //System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // if crashes at this line, change parameter to libopencv_java3 or opencv_java3
-
-        try {
-            boolean load = OpenCVLoader.initDebug();
-            telemetry.addData("Reached checkpoint", load);
-            telemetry.update();
-            if(load){
-                System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-                System.loadLibrary("opencv_java3");
-            }
-            telemetry.addData("Reached checkpoint", "2.5");
-            telemetry.update();
-            camera = new VideoCapture();
-        }
-        catch (Exception e){
-            telemetry.addData("Error: ", e.getMessage());
-            telemetry.update();
-        }
-        telemetry.addData("Reached checkpoint", "3");
-        telemetry.update();
-        Mat mat = new Mat();
-        telemetry.addData("Reached checkpoint", "4");
-        telemetry.update();
-
-        if(!camera.isOpened()) {
-            telemetry.addData("Camera working", "false");
-        } else {
-            telemetry.addData("Camera working", "true");
-            while (!gamepad2.x) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // Shouldn't happen
-                }
-
-                if (camera.read(mat)) {
-                    final int HEIGHT = mat.rows();
-                    final int WIDTH = mat.cols();
-
-                    int ballCol = (int) (WIDTH * 0.67);
-                    int ballRow = (int) (HEIGHT * 0.75);
-
-                    double blueWeight = 0;
-                    double redWeight = 0;
-                    for (int row = (int) (HEIGHT * 0.5); row < HEIGHT; row += 10) {
-                        for (int col = (int) (WIDTH * 0.33); col < WIDTH; col += 10) {
-                            double distWeight = Math.abs(ballRow - row) + Math.abs(ballCol - col);
-
-                            blueWeight += mat.get(row, col)[0] / (distWeight + 20);
-                            redWeight += mat.get(row, col)[2] / (distWeight + 20);
-                        }
-                    }
-                    telemetry.addData("Red: ", redWeight);
-                    telemetry.addData("Blue: ", blueWeight);
-                    telemetry.addData("Color: ", redWeight > blueWeight ? "RED" : "BLUE");
-                    telemetry.update();
-                }
-            }
-            camera.release();
-        }
-        */
         //Activate the VuMark Dataset as Current Tracked Object
         relicTrackables.activate();
 

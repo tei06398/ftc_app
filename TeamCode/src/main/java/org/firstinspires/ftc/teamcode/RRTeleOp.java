@@ -68,17 +68,19 @@ public class RRTeleOp extends OpMode {
         if (this.gamepad2.left_trigger > 0) {
             // Y: expand relic slide
             // X: retract
-            if (this.gamepad2.y) gunnerFunction.expandRelicSlide();
-            if (this.gamepad2.x) gunnerFunction.retractRelicSlide();
+            if (this.gamepad2.y) {
+                gunnerFunction.expandRelicSlide();
+            }
+            else if (this.gamepad2.x) {
+                gunnerFunction.retractRelicSlide();
+            }
+            else {
+                gunnerFunction.stopRelicSlide();
+            }
 
             // B: rotate glyphter
-            // A: unrotate
-
             if (this.gamepad2.b) {
-                //gunnerFunction.rotateGlyphter();
-                servoGlyphterRotation.setPosition(0.6);
-                telemetry.addData("glypher function", "true");
-                telemetry.update();
+                gunnerFunction.rotateGlyphter();
             }
         }
 
