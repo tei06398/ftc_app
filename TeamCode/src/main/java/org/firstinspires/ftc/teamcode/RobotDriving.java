@@ -18,20 +18,24 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
     ts.move(30, 2); // move at 30 degree angle for 2 sec
 */
 public class RobotDriving {
-    private DcMotor motorLF;
-    private DcMotor motorLB;
-    private DcMotor motorRF;
-    private DcMotor motorRB;
+    // DrivingMotors are not real motors. They are a utility class that wraps over a motor object,
+    // and the main feature is that their powers are weighted so when you "apply" power to them,
+    // the power is gradually shifted.
+    private DrivingMotor lf;
+    private DrivingMotor lb;
+    private DrivingMotor rf;
+    private DrivingMotor rb;
 
     private Telemetry telemetry;
     public static final double MAX_SPEED_RATIO = 0.5;
     public static final double MIN_SPEED_RATIO = 0.3;
-
+    public static final double SMOOTHNESS = 0.5;
+    
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
-        motorLF = LF;
-        motorLB = LB;
-        motorRF = RF;
-        motorRB = RB;
+        this.lf = new DrivingMotor(LF, SMOOTHNESS);
+        this.lb = new DrivingMotor(LB, SMOOTHNESS);
+        this.rf = new DrivingMotor(RF, SMOOTHNESS);
+        this.rb = new DrivingMotor(RB, SMOOTHNESS);
         this.telemetry = telemetry;
     }
 
@@ -52,19 +56,27 @@ public class RobotDriving {
         }
     }*/
     
+    // Encapsulates a motor and all its utilities.
+    public static class DrivingMotor {
+        private DcMotor motor;
+        private WeightedValue acceleration;
+        
+        public DrivingMotor(DcMotor motor, double smoothness) {
+            this.motor = motor;
+            acceleration = new WeightedValue(smoothness);
+        }
+        
+        public void applyPower(double power) {
+            this.motor.setPower(acceleration.applyValue(power));
+        }
+    }
+    
     // An inner class that manages the repeated recalculation of motor powers.
     public class Steering {
-        private static final double ACCELERATION_WEIGHT_TO_PREVIOUS = 0.5;
-
         private double powerLF = 0;
         private double powerLB = 0;
         private double powerRF = 0;
         private double powerRB = 0;
-
-        private NumericalAcceleration accelLF = new NumericalAcceleration(ACCELERATION_WEIGHT_TO_PREVIOUS);
-        private NumericalAcceleration accelLB = new NumericalAcceleration(ACCELERATION_WEIGHT_TO_PREVIOUS);
-        private NumericalAcceleration accelRF = new NumericalAcceleration(ACCELERATION_WEIGHT_TO_PREVIOUS);
-        private NumericalAcceleration accelRB = new NumericalAcceleration(ACCELERATION_WEIGHT_TO_PREVIOUS);
 
         private double speedRatio = MAX_SPEED_RATIO;
 
@@ -89,6 +101,13 @@ public class RobotDriving {
             powerLB += power;
             powerRF += power;
             powerRB += power;
+        }
+        
+        public void stopAllMotors() {
+            lf.applyPower(0);
+            lb.applyPower(0);
+            rf.applyPower(0);
+            rb.applyPower(0);
         }
 
         /* LINEAR MOVEMENT */
@@ -158,22 +177,16 @@ public class RobotDriving {
                 telemetry.addData("power rb: ", powerRB);
 
                 telemetry.addData("max raw power: ", maxRawPower);
-                powerMotors(powerLF / maxRawPower * speedRatio,
-                        powerLB / maxRawPower * speedRatio,
-                        powerRF / maxRawPower * speedRatio,
-                        powerRB / maxRawPower * speedRatio);
+                
+                lf.applyPower(powerLF / maxRawPower * speedRatio);
+                lb.applyPower(powerLB / maxRawPower * speedRatio);
+                rf.applyPower(powerRF / maxRawPower * speedRatio);
+                rb.applyPower(powerRB / maxRawPower * speedRatio);
             } else {
-                powerMotors(0, 0, 0, 0);
+                stopAllMotors();
             }
-
+            
             setAllPowers(0);
-        }
-
-        public void powerMotors(double lf, double lb, double rf, double rb) {
-            motorLF.setPower(accelLF.applyAmount(lf));
-            motorLB.setPower(accelLB.applyAmount(lb));
-            motorRF.setPower(accelRF.applyAmount(rf));
-            motorRB.setPower(accelRB.applyAmount(rb));
         }
     }
     
@@ -246,7 +259,7 @@ public class RobotDriving {
                 }*/
 
                 // Stop all the motors at the end of the motion.
-                // NOT ACTUALLY USING THIS CLASS. stopAllMotors();
+                stopAllMotors();
                 
                 // Reset time.
                 time = 0;
