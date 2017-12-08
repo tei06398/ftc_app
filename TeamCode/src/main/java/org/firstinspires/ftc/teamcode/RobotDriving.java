@@ -29,7 +29,7 @@ public class RobotDriving {
     private Telemetry telemetry;
     public static final double MAX_SPEED_RATIO = 0.5;
     public static final double MIN_SPEED_RATIO = 0.3;
-    public static final double SMOOTHNESS = 0.5;
+    public static final double SMOOTHNESS = 0.1;
     
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
         this.lf = new DrivingMotor(LF, SMOOTHNESS);
@@ -41,10 +41,6 @@ public class RobotDriving {
 
     public Steering getSteering() {
         return new Steering();
-    }
-    
-    public TimedSteering getTimedSteering() {
-        return new TimedSteering();
     }
     
     /*public void wait(double seconds) {
@@ -187,83 +183,6 @@ public class RobotDriving {
             }
             
             setAllPowers(0);
-        }
-    }
-    
-    // An inner class that handles _timed_ steering: ie. "move forward for 3 seconds, then stop" vs. "move forward until you get the next command"
-    // Every movement is finished when it is created. There's no need to call "finishSteering()." However, this means that this class can't do two motions
-    // at once (ie. move AND rotate).
-    public class TimedSteering extends Steering {
-        private double time = 0;
-        
-        public TimedSteering() {
-            super();
-        }
-        
-        /* LINEAR MOVEMENT */
-        
-        public void moveRadians(double angle, double time) {
-            super.moveRadians(angle);
-            this.time = time;
-            finishSteering();
-        }
-        
-        public void move(double angle, double time) {
-            super.move(angle);
-            this.time = time;
-            finishSteering();
-        }
-        
-        public void moveDegrees(double angle, double time) {
-            move(angle, time);
-        }
-        
-        public void right(double time) { move(0, time); finishSteering(); }
-        public void forward(double time) { move(90, time); finishSteering(); }
-        public void left(double time) { move(180, time); finishSteering(); }
-        public void backward(double time) { move(270, time); finishSteering(); }
-        
-        /* ROTATION */
-        
-        public void turn(boolean isClockwise, double time) {
-            super.turn(isClockwise);
-            this.time = time;
-            finishSteering();
-        }
-        
-        public void turnClockwise(double time) {
-            super.turnClockwise();
-            this.time = time;
-            finishSteering();
-        }
-        
-        public void turnCounterclockwise(double time) {
-            super.turnCounterclockwise();
-            this.time = time;
-            finishSteering();
-        }
-        
-        /* MISC */
-        
-        // NO NEED TO CALL THIS DIRECTLY. It is automatically done after every steering operation with a time. 
-        public void finishSteering() {
-            super.finishSteering();
-            
-            if (time != 0) {
-                // You don't need any exception handling here because wait(time) "converts"
-                // an InterruptedException to a RuntimeException. :)
-                /*try {
-                    wait((long) time);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
-
-                // Stop all the motors at the end of the motion.
-                stopAllMotors();
-                
-                // Reset time.
-                time = 0;
-            }
         }
     }
 }

@@ -26,7 +26,6 @@ public class RRTeleOp extends OpMode {
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
     protected GunnerFunction gunnerFunction;
-    int position = 0;
 
     public void loop() {
         steering.setSpeedRatio((this.gamepad1.right_trigger > 0.5) ? MIN_SPEED_RATIO : MAX_SPEED_RATIO);
@@ -78,7 +77,7 @@ public class RRTeleOp extends OpMode {
                 gunnerFunction.stopRelicSlide();
             }
 
-            // B: rotate glyphter
+            // B: toggle glyphter rotation
             if (this.gamepad2.b) {
                 gunnerFunction.rotateGlyphter();
             }
@@ -93,7 +92,6 @@ public class RRTeleOp extends OpMode {
     }
 
     public void init(){
-
         //Instantiates motors and servos, sets operating mode
         this.motorLF = this.hardwareMap.dcMotor.get("lfMotor");
         this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
@@ -112,5 +110,8 @@ public class RRTeleOp extends OpMode {
         gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoGlyphterRotation, telemetry);
         
         steering = robotDriving.getSteering();
+
+        // Snap the glyphter rotation servo into the correct spot
+        gunnerFunction.rotateGlyphter();
     }
 }

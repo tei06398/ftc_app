@@ -21,7 +21,6 @@ public class RRAuton extends LinearOpMode {
     protected UltrasonicSensor ultrasonic1 = null;
     //protected VideoCapture camera = null;
 
-
     private VuforiaLocalizer vuforia;
 
     char readVuMark(VuforiaTrackable relicTemplate) {
@@ -67,12 +66,6 @@ public class RRAuton extends LinearOpMode {
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //Makes RobotDriving Object
-        RobotDriving robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry);
-
-        //Gets TimedSteering Object
-        RobotDriving.TimedSteering ts = robotDriving.getTimedSteering();
 
         //Tell Vuforia to display video feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

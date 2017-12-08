@@ -14,9 +14,11 @@ public class GunnerFunction {
     // put in actual values later
     private static final int GLYPHTER_SERVO_CLOSE_POS = 0;
     private static final int GLYPHTER_SERVO_OPEN_POS = 100;
-    private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 0.47;
-    private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0.53;
-    private boolean isGlyphterRotated = false;
+    private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 0.43;
+    private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0.57;
+
+    // Assume that the glyphter is rotated at the beginning so we can fix it at the beginning of tele-op
+    private boolean isGlyphterRotated = true;
 
     GunnerFunction(DcMotor motorWinch, DcMotor motorRelicSlide, Servo servoGlyphter, Servo servoGlyphterRotation, Telemetry telemetry) {
         this.motorWinch = motorWinch;
@@ -58,7 +60,7 @@ public class GunnerFunction {
         motorRelicSlide.setPower(0);
     }
 
-/// changed Servo to CRServo, different methods to be called
+    // changed Servo to CRServo, different methods to be called
     public void rotateGlyphter() {
         if(isGlyphterRotated){
             servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_NORMAL_POS);

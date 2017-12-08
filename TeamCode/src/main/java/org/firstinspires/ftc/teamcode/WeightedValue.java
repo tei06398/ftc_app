@@ -9,7 +9,12 @@ public class WeightedValue {
     }
 
     public double applyValue(double newValue) {
-        value = value * smoothness + newValue * (1 - smoothness);
+        if (value < newValue) {
+            value = value + Math.min(newValue-value, smoothness);
+        }
+        else {
+            value = value - Math.min(value-newValue, smoothness);
+        }
         return value;
     }
 }
