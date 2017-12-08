@@ -14,8 +14,8 @@ import static org.firstinspires.ftc.teamcode.RobotDriving.MIN_SPEED_RATIO;
 @TeleOp(name = "Relic Recovery Official Tele-Op Mode")
 public class RRTeleOp extends OpMode {
     /* Declare here any fields you might find useful. */
-    // Declares motors
     protected DcMotor motorLF = null;
+    // Declares motors
     protected DcMotor motorRF = null;
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
@@ -26,9 +26,15 @@ public class RRTeleOp extends OpMode {
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
     protected GunnerFunction gunnerFunction;
+    private static double BLOCK_ROTATION_WEIGHT = 0.5; // make this final later
 
     public void loop() {
         steering.setSpeedRatio((this.gamepad1.right_trigger > 0.5) ? MIN_SPEED_RATIO : MAX_SPEED_RATIO);
+
+        // TESTING
+        if (this.gamepad1.a) BLOCK_ROTATION_WEIGHT += 0.05;
+        if (this.gamepad1.b) BLOCK_ROTATION_WEIGHT -= 0.05;
+        telemetry.addData("block rotation weight: ", BLOCK_ROTATION_WEIGHT);
 
         // GAMEPAD 1 (DRIVER)
         // Right stick: turn
@@ -47,6 +53,18 @@ public class RRTeleOp extends OpMode {
         } else {
             telemetry.addData("angle: ", 0);
         }
+
+        // Arrow keys: also driving
+        if (this.gamepad1.dpad_right) steering.moveDegrees(0);
+        if (this.gamepad1.dpad_up) steering.moveDegrees(90);
+        if (this.gamepad1.dpad_left) steering.moveDegrees(180);
+        if (this.gamepad1.dpad_down) steering.moveDegrees(270);
+
+        // Left bumper: move around block counterclockwise
+        if (this.gamepad1.left_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
+
+        // Right bumper: clockwise
+        if (this.gamepad1.right_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
 
         // GAMEPAD 2 (GUNNER)
         // Up/down keys: winch

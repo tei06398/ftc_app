@@ -157,19 +157,36 @@ public class RobotDriving {
 
         /* ROTATION */
 
+        public void turn(boolean isClockwise, double power) {
+            addToAllPowers(isClockwise ? power : -power);
+        }
+
+        public void turnClockwise(double power) {
+            turn(true, power);
+        }
+
+        public void turnCounterclockwise(double power) {
+            turn(false, power);
+        }
+
         public void turn(boolean isClockwise) {
-            addToAllPowers(isClockwise ? 1 : -1);
+            turn(isClockwise, 1);
         }
 
         public void turnClockwise() {
-            turn(true);
+            turnClockwise(1);
         }
 
         public void turnCounterclockwise() {
-            turn(false);
+            turnCounterclockwise(1);
         }
 
         /* MISC */
+
+        public void aroundPoint(boolean isClockwise, double rotationWeight) {
+            moveDegrees(isClockwise ? 180 : 0);
+            turn(isClockwise, rotationWeight);
+        }
 
         // Actually makes the motors spin. You must call this once all the movements are set for anything to happen.
         public void finishSteering() {
