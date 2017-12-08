@@ -29,7 +29,7 @@ public class RobotDriving {
     private Telemetry telemetry;
     public static final double MAX_SPEED_RATIO = 0.5;
     public static final double MIN_SPEED_RATIO = 0.3;
-    public static final double SMOOTHNESS = 0.1;
+    public static final double SMOOTHNESS = 0.2;
     
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
         this.lf = new DrivingMotor(LF, SMOOTHNESS);
@@ -110,7 +110,10 @@ public class RobotDriving {
 
         // **Angle is in radians, not degrees.**
         public void moveRadians(double angle) {
+            moveRadians(angle, 1);
+        }
 
+        public void moveRadians(double angle, double power) {
             // This "fixes" a really annoying bug where the left and right controls are inverted. We don't know where it
             // is, so we just inverted the angle by reflecting it over the y-axis.
             if (angle >= 0) {
@@ -128,10 +131,11 @@ public class RobotDriving {
             // so there's always going to be a speed that's +-1
             double divider = Math.max(Math.abs(speedX), Math.abs(speedY));
             telemetry.addData("divider: ", divider);
-            powerLF += speedX / divider;
-            powerRB -= speedX / divider;
-            powerLB += speedY / divider;
-            powerRF -= speedY / divider;
+
+            powerLF += speedX / divider * power;
+            powerRB -= speedX / divider * power;
+            powerLB += speedY / divider * power;
+            powerRF -= speedY / divider * power;
         }
 
         // **Angle is in degrees, not radians.**
@@ -139,8 +143,16 @@ public class RobotDriving {
             moveRadians(Math.toRadians(angle));
         }
 
+        public void move(double angle, double power) {
+            moveRadians(Math.toRadians(angle), power);
+        }
+
         public void moveDegrees(double angle) {
             move(angle);
+        }
+
+        public void moveDegrees(double angle, double power) {
+            move(angle, power);
         }
 
         /* ROTATION */
