@@ -11,13 +11,11 @@ public class UltrasonicFunction {
 
     private Telemetry telemetry;
 
-    private double SMOOTHNESS = 0;
-
     public UltrasonicFunction (UltrasonicSensor ultrasonicLeft, UltrasonicSensor ultrasonicRight, UltrasonicSensor ultrasonicRF, UltrasonicSensor ultrasonicLF, Telemetry telemetry) {
-        this.ultrasonicLeft = new SmoothUltrasonic(ultrasonicLeft, SMOOTHNESS, telemetry);
-        this.ultrasonicRight = new SmoothUltrasonic(ultrasonicRight, SMOOTHNESS, telemetry);
-        this.ultrasonicRF = new SmoothUltrasonic(ultrasonicRF, SMOOTHNESS, telemetry);
-        this.ultrasonicLF = new SmoothUltrasonic(ultrasonicLF, SMOOTHNESS, telemetry);
+        this.ultrasonicLeft = new SmoothUltrasonic(ultrasonicLeft, telemetry);
+        this.ultrasonicRight = new SmoothUltrasonic(ultrasonicRight, telemetry);
+        this.ultrasonicRF = new SmoothUltrasonic(ultrasonicRF, telemetry);
+        this.ultrasonicLF = new SmoothUltrasonic(ultrasonicLF, telemetry);
         this.telemetry = telemetry;
     }
 
@@ -34,10 +32,10 @@ public class UltrasonicFunction {
         private double smoothness;
         private long previousTickTime;
         private Telemetry telemetry;
+        private boolean hasBegun;
 
-        public SmoothUltrasonic (UltrasonicSensor ultrasonicSensor, double smoothness, Telemetry telemetry) {
+        public SmoothUltrasonic (UltrasonicSensor ultrasonicSensor, Telemetry telemetry) {
             this.ultrasonicSensor = ultrasonicSensor;
-            this.smoothness = smoothness;
             double sum = 0;
             this.telemetry = telemetry;
 
@@ -48,17 +46,25 @@ public class UltrasonicFunction {
             //DO MORE TESTING TO SEE HOW MANY READINGS WE REALLY NEED
             for (int attempt = 0; attempt < 20; attempt++) {
                 outputValue = ultrasonicSensor.getUltrasonicLevel();
-                if (outputValue != 0) {
+                if (outputValue == 0 || outputValue == 255) {}
+                else {
                     sum += outputValue;
                     successes++;
                 }
             }
             if (sum == 0) {
+                distance = 128;
+                hasBegun = false;
                 telemetry.addData("Error: ", "Ultrasonic Sensor outputs zero all the time");
             } else {
-                distance = sum/successes;
+                distance = sum / successes;
+                hasBegun = true;
             }
-            speed = 0;
+            double x = 0;
+            for (int i = 0; i < 1000000; i++) {
+                x = Math.sqrt(i);
+            }
+            double a = x;
             previousTickTime = System.currentTimeMillis();
         }
 
@@ -68,31 +74,27 @@ public class UltrasonicFunction {
             double outputValue;
 
             //Average 5 readings from ultrasonic sensor: if they all output zero, use known velocity/acceleration values
-            for (int attempt = 0; attempt < 5; attempt++) {
+            for (int attempt = 0; attempt < 10; attempt++) {
                 outputValue = ultrasonicSensor.getUltrasonicLevel();
-                if (outputValue == 0 || outputValue == 255 || Math.abs(outputValue-distance) > 50) {}
+                //telemetry.addData("output value: ", outputValue);
+                if (outputValue == 0 || outputValue == 255 || (hasBegun && Math.abs(outputValue-distance) > 50)) {}
                 else {
                     sum += outputValue;
                     successes++;
                 }
+                double x = 0;
+                for (int i = 0; i < 1000000; i++) {
+                    x = Math.sqrt(i);
+                }
+                double a = x;
             }
-            long curTime = System.currentTimeMillis();
-            long time = curTime-previousTickTime;
+            //telemetry.addData("sum: ", sum);
+            //telemetry.addData("successes: ", successes);
+
             if (sum == 0) {
-                distance += speed * time;
                 return distance;
             } else {
-                double measuredDistance = sum/successes;
-                double oldDistance = distance;
-                double calculatedDistance = distance + speed * time;
-                distance = (1 - smoothness) * measuredDistance + smoothness * calculatedDistance;
-                speed = (distance-oldDistance)/(time);
-                previousTickTime = curTime;
-
-                telemetry.addData("speed: ", speed);
-                telemetry.addData("distance: ", distance);
-                telemetry.addData("time", time);
-                telemetry.addData("calculated distance", calculatedDistance);
+                distance = sum / successes;
                 return distance;
             }
         }

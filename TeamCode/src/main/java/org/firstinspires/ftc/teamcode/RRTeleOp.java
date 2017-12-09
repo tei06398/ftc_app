@@ -64,10 +64,18 @@ public class RRTeleOp extends OpMode {
         }
 
         // Arrow keys: also driving
-        if (this.gamepad1.dpad_right) steering.moveDegrees(0);
-        if (this.gamepad1.dpad_up) steering.moveDegrees(90);
-        if (this.gamepad1.dpad_left) steering.moveDegrees(180);
-        if (this.gamepad1.dpad_down) steering.moveDegrees(270);
+        if (this.gamepad1.dpad_right) {
+            steering.moveDegrees(0,.3);
+        }
+        if (this.gamepad1.dpad_up) {
+            steering.moveDegrees(90,.3);
+        }
+        if (this.gamepad1.dpad_left) {
+            steering.moveDegrees(180,.3);
+        }
+        if (this.gamepad1.dpad_down) {
+            steering.moveDegrees(270,.3);
+        }
 
         // Left bumper: move around block counterclockwise
         if (this.gamepad1.left_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
@@ -112,13 +120,13 @@ public class RRTeleOp extends OpMode {
 
         steering.finishSteering();
 
-        telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
-        telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
-        telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
-        telemetry.addData("Ultrasonic Left: ", ultrasonicFunction.getLeft());
+        //telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
+        //telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
+        //telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
+        /*telemetry.addData("Ultrasonic Left: ", ultrasonicFunction.getLeft());
         telemetry.addData("Ultrasonic Right: ", ultrasonicFunction.getRight());
         telemetry.addData("Ultrasonic Left Front: ", ultrasonicFunction.getLF());
-        telemetry.addData("Ultrasonic Right Front: ", ultrasonicFunction.getRF());
+        telemetry.addData("Ultrasonic Right Front: ", ultrasonicFunction.getRF());*/
         telemetry.update();
     }
 
@@ -140,6 +148,7 @@ public class RRTeleOp extends OpMode {
         this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");
         this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF");
         this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF");
+
 
         robotDriving = new RobotDriving(motorLF,motorLB,motorRF,motorRB,telemetry);
         gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoGlyphterRotation, telemetry);
