@@ -27,8 +27,11 @@ public class RobotDriving {
     private DrivingMotor rb;
 
     private Telemetry telemetry;
-    public static final double MAX_SPEED_RATIO = 0.5;
+    
+    public static final double MAX_SPEED_RATIO = 1;
+    public static final double NORMAL_SPEED_RATIO = 0.5;
     public static final double MIN_SPEED_RATIO = 0.3;
+    
     public static final double SMOOTHNESS = 0.1;
     
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
@@ -74,7 +77,7 @@ public class RobotDriving {
         private double powerRF = 0;
         private double powerRB = 0;
 
-        private double speedRatio = MAX_SPEED_RATIO;
+        private double speedRatio = NORMAL_SPEED_RATIO;
 
         public Steering() {
         }
