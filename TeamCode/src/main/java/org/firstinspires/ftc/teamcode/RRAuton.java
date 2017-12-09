@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
@@ -15,6 +18,7 @@ import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 /**
@@ -156,13 +160,23 @@ public class RRAuton extends LinearOpMode {
 
 
             //Detect whiffle ball location
-            Camera camera = Camera.open(0);
-            /*camera.takePicture(null, null, new Camera.PictureCallback() {
-                @Override
-                public void onPictureTaken(byte[] data, Camera camera) {
-                    BufferedImage
-                }
-            });*/
+            Camera camera = Camera.open();
+            camera.takePicture(null, null,
+                    new Camera.PictureCallback() {
+                        @Override
+                        public void onPictureTaken(byte[] data, Camera camera) {
+                            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+                            Bitmap bmp = BitmapFactory.decodeStream(bais);
+                            int pixelx = 0;
+                            int pixely = 0;
+                            int color = bmp.getPixel(pixelx, pixely);
+
+                            int red = Color.red(color);
+                            int blue = Color.blue(color);
+                            int green = Color.green(color);
+                            int alpha = Color.alpha(color);
+                        }
+                    });
 
 
             //Extend whiffle ball thing
