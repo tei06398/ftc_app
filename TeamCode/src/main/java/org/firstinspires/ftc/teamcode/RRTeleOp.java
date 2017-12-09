@@ -23,9 +23,18 @@ public class RRTeleOp extends OpMode {
     protected DcMotor motorRelicSlide = null;
     protected Servo servoGlyphter = null;
     protected Servo servoGlyphterRotation = null;
+
+    protected UltrasonicSensor ultrasonicLeft;
+    protected UltrasonicSensor ultrasonicRight;
+    protected UltrasonicSensor ultrasonicLF;
+    protected UltrasonicSensor ultrasonicRF;
+
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
     protected GunnerFunction gunnerFunction;
+    protected UltrasonicFunction ultrasonicFunction;
+
+
     private static double BLOCK_ROTATION_WEIGHT = 0.5; // make this final later
 
     public void loop() {
@@ -106,6 +115,10 @@ public class RRTeleOp extends OpMode {
         telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
         telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
         telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
+        telemetry.addData("Ultrasonic Left: ", ultrasonicFunction.getLeft());
+        telemetry.addData("Ultrasonic Right: ", ultrasonicFunction.getRight());
+        telemetry.addData("Ultrasonic Left Front: ", ultrasonicFunction.getLF());
+        telemetry.addData("Ultrasonic Right Front: ", ultrasonicFunction.getRF());
         telemetry.update();
     }
 
@@ -123,11 +136,17 @@ public class RRTeleOp extends OpMode {
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        
+        this.ultrasonicLeft = this.hardwareMap.ultrasonicSensor.get("ultrasonicLeft");
+        this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");
+        this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF");
+        this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF");
+
         robotDriving = new RobotDriving(motorLF,motorLB,motorRF,motorRB,telemetry);
         gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoGlyphterRotation, telemetry);
         
         steering = robotDriving.getSteering();
+
+        ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
 
         // Snap the glyphter rotation servo into the correct spot
         gunnerFunction.rotateGlyphter();

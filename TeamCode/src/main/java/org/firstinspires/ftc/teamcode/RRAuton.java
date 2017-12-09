@@ -1,12 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.content.SharedPreferences;
+import android.hardware.Camera;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
+import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.FtcRobotControllerServiceState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
+
+import java.io.File;
 
 /**
  * Created 11/13/2017
@@ -18,7 +27,22 @@ public class RRAuton extends LinearOpMode {
     protected DcMotor motorRF = null;
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
-    protected UltrasonicSensor ultrasonic1 = null;
+    protected UltrasonicSensor ultrasonicLeft = null;
+    protected UltrasonicSensor ultrasonicRight = null;
+    protected UltrasonicSensor ultrasonicRF = null;
+    protected UltrasonicSensor ultrasonicLF = null;
+
+    protected RobotDriving robotDriving;
+    protected RobotDriving.Steering steering;
+
+    protected UltrasonicFunction ultrasonicFunction;
+
+    SharedPreferences sharedPref;
+    protected String startPosition; //RED_RELIC, RED_MIDDLE, BLUE_RELIC, BLUE_MIDDLE
+
+    //Required distance from wall at the beginning
+    protected int wallDistance = 30;
+
     //protected VideoCapture camera = null;
 
     private VuforiaLocalizer vuforia;
@@ -60,12 +84,25 @@ public class RRAuton extends LinearOpMode {
         this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
-        this.ultrasonic1 = this.hardwareMap.ultrasonicSensor.get("ultrasonic1");
+        this.ultrasonicLeft = this.hardwareMap.ultrasonicSensor.get("ultrasonicLeft"); //module 2, port 1
+        this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");//module 2, port 2
+        this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF"); //module 3, port 3
+        this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF"); //module 4, port 4
 
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
+        startPosition = sharedPref.getString("auton_start_position","RED_RELIC");
+
+        // RobotDriving instantiation
+        robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry);
+        steering = robotDriving.getSteering();
+
+        //Ultrasonic function instantiation
+        ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
 
         //Tell Vuforia to display video feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -94,7 +131,7 @@ public class RRAuton extends LinearOpMode {
             int total = 0;
             char pictograph = 'E';
 
-            while (total<3) {
+            while (total < 3) {
                 pictograph = readVuMark(relicTemplate);
                 if (pictograph != '!') {
                     total = 3;
@@ -116,6 +153,48 @@ public class RRAuton extends LinearOpMode {
                 //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
             }
             telemetry.update();
+
+
+            //Detect whiffle ball location
+            Camera camera = Camera.open(0);
+            /*camera.takePicture(null, null, new Camera.PictureCallback() {
+                @Override
+                public void onPictureTaken(byte[] data, Camera camera) {
+                    BufferedImage
+                }
+            });*/
+
+
+            //Extend whiffle ball thing
+
+            //Starting case Red Recovery
+            //if (STARTING CASE ENUM) {
+            double forwardWeight = 0;
+            double clockwiseTurnWeight = 0;
+            while (ultrasonicFunction.getRight() < 100) {
+                steering.moveDegrees(180, 1);
+
+                //Determine robot turning off course
+                if (ultrasonicFunction.getLF() + 1 < ultrasonicFunction.getRF()) {
+                    clockwiseTurnWeight -= 0.01;
+                } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()){
+                    clockwiseTurnWeight += 0.01;
+                }
+
+                //Determine robot drifting off course
+                if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 + 1 < wallDistance) {
+                    forwardWeight += 0.01;
+                } else if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 - 1 > wallDistance) {
+                    forwardWeight -= 0.01;
+                }
+
+                steering.moveDegrees(180, 1);
+                if (forwardWeight > 0) {steering.moveDegrees(90, forwardWeight);}
+                else {steering.moveDegrees(270, -forwardWeight);}
+                steering.turn(clockwiseTurnWeight);
+                steering.finishSteering();
+            }
+            //}
         }
     }
 }

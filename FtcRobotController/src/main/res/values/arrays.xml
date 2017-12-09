@@ -19,13 +19,17 @@
         <item>"FAR"</item>
     </string-array>
     <string-array name="startPos">
-        <item>3 inches (+/- 1 in) from mountain edge</item>
-        <item>20 inches (+/- 1 in) inches from corner. Note: Align 2 inches away from corner hitting center divider</item>
+        <item>Red team, closest to relic slide</item>
+        <item>Red team, not near relic slide</item>
+        <item>Blue team, closest to relic slide</item>
+        <item>Blue team, not near relic slide</item>
     </string-array>
 
     <string-array name="startPosAlias">
-        <item>"MOUNTAIN"</item>
-        <item>"MIDLINE"</item>
+        <item>"RED_RELIC"</item>
+        <item>"RED_MIDDLE"</item>
+        <item>"BLUE_RELIC"</item>
+        <item>"BLUE_MIDDLE"</item>
     </string-array>
 
     <string-array name="goalPos">

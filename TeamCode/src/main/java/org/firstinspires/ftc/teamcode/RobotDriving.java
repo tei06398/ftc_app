@@ -29,7 +29,7 @@ public class RobotDriving {
     private Telemetry telemetry;
     public static final double MAX_SPEED_RATIO = 0.5;
     public static final double MIN_SPEED_RATIO = 0.3;
-    public static final double SMOOTHNESS = 0.2;
+    public static final double SMOOTHNESS = 0.1;
     
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
         this.lf = new DrivingMotor(LF, SMOOTHNESS);
@@ -160,6 +160,8 @@ public class RobotDriving {
         public void turn(boolean isClockwise, double power) {
             addToAllPowers(isClockwise ? power : -power);
         }
+
+        public void turn(double power) { addToAllPowers(power > 0 ? power : -power);}
 
         public void turnClockwise(double power) {
             turn(true, power);

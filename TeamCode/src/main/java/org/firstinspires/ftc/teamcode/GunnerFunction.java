@@ -13,7 +13,7 @@ public class GunnerFunction {
 
     // put in actual values later
     private static final int GLYPHTER_SERVO_CLOSE_POS = 0;
-    private static final int GLYPHTER_SERVO_OPEN_POS = 100;
+    private static final int GLYPHTER_SERVO_OPEN_POS = 120;
     private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 0.54;
     private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0.43;
 

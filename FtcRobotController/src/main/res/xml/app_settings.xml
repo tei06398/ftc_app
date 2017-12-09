@@ -50,7 +50,7 @@ See https://developer.android.com/guide/topics/ui/settings.html
         android:title="@string/prefedit_device_name_rc"
         android:summary="@string/prefedit_device_name_summary_rc"
         android:key="@string/pref_device_name"
-        android:defaultValue=""
+        android:defaultValue="0"
         />
 
     <org.firstinspires.ftc.robotcore.internal.ui.ColorListPreference
@@ -87,6 +87,12 @@ See https://developer.android.com/guide/topics/ui/settings.html
         android:targetPackage="@string/packageName"
         android:targetClass="com.qualcomm.ftccommon.ViewLogsActivity" />
     </PreferenceScreen>
+
+    <ListPreference
+        android:key = "auton_start_position"
+        android:title = "Start Position"
+        android:entries = "@array/startPos"
+        android:entryValues = "@array/startPosAlias" />
 
   </PreferenceCategory>
 
