@@ -165,11 +165,15 @@ public class RRAuton extends LinearOpMode {
         telemetry.update();
 
         //Detect whiffle ball location
+        telemetry.addData("stage: ", "1");
+        telemetry.update();
         Camera camera = Camera.open();
         camera.takePicture(null, null,
                 new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
+                        telemetry.addData("stage: ", "2");
+                        telemetry.update();
                         ByteArrayInputStream bais = new ByteArrayInputStream(data);
                         Bitmap bmp = BitmapFactory.decodeStream(bais);
                         int width = bmp.getWidth();
@@ -184,6 +188,8 @@ public class RRAuton extends LinearOpMode {
                         double weight;
 
                         for (int row = 2 * height / 3; row < height; row += 10) {
+                            telemetry.addData("stage: ", "3");
+                            telemetry.update();
                             for (int col = width/2; col < width; col += 10) {
                                 red = Color.red(bmp.getPixel(row, col));
                                 blue = Color.blue(bmp.getPixel(row, col));
@@ -205,7 +211,7 @@ public class RRAuton extends LinearOpMode {
                         }
                     }
                 });
-
+        telemetry.addData("stage: ", "4");
         //TODO: Replace the Telemetry with actual boops when we have the booper -Seth
         if(getJewelResult().equals("red")) {
             //RED
