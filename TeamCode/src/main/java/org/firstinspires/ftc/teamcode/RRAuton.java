@@ -222,7 +222,7 @@ public class RRAuton extends LinearOpMode {
                 telemetry.addData("Knock: ", "LEFT");
             }
         } else {
-            telemetry.addData("Knock: ", "NaN - Björk 404: Ball Not Found");
+            telemetry.addData("Knock: ", "NaN - Björk 404: Jewel Not Found");
             telemetry.update();
         }
 
