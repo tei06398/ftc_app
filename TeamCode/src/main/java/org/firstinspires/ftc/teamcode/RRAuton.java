@@ -50,6 +50,13 @@ public class RRAuton extends LinearOpMode {
     //protected VideoCapture camera = null;
 
     private VuforiaLocalizer vuforia;
+    public static String jewelResult = "";
+    public static final void setJewelResult(String result) {
+        jewelResult = result;
+    }
+    public static String getJewelResult() {
+        return jewelResult;
+    }
 
     char readVuMark(VuforiaTrackable relicTemplate) {
         RelicRecoveryVuMark vuMark = null;
@@ -131,84 +138,122 @@ public class RRAuton extends LinearOpMode {
         relicTrackables.activate();
 
         //Get a semi-reliable reading of the Pictograph
-        while(this.opModeIsActive()) {
-            int total = 0;
-            char pictograph = 'E';
+        int total = 0;
+        char pictograph = 'E';
 
-            while (total < 3) {
-                pictograph = readVuMark(relicTemplate);
-                if (pictograph != '!') {
-                    total = 3;
-                } else {
-                    total++;
-                }
-            }
-            if (pictograph == '!') {
-                telemetry.addData("Pictograph", "Unreliable");
-                //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
-            } else if (pictograph == 'l') {
-                telemetry.addData("Pictograph", "Left");
-            } else if (pictograph == 'r') {
-                telemetry.addData("Pictograph", "Right");
-            } else if (pictograph == 'c') {
-                telemetry.addData("Pictograph", "Center");
+        while (total < 3) {
+            pictograph = readVuMark(relicTemplate);
+            if (pictograph != '!') {
+                total = 3;
             } else {
-                telemetry.addData("Pictograph", "ERROR");
-                //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
+                total++;
             }
-            telemetry.update();
+        }
+        if (pictograph == '!') {
+            telemetry.addData("Pictograph: ", "NaN - Björk 403: Pictograph Not Accessible");
+            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
+        } else if (pictograph == 'l') {
+            telemetry.addData("Pictograph: ", "Left");
+        } else if (pictograph == 'r') {
+            telemetry.addData("Pictograph: ", "Right");
+        } else if (pictograph == 'c') {
+            telemetry.addData("Pictograph: ", "Center");
+        } else {
+            telemetry.addData("Pictograph: ", "NaN - Björk 500: Internal Pictograph Error");
+            //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
+        }
+        telemetry.update();
 
+        //Detect whiffle ball location
+        Camera camera = Camera.open();
+        camera.takePicture(null, null,
+                new Camera.PictureCallback() {
+                    @Override
+                    public void onPictureTaken(byte[] data, Camera camera) {
+                        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+                        Bitmap bmp = BitmapFactory.decodeStream(bais);
+                        int width = bmp.getWidth();
+                        int height = bmp.getHeight();
 
-            //Detect whiffle ball location
-            Camera camera = Camera.open();
-            camera.takePicture(null, null,
-                    new Camera.PictureCallback() {
-                        @Override
-                        public void onPictureTaken(byte[] data, Camera camera) {
-                            ByteArrayInputStream bais = new ByteArrayInputStream(data);
-                            Bitmap bmp = BitmapFactory.decodeStream(bais);
-                            int pixelx = 0;
-                            int pixely = 0;
-                            int color = bmp.getPixel(pixelx, pixely);
+                        double redWeight = 0;
+                        double blueWeight = 0;
 
-                            int red = Color.red(color);
-                            int blue = Color.blue(color);
-                            int green = Color.green(color);
-                            int alpha = Color.alpha(color);
+                        double red;
+                        double blue;
+                        double green;
+                        double weight;
+
+                        for (int row = 2 * height / 3; row < height; row += 10) {
+                            for (int col = width/2; col < width; col += 10) {
+                                red = Color.red(bmp.getPixel(row, col));
+                                blue = Color.blue(bmp.getPixel(row, col));
+                                green =  Color.green(bmp.getPixel(row, col));
+                                if (red > blue && red > green) {
+                                    weight = Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2);
+                                    redWeight += red * weight;
+                                }
+                                else if (blue > red && blue > green) {
+                                    weight = Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2);
+                                    blueWeight += blue * weight;
+                                }
+                            }
                         }
-                    });
+                        if (redWeight > blueWeight) {
+                            setJewelResult("red");
+                        } else {
+                            setJewelResult("blue");
+                        }
+                    }
+                });
 
-
-            //Extend whiffle ball thing
-
-            //Starting case Red Recovery
-            //if (STARTING CASE ENUM) {
-            double forwardWeight = 0;
-            double clockwiseTurnWeight = 0;
-            while (ultrasonicFunction.getRight() < 100) {
-                steering.moveDegrees(180, 1);
-
-                //Determine robot turning off course
-                if (ultrasonicFunction.getLF() + 1 < ultrasonicFunction.getRF()) {
-                    clockwiseTurnWeight -= 0.01;
-                } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()){
-                    clockwiseTurnWeight += 0.01;
-                }
-
-                //Determine robot drifting off course
-                if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 + 1 < wallDistance) {
-                    forwardWeight += 0.01;
-                } else if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 - 1 > wallDistance) {
-                    forwardWeight -= 0.01;
-                }
-
-                steering.moveDegrees(180, 1);
-                if (forwardWeight > 0) {steering.moveDegrees(90, forwardWeight);}
-                else {steering.moveDegrees(270, -forwardWeight);}
-                steering.turn(clockwiseTurnWeight);
-                steering.finishSteering();
+        //TODO: Replace the Telemetry with actual boops when we have the booper -Seth
+        if(getJewelResult().equals("red")) {
+            //RED
+            if (startPosition.equals("RED_RELIC") || startPosition.equals("RED_MIDDLE")) {
+                //thing.knockright();
+                telemetry.addData("Knock: ", "RIGHT");
+            } else {
+                telemetry.addData("Knock: ", "LEFT");
             }
-            //}
+        } else if (getJewelResult().equals("blue")) {
+            if (startPosition.equals("BLUE_RELIC") || startPosition.equals("BLUE_MIDDLE")) {
+                telemetry.addData("Knock: ", "RIGHT");
+            } else {
+                telemetry.addData("Knock: ", "LEFT");
+            }
+        } else {
+            telemetry.addData("Knock: ", "NaN - Björk 404: Ball Not Found");
+            telemetry.update();
+        }
+
+        //Extend whiffle ball thing
+
+        //Starting case Red Recovery
+        //if (STARTING CASE ENUM) {
+        double forwardWeight = 0;
+        double clockwiseTurnWeight = 0;
+        while (ultrasonicFunction.getRight() < 100) {
+            steering.moveDegrees(180, 1);
+
+            //Determine robot turning off course
+            if (ultrasonicFunction.getLF() + 1 < ultrasonicFunction.getRF()) {
+                clockwiseTurnWeight -= 0.01;
+            } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()){
+                clockwiseTurnWeight += 0.01;
+            }
+
+            //Determine robot drifting off course
+            if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 + 1 < wallDistance) {
+                forwardWeight += 0.01;
+            } else if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 - 1 > wallDistance) {
+                forwardWeight -= 0.01;
+            }
+
+            steering.moveDegrees(180, 1);
+            if (forwardWeight > 0) {steering.moveDegrees(90, forwardWeight);}
+            else {steering.moveDegrees(270, -forwardWeight);}
+            steering.turn(clockwiseTurnWeight);
+            steering.finishSteering();
         }
     }
 }
