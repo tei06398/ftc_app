@@ -29,11 +29,11 @@ public class GunnerFunction {
     }
 
     public void upWinch() {
-        motorWinch.setPower(0.5);
+        motorWinch.setPower(0.75);
     }
 
     public void downWinch() {
-        motorWinch.setPower(-0.5);
+        motorWinch.setPower(-0.75);
     }
 
     public void stopWinch() {

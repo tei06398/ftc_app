@@ -30,13 +30,27 @@ public class RRTeleOp extends OpMode {
     protected GunnerFunction gunnerFunction;
     protected UltrasonicFunction ultrasonicFunction;
 
+    private boolean disableA1 = false;
+    private boolean disableB1 = false;
+
 
     private static double BLOCK_ROTATION_WEIGHT = 0.5; // make this final later
     
     public void loop() {
         // TESTING
-        if (this.gamepad1.a) BLOCK_ROTATION_WEIGHT += 0.05;
-        if (this.gamepad1.b) BLOCK_ROTATION_WEIGHT -= 0.05;
+
+        if (this.gamepad1.a) {
+            if (!disableA1) BLOCK_ROTATION_WEIGHT += 0.05;
+            disableA1 = true;
+        } else {
+            disableA1 = false;
+        }
+        if (this.gamepad1.b) {
+            if (!disableB1) BLOCK_ROTATION_WEIGHT -= 0.05;
+            disableB1 = true;
+        } else {
+            disableB1 = false;
+        }
         telemetry.addData("block rotation weight: ", BLOCK_ROTATION_WEIGHT);
 
         // GAMEPAD 1 (DRIVER)
@@ -59,16 +73,16 @@ public class RRTeleOp extends OpMode {
 
         // Arrow keys: also driving
         if (this.gamepad1.dpad_right) {
-            steering.moveDegrees(0);
+            steering.moveDegrees(0, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_up) {
-            steering.moveDegrees(90);
+            steering.moveDegrees(90, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_left) {
-            steering.moveDegrees(180);
+            steering.moveDegrees(180, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_down) {
-            steering.moveDegrees(270);
+            steering.moveDegrees(270, MIN_SPEED_RATIO);
         }
         
         // Right trigger: minimum speed
@@ -84,7 +98,7 @@ public class RRTeleOp extends OpMode {
         // Left bumper: move around block counterclockwise
         if (this.gamepad1.left_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
 
-        // Right bumper: clockwise
+        // Right bumper: move around block clockwise
         if (this.gamepad1.right_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
 
         // GAMEPAD 2 (GUNNER)
@@ -105,11 +119,11 @@ public class RRTeleOp extends OpMode {
         // Left trigger required for endgame functions
         if (this.gamepad2.left_trigger > 0) {
             // Y: expand relic slide
-            // X: retract
+            // A: retract
             if (this.gamepad2.y) {
                 gunnerFunction.expandRelicSlide();
             }
-            else if (this.gamepad2.x) {
+            else if (this.gamepad2.a) {
                 gunnerFunction.retractRelicSlide();
             }
             else {
@@ -127,10 +141,10 @@ public class RRTeleOp extends OpMode {
         //telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
         //telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
         //telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
-        /*telemetry.addData("Ultrasonic Left: ", ultrasonicFunction.getLeft());
+        telemetry.addData("Ultrasonic Left: ", ultrasonicFunction.getLeft());
         telemetry.addData("Ultrasonic Right: ", ultrasonicFunction.getRight());
         telemetry.addData("Ultrasonic Left Front: ", ultrasonicFunction.getLF());
-        telemetry.addData("Ultrasonic Right Front: ", ultrasonicFunction.getRF());*/
+        telemetry.addData("Ultrasonic Right Front: ", ultrasonicFunction.getRF());
         telemetry.update();
     }
 
