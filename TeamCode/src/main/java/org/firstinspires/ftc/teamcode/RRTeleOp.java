@@ -19,6 +19,8 @@ public class RRTeleOp extends OpMode {
     protected DcMotor motorRelicSlide = null;
     protected Servo servoGlyphter = null;
     protected Servo servoGlyphterRotation = null;
+    protected Servo jewelPusher = null;
+
 
     protected UltrasonicSensor ultrasonicLeft;
     protected UltrasonicSensor ultrasonicRight;
@@ -166,7 +168,7 @@ public class RRTeleOp extends OpMode {
         this.motorRelicSlide = this.hardwareMap.dcMotor.get("relicSlideMotor");
         this.servoGlyphter = this.hardwareMap.servo.get("glyphterServo");
         this.servoGlyphterRotation = this.hardwareMap.servo.get("glyphterRotationServo");
-        
+
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -176,10 +178,13 @@ public class RRTeleOp extends OpMode {
         this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");
         this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF");
         this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF");
-        
+
+        this.jewelPusher = this.hardwareMap.servo.get("jewelPusher");
+
+
         robotDriving = new RobotDriving(motorLF,motorLB,motorRF,motorRB,telemetry);
-        
-        gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoGlyphterRotation, telemetry);
+
+        gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoGlyphterRotation, jewelPusher, telemetry);
         
         steering = robotDriving.getSteering();
 

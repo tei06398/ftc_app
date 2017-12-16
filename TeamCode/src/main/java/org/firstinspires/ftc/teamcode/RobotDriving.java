@@ -32,13 +32,17 @@ public class RobotDriving {
     public static final double NORMAL_SPEED_RATIO = 0.5;
     public static final double MIN_SPEED_RATIO = 0.3;
     
-    public static final double SMOOTHNESS = 0.1;
+    public static final double DEFAULT_SMOOTHNESS = 0.1;
     
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
-        this.lf = new DrivingMotor(LF, SMOOTHNESS);
-        this.lb = new DrivingMotor(LB, SMOOTHNESS);
-        this.rf = new DrivingMotor(RF, SMOOTHNESS);
-        this.rb = new DrivingMotor(RB, SMOOTHNESS);
+        this(LF, LB, RF, RB, telemetry, DEFAULT_SMOOTHNESS);
+    }
+
+    public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry, double smoothness) {
+        this.lf = new DrivingMotor(LF, smoothness);
+        this.lb = new DrivingMotor(LB, smoothness);
+        this.rf = new DrivingMotor(RF, smoothness);
+        this.rb = new DrivingMotor(RB, smoothness);
         this.telemetry = telemetry;
     }
 

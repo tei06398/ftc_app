@@ -9,22 +9,26 @@ public class GunnerFunction {
     private final DcMotor motorWinch;
     private final Servo servoGlyphter;
     private final Servo servoGlyphterRotation;
+    private final Servo servoJewelPusher;
     private final Telemetry telemetry;
 
     // put in actual values later
-    private static final int GLYPHTER_SERVO_CLOSE_POS = 0;
-    private static final int GLYPHTER_SERVO_OPEN_POS = 120;
+    private static final int GLYPHTER_SERVO_CLOSE_POS = 120;
+    private static final int GLYPHTER_SERVO_OPEN_POS = 0;
     private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 0;
     private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 180;
+    private static final double JEWELPUSHER_SERVO_UP_POS = 100;
+    private static final double JEWELPUSHER_SERVO_DOWN_POS = 0;
 
     // Assume that the glyphter is rotated at the beginning so we can fix it at the beginning of tele-op
     private boolean isGlyphterRotated = true;
 
-    GunnerFunction(DcMotor motorWinch, DcMotor motorRelicSlide, Servo servoGlyphter, Servo servoGlyphterRotation, Telemetry telemetry) {
+    GunnerFunction(DcMotor motorWinch, DcMotor motorRelicSlide, Servo servoGlyphter, Servo servoGlyphterRotation, Servo servoJewelPusher, Telemetry telemetry) {
         this.motorWinch = motorWinch;
         this.motorRelicSlide = motorRelicSlide;
         this.servoGlyphter = servoGlyphter;
         this.servoGlyphterRotation = servoGlyphterRotation;
+        this.servoJewelPusher = servoJewelPusher;
         this.telemetry = telemetry;
     }
 
@@ -70,5 +74,11 @@ public class GunnerFunction {
             servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_ROTATED_POS);
             isGlyphterRotated = true;
         }
+    }
+
+    public void defaultServos() {
+        servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_NORMAL_POS);
+        servoGlyphter.setPosition(GLYPHTER_SERVO_CLOSE_POS);
+        servoJewelPusher.setPosition(JEWELPUSHER_SERVO_UP_POS);
     }
 }
