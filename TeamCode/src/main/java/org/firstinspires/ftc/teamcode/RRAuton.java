@@ -12,16 +12,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.FtcRobotControllerServiceState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
+import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.ByteBuffer;
 
 /**
  * Created 11/13/2017
@@ -37,6 +40,7 @@ public class RRAuton extends LinearOpMode {
     protected UltrasonicSensor ultrasonicRight = null;
     protected UltrasonicSensor ultrasonicRF = null;
     protected UltrasonicSensor ultrasonicLF = null;
+    protected Servo jewelPusher = null;
 
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
@@ -45,6 +49,8 @@ public class RRAuton extends LinearOpMode {
 
     SharedPreferences sharedPref;
     protected String startPosition; //RED_RELIC, RED_MIDDLE, BLUE_RELIC, BLUE_MIDDLE
+    protected int JEWEL_PUSHER_DOWN = 0;
+    protected int JEWEL_PUSHER_UP = 100;
 
     //Required distance from wall at the beginning
     protected int wallDistance = 30;
@@ -55,35 +61,57 @@ public class RRAuton extends LinearOpMode {
 
     private VuforiaLocalizer vuforia;
     public static String jewelResult = "";
+
     public static final void setJewelResult(String result) {
         jewelResult = result;
     }
+
     public static String getJewelResult() {
         return jewelResult;
     }
 
     char readVuMark(VuforiaTrackable relicTemplate) {
+        telemetry.addData("readvumark", "called");
+        telemetry.update();
         RelicRecoveryVuMark vuMark = null;
         int total = 0;
         int left = 0;
         int right = 0;
         int center = 0;
+        telemetry.addData("while top", "");
+        telemetry.update();
         while (total < 3) {
+            telemetry.addData("loop top", "");
+            telemetry.update();
             vuMark = RelicRecoveryVuMark.from(relicTemplate);
             if (vuMark == RelicRecoveryVuMark.LEFT) {
+                telemetry.addData("left", "");
+                telemetry.update();
                 left++;
                 total++;
             } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
+                telemetry.addData("right", "");
+                telemetry.update();
                 right++;
                 total++;
             } else if (vuMark == RelicRecoveryVuMark.CENTER) {
+                telemetry.addData("center", "");
+                telemetry.update();
                 center++;
                 total++;
-            } else {
+            }/* else {
+                telemetry.addData("unknown", "");telemetry.update();
                 // unknown
                 total++;
-            }
+            }*/
+            telemetry.addData("sleep start", "");
+            telemetry.update();
+            //sleep(1000);
+            telemetry.addData("sleep done", "");
+            telemetry.update();
         }
+        telemetry.addData("while done", "");
+        telemetry.update();
         if (left > right && left > center) {
             return 'l'; //Left is most likely Correct
         } else if (right > left && right > center) {
@@ -113,7 +141,7 @@ public class RRAuton extends LinearOpMode {
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
-        startPosition = sharedPref.getString("auton_start_position","RED_RELIC");
+        startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
         // RobotDriving instantiation
         robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry);
@@ -133,6 +161,7 @@ public class RRAuton extends LinearOpMode {
         parameters.vuforiaLicenseKey = "AUrG/9b/////AAAAGYb5udEIt0W7p8AYwNbs5lUO4Ojghb2IvJN64Q6ZnRvUfbl59Au5c48n2lykKrsfZgYx9m2HpOgdNFmLaxhilDQIc0mmohbk5IjXvKkGGJR4OiqNtqYVDncXZpb/esaPeFTLtkbJFAlEs+oPwcAKoO5FctEuFyEgz1IJc6/MRphweDiXuJ86Rqs81UVeOlNXdr3QtZazJcViHHeWkv5pJUvefJWbjXSZvOZFlITDaTbyPIibQsHsbDg+B0IBMHK+d8fs58anmJ1VJEoQ9Xo0YDpHgosgx996zfSjhAK8YcIxLQdCkFbJtQtkpAl14jz+Yz86QvP8AMtFeMRuIYrPWhQvPJ3VU/Jm1Qmz+p/jbJ8k";
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        Vuforia.setFrameFormat(PIXEL_FORMAT.RGB565, true);
 
         //Load in the VuMark dataset from assets
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
@@ -144,20 +173,25 @@ public class RRAuton extends LinearOpMode {
         //Activate the VuMark Dataset as Current Tracked Object
         relicTrackables.activate();
 
-        /* TEST */telemetry.setAutoClear(false);
+        /* TEST */
+        telemetry.setAutoClear(false);
+        telemetry.setMsTransmissionInterval(0);
 
         //Get a semi-reliable reading of the Pictograph
-        //while (this.opModeIsActive()) {
+        while (this.opModeIsActive()) {
             int total = 0;
             char pictograph = 'E';
-            while (total < 3) {
-                pictograph = readVuMark(relicTemplate);
-                if (pictograph != '!') {
-                    total = 3;
-                } else {
-                    total++;
-                }
-            }
+            //while (total < 3) {
+            pictograph = readVuMark(relicTemplate);
+            //    if (pictograph != '!') {
+            //        total = 3;
+            //    } else {
+            //         total++;
+            //    }
+            //}
+            telemetry.addData("Pictograph", "" + pictograph);
+            telemetry.update();
+
             if (pictograph == '!') {
                 telemetry.addData("Pictograph", "Unreliable");
                 //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
@@ -175,27 +209,47 @@ public class RRAuton extends LinearOpMode {
             //Detect whiffle ball location
             telemetry.update();
 
-            VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take(); // this line is definetly not working
-
+            vuforia.setFrameQueueCapacity(10);
+            VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
 
             long numImages = frame.getNumImages();
-        /* TEST */telemetry.addData("numImages: ", numImages);telemetry.update();
             Image rgb = null;
             for (int i = 0; i < numImages; i++) {
                 if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
                     rgb = frame.getImage(i);
                     break;
                 }
-                /* TEST */telemetry.addData("loop: ", "loop");telemetry.update();
             }
-        /* TEST */telemetry.addData("Testing: ", "Image spot 1");telemetry.update();
+            /* TEST */
+            telemetry.addData("Testing: ", "Image spot 1");
+            telemetry.addData("RGB: ", rgb);
+            telemetry.update();
+
+            // https://developer.vuforia.com/forum/android/how-transform-camera-image-androidgraphicsbitmap
+            ByteBuffer pixels = rgb.getPixels();
+            telemetry.addData("Pixels: ", pixels);telemetry.update();
+            //telemetry.addData("Pixel test", pixels.array()[0]);
+            byte[] pixelArray = new byte[pixels.remaining()];
+            telemetry.addData("Pixel array: ", pixelArray);telemetry.update();
+            pixels.get(pixelArray, 0, pixelArray.length);
+            int imageWidth = rgb.getWidth();
+            int imageHeight = rgb.getHeight();
+            int stride = rgb.getStride();
+
+            //BitmapFactory.Options opts = new BitmapFactory.Options();
+            //opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap bmp = BitmapFactory.decodeByteArray(pixelArray, 0, pixelArray.length, null);
+            telemetry.addData("bmp: ", bmp);telemetry.update();
+
             /*rgb is now the Image object that weve used in the video*/
-            Bitmap bmp = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
+            //Bitmap bmp = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
             frame.close();
             int width = bmp.getWidth();
             int height = bmp.getHeight();
 
-            /* TEST */telemetry.addData("Testing: ", "Image spot 2");telemetry.update();
+            /* TEST */
+            telemetry.addData("Testing: ", "Image spot 2");
+            telemetry.update();
 
             double redWeight = 0;
             double blueWeight = 0;
@@ -205,27 +259,42 @@ public class RRAuton extends LinearOpMode {
             double green;
             double weight;
 
-            for (int row = 2 * height / 3; row < height; row += 10) {
-                for (int col = width / 2; col < width; col += 10) {
-                    red = Color.red(bmp.getPixel(row, col));
-                    blue = Color.blue(bmp.getPixel(row, col));
-                    green = Color.green(bmp.getPixel(row, col));
+            for (int row = 0; row < 2 * height / 3; row += 10) {
+                for (int col = 0; col < width / 2; col += 10) {
+                    red = Color.red(bmp.getPixel(col, row));
+                    blue = Color.blue(bmp.getPixel(col, row));
+                    green = Color.green(bmp.getPixel(col, row));
+                    telemetry.addData("red:", red);
+                    telemetry.addData("green: ", green);
+                    telemetry.addData("blue: ", blue);
+                    telemetry.update();
                     if (red > blue && red > green) {
-                        weight = Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2);
+                        weight = 1 / (Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2) + 1);
                         redWeight += red * weight;
                     } else if (blue > red && blue > green) {
-                        weight = Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2);
+                        weight = 1 / (Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2) + 1);
                         blueWeight += blue * weight;
                     }
                 }
             }
-        /* TEST */telemetry.addData("Testing: ", "Image spot 3");telemetry.update();
+            /* TEST */
+            telemetry.addData("blue weight: ", blueWeight);
+            telemetry.addData("red weight: ", redWeight);
+            telemetry.update();
             if (redWeight > blueWeight) {
                 setJewelResult("red");
+                telemetry.addData("Testing: ", "RED JEWEL DETECTED");
+                telemetry.update();
+                sleep(30000);
             } else {
                 setJewelResult("blue");
+                telemetry.addData("Testing: ", "BLUE JEWEL DETECTED");
+                telemetry.update();
+                sleep(30000);
             }
-        /* TEST */telemetry.addData("Testing: ", "Image spot 4");telemetry.update();
+            /* TEST */
+            telemetry.addData("Testing: ", "Image spot 4");
+            telemetry.update();
 
             //TODO: Replace the Telemetry with actual boops when we have the booper -Seth
             if (getJewelResult().equals("red")) {
@@ -250,28 +319,40 @@ public class RRAuton extends LinearOpMode {
 
             knockJewel(JewelPosition.LEFT);
             driveToCryptobox(CrypoboxPosition.LEFT);
-        //}
+        }
     }
 
-    public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {
-        while (ultrasonicFunction.getRight() < 100) {
-            steering.moveDegrees(180, 1);
+    public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
+        double distanceLF;
+        double distanceRF;
+        boolean keepMoving = true;
+        while (keepMoving) {
+
+            //Set power in direction of motion
+            if (moveRight) {
+                steering.moveDegrees(0, 1);
+            } else {
+                steering.moveDegrees(180, 1);
+            }
+
+            //Sense distances to walls
+            distanceLF = ultrasonicFunction.getLF();
+            distanceRF = ultrasonicFunction.getLF();
 
             //Determine robot turning off course
-            if (ultrasonicFunction.getLF() + 1 < ultrasonicFunction.getRF()) {
+            if (distanceLF + 1 < distanceRF) {
                 clockwiseTurnWeight -= 0.01;
-            } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()) {
+            } else if (distanceRF + 1 < distanceLF) {
                 clockwiseTurnWeight += 0.01;
             }
 
             //Determine robot drifting off course
-            if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 + 1 < wallDistance) {
+            if ((distanceLF + distanceRF) / 2 + 1 < wallDistance) {
                 forwardWeight += 0.01;
-            } else if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 - 1 > wallDistance) {
+            } else if ((distanceLF + distanceRF) / 2 - 1 > wallDistance) {
                 forwardWeight -= 0.01;
             }
 
-            steering.moveDegrees(180, 1);
             if (forwardWeight > 0) {
                 steering.moveDegrees(90, forwardWeight);
             } else {
@@ -279,11 +360,64 @@ public class RRAuton extends LinearOpMode {
             }
             steering.turn(clockwiseTurnWeight);
             steering.finishSteering();
+
+            //determine whether to keep moving
+            if (moveRight && senseRight) {
+                keepMoving = ultrasonicFunction.getRight() > sideDistance;
+            } else if (!moveRight && senseRight) {
+                keepMoving = ultrasonicFunction.getRight() < sideDistance;
+            } else if (moveRight && !senseRight) {
+                keepMoving = ultrasonicFunction.getLeft() < sideDistance;
+            } else {
+                keepMoving = ultrasonicFunction.getLeft() > sideDistance;
+            }
+        }
+    }
+
+    public void turnNinety(boolean isClockwise) {
+        if (isClockwise) {
+            while (ultrasonicFunction.getLeft() > ultrasonicFunction.getRight() || ultrasonicFunction.getLF() > ultrasonicFunction.getRF()) {
+                steering.turn(true);
+                steering.stopAllMotors();
+            }
+        } else {
+            while (ultrasonicFunction.getLeft() < ultrasonicFunction.getRight() || ultrasonicFunction.getLF() < ultrasonicFunction.getRF()) {
+                steering.turn(false);
+                steering.stopAllMotors();
+            }
+        }
+    }
+
+    public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {
+        if (startPosition.equals("RED_RELIC")) {
+            moveAlongWall(false, true, 150, 50);
+        } else if (startPosition.equals("RED_MIDDLE")) {
+            moveAlongWall(false, false, 60, 50);
+        } else if (startPosition.equals("BLUE_RELIC")) {
+            moveAlongWall(true, false, 150, 50);
+        } else {
+            moveAlongWall(true, true, 60, 50);
         }
     }
 
     public void knockJewel(JewelPosition jewelPosition) {
-
+        this.jewelPusher.setPosition(JEWEL_PUSHER_DOWN);
+        steering.setSpeedRatio(0.3);
+        long startTime = System.currentTimeMillis();
+        if (jewelPosition == JewelPosition.LEFT) {
+            while ((System.currentTimeMillis() - startTime) < 100) {
+                steering.turn(false);
+                steering.finishSteering();
+            }
+        } else {
+            while ((System.currentTimeMillis() - startTime) < 100) {
+                steering.turn(true);
+                steering.finishSteering();
+            }
+        }
+        steering.stopAllMotors();
+        steering.finishSteering();
+        this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
     }
 
     public enum CrypoboxPosition {
@@ -293,4 +427,5 @@ public class RRAuton extends LinearOpMode {
     public enum JewelPosition {
         LEFT, RIGHT;
     }
+
 }
