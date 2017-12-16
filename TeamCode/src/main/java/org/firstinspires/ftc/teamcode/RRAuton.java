@@ -48,6 +48,8 @@ public class RRAuton extends LinearOpMode {
 
     //Required distance from wall at the beginning
     protected int wallDistance = 30;
+    protected double clockwiseTurnWeight = 0;
+    protected double forwardWeight = 0;
 
     //protected VideoCapture camera = null;
 
@@ -76,6 +78,9 @@ public class RRAuton extends LinearOpMode {
                 total++;
             } else if (vuMark == RelicRecoveryVuMark.CENTER) {
                 center++;
+                total++;
+            } else {
+                // unknown
                 total++;
             }
         }
@@ -139,8 +144,10 @@ public class RRAuton extends LinearOpMode {
         //Activate the VuMark Dataset as Current Tracked Object
         relicTrackables.activate();
 
+        /* TEST */telemetry.setAutoClear(false);
+
         //Get a semi-reliable reading of the Pictograph
-        while (this.opModeIsActive()) {
+        //while (this.opModeIsActive()) {
             int total = 0;
             char pictograph = 'E';
             while (total < 3) {
@@ -164,26 +171,31 @@ public class RRAuton extends LinearOpMode {
                 telemetry.addData("Pictograph", "ERROR");
                 //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
             }
-            telemetry.update();
 
             //Detect whiffle ball location
-            telemetry.addData("Stage", "0");
             telemetry.update();
-            VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+
+            VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take(); // this line is definetly not working
+
 
             long numImages = frame.getNumImages();
+        /* TEST */telemetry.addData("numImages: ", numImages);telemetry.update();
             Image rgb = null;
             for (int i = 0; i < numImages; i++) {
                 if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
                     rgb = frame.getImage(i);
                     break;
                 }
+                /* TEST */telemetry.addData("loop: ", "loop");telemetry.update();
             }
+        /* TEST */telemetry.addData("Testing: ", "Image spot 1");telemetry.update();
             /*rgb is now the Image object that weve used in the video*/
             Bitmap bmp = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
             frame.close();
             int width = bmp.getWidth();
             int height = bmp.getHeight();
+
+            /* TEST */telemetry.addData("Testing: ", "Image spot 2");telemetry.update();
 
             double redWeight = 0;
             double blueWeight = 0;
@@ -207,11 +219,13 @@ public class RRAuton extends LinearOpMode {
                     }
                 }
             }
+        /* TEST */telemetry.addData("Testing: ", "Image spot 3");telemetry.update();
             if (redWeight > blueWeight) {
                 setJewelResult("red");
             } else {
                 setJewelResult("blue");
             }
+        /* TEST */telemetry.addData("Testing: ", "Image spot 4");telemetry.update();
 
             //TODO: Replace the Telemetry with actual boops when we have the booper -Seth
             if (getJewelResult().equals("red")) {
@@ -234,38 +248,49 @@ public class RRAuton extends LinearOpMode {
             }
             telemetry.update();
 
-            //Extend whiffle ball thing
+            knockJewel(JewelPosition.LEFT);
+            driveToCryptobox(CrypoboxPosition.LEFT);
+        //}
+    }
 
-            //Starting case Red Recovery
-            //if (STARTING CASE ENUM) {
-            /*double forwardWeight = 0;
-            double clockwiseTurnWeight = 0;
-            while (ultrasonicFunction.getRight() < 100) {
-                steering.moveDegrees(180, 1);
+    public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {
+        while (ultrasonicFunction.getRight() < 100) {
+            steering.moveDegrees(180, 1);
 
-                //Determine robot turning off course
-                if (ultrasonicFunction.getLF() + 1 < ultrasonicFunction.getRF()) {
-                    clockwiseTurnWeight -= 0.01;
-                } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()) {
-                    clockwiseTurnWeight += 0.01;
-                }
+            //Determine robot turning off course
+            if (ultrasonicFunction.getLF() + 1 < ultrasonicFunction.getRF()) {
+                clockwiseTurnWeight -= 0.01;
+            } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()) {
+                clockwiseTurnWeight += 0.01;
+            }
 
-                //Determine robot drifting off course
-                if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 + 1 < wallDistance) {
-                    forwardWeight += 0.01;
-                } else if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 - 1 > wallDistance) {
-                    forwardWeight -= 0.01;
-                }
+            //Determine robot drifting off course
+            if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 + 1 < wallDistance) {
+                forwardWeight += 0.01;
+            } else if ((ultrasonicFunction.getLF() + ultrasonicFunction.getRF()) / 2 - 1 > wallDistance) {
+                forwardWeight -= 0.01;
+            }
 
-                steering.moveDegrees(180, 1);
-                if (forwardWeight > 0) {
-                    steering.moveDegrees(90, forwardWeight);
-                } else {
-                    steering.moveDegrees(270, -forwardWeight);
-                }
-                steering.turn(clockwiseTurnWeight);
-                steering.finishSteering();
-            }*/
+            steering.moveDegrees(180, 1);
+            if (forwardWeight > 0) {
+                steering.moveDegrees(90, forwardWeight);
+            } else {
+                steering.moveDegrees(270, -forwardWeight);
+            }
+            steering.turn(clockwiseTurnWeight);
+            steering.finishSteering();
         }
+    }
+
+    public void knockJewel(JewelPosition jewelPosition) {
+
+    }
+
+    public enum CrypoboxPosition {
+        LEFT, CENTER, RIGHT;
+    }
+
+    public enum JewelPosition {
+        LEFT, RIGHT;
     }
 }
