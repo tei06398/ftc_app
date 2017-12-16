@@ -71,47 +71,29 @@ public class RRAuton extends LinearOpMode {
     }
 
     char readVuMark(VuforiaTrackable relicTemplate) {
-        telemetry.addData("readvumark", "called");
-        telemetry.update();
         RelicRecoveryVuMark vuMark = null;
         int total = 0;
         int left = 0;
         int right = 0;
         int center = 0;
-        telemetry.addData("while top", "");
-        telemetry.update();
         while (total < 3) {
-            telemetry.addData("loop top", "");
-            telemetry.update();
             vuMark = RelicRecoveryVuMark.from(relicTemplate);
             if (vuMark == RelicRecoveryVuMark.LEFT) {
-                telemetry.addData("left", "");
-                telemetry.update();
                 left++;
                 total++;
             } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                telemetry.addData("right", "");
-                telemetry.update();
                 right++;
                 total++;
             } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-                telemetry.addData("center", "");
-                telemetry.update();
                 center++;
                 total++;
-            }/* else {
+            } else {
                 telemetry.addData("unknown", "");telemetry.update();
                 // unknown
                 total++;
-            }*/
-            telemetry.addData("sleep start", "");
-            telemetry.update();
-            //sleep(1000);
-            telemetry.addData("sleep done", "");
-            telemetry.update();
+            }
+
         }
-        telemetry.addData("while done", "");
-        telemetry.update();
         if (left > right && left > center) {
             return 'l'; //Left is most likely Correct
         } else if (right > left && right > center) {
@@ -228,13 +210,12 @@ public class RRAuton extends LinearOpMode {
             // https://developer.vuforia.com/forum/android/how-transform-camera-image-androidgraphicsbitmap
             ByteBuffer pixels = rgb.getPixels();
             telemetry.addData("Pixels: ", pixels);telemetry.update();
-            //telemetry.addData("Pixel test", pixels.array()[0]);
             byte[] pixelArray = new byte[pixels.remaining()];
             telemetry.addData("Pixel array: ", pixelArray);telemetry.update();
+            telemetry.addData("Pixel length: ", pixelArray.length);telemetry.update();
             pixels.get(pixelArray, 0, pixelArray.length);
-            int imageWidth = rgb.getWidth();
-            int imageHeight = rgb.getHeight();
-            int stride = rgb.getStride();
+            telemetry.addData("Pixel array2: ", pixelArray);telemetry.update();
+            telemetry.addData("Pixel length2: ", pixelArray.length);telemetry.update();
 
             //BitmapFactory.Options opts = new BitmapFactory.Options();
             //opts.inPreferredConfig = Bitmap.Config.RGB_565;
