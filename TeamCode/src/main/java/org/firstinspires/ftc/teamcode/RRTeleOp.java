@@ -30,6 +30,8 @@ public class RRTeleOp extends OpMode {
     protected GunnerFunction gunnerFunction;
     protected UltrasonicFunction ultrasonicFunction;
 
+    private boolean allowGamepad2B = true;
+
     private boolean disableA1 = false;
     private boolean disableB1 = false;
 
@@ -95,11 +97,11 @@ public class RRTeleOp extends OpMode {
             steering.setSpeedRatio(NORMAL_SPEED_RATIO);
         }
         
-        // Left bumper: move around block counterclockwise
-        if (this.gamepad1.left_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
+        // Right bumper: move around block counterclockwise
+        if (this.gamepad1.right_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
 
-        // Right bumper: move around block clockwise
-        if (this.gamepad1.right_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
+        // Left bumper: move around block clockwise
+        if (this.gamepad1.left_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
 
         // GAMEPAD 2 (GUNNER)
         // Up/down keys: winch
@@ -118,12 +120,12 @@ public class RRTeleOp extends OpMode {
 
         // Left trigger required for endgame functions
         if (this.gamepad2.left_trigger > 0) {
-            // Y: expand relic slide
-            // A: retract
-            if (this.gamepad2.y) {
+            // A: expand relic slide
+            // Y: retract
+            if (this.gamepad2.a) {
                 gunnerFunction.expandRelicSlide();
             }
-            else if (this.gamepad2.a) {
+            else if (this.gamepad2.y) {
                 gunnerFunction.retractRelicSlide();
             }
             else {
@@ -132,7 +134,12 @@ public class RRTeleOp extends OpMode {
 
             // B: toggle glyphter rotation
             if (this.gamepad2.b) {
-                gunnerFunction.rotateGlyphter();
+                if (allowGamepad2B) {
+                    allowGamepad2B = false;
+                    gunnerFunction.rotateGlyphter();
+                }
+            } else {
+                allowGamepad2B = true;
             }
         }
 
