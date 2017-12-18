@@ -15,8 +15,8 @@ public class GunnerFunction {
     // put in actual values later
     private static final int GLYPHTER_SERVO_CLOSE_POS = 120;
     private static final int GLYPHTER_SERVO_OPEN_POS = 0;
-    private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 0;
-    private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 180;
+    private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 180;
+    private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0;
     private static final double JEWELPUSHER_SERVO_UP_POS = 100;
     private static final double JEWELPUSHER_SERVO_DOWN_POS = 0;
 

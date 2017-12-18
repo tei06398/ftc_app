@@ -59,63 +59,246 @@ public class JewelAuton extends LinearOpMode {
 
 
         // RobotDriving instantiation
-        robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry, 0);
+        robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry, 1);
         steering = robotDriving.getSteering();
         gunnerFunction.defaultServos();
 
         waitForStart();
-
+        long startTime = System.currentTimeMillis();
+        double a;
+        int i =0;
+        while (System.currentTimeMillis()-startTime < 2000) {
+            a = Math.sqrt(Math.abs(i));
+            i++;
+        }
         telemetry.setAutoClear(false);
 
         this.jewelPusher.setPosition(JEWEL_PUSHER_DOWN);
-        sleep(2000);
+        //sleep(2000);
+
+        i = 0;
+        startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis()-startTime < 2000) {
+            a = Math.sqrt(Math.abs(i));
+            i++;
+        }
+
         double red = colorSensor.red();
         double blue = colorSensor.blue();
+
         boolean isRedTeam = startPosition.equals("RED_RELIC") || startPosition.equals("RED_MIDDLE");
 
         telemetry.addData("Red", red);
         telemetry.addData("Blue", blue);
         telemetry.addData("Is red team", isRedTeam);
         telemetry.update();
+        startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis()-startTime < 2000) {
+            a = Math.sqrt(Math.abs(i));
+            i++;
+        }
 
         if(red > blue) {
             if(isRedTeam){
-                knockJewel(JewelPosition.RIGHT);
+                //knockJewel(JewelPosition.LEFT);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
+                motorRB.setPower(-0.3);
+                motorRF.setPower(-0.3);
+                motorLB.setPower(-0.3);
+                motorLF.setPower(-0.3);
+                jankySleep(300);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
+                this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+                jankySleep(1000);
+                motorRB.setPower(0.3);
+                motorRF.setPower(0.3);
+                motorLB.setPower(0.3);
+                motorLF.setPower(0.3);
+                jankySleep(300);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
             }
             else{
-                knockJewel(JewelPosition.LEFT);
+                //knockJewel(JewelPosition.RIGHT);
+                motorLB.setPower(0.3);
+                motorLF.setPower(0.3);
+                motorRB.setPower(0.3);
+                motorRF.setPower(0.3);
+                jankySleep(300);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
+                this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+                jankySleep(1000);
+                motorRB.setPower(-0.3);
+                motorRF.setPower(-0.3);
+                motorLB.setPower(-0.3);
+                motorLF.setPower(-0.3);
+                jankySleep(300);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
             }
         }
-        else{
+        else if (red < blue){
             if(isRedTeam){
-                knockJewel(JewelPosition.LEFT);
+                //knockJewel(JewelPosition.RIGHT);
+                motorLB.setPower(0.3);
+                motorLF.setPower(0.3);
+                motorRB.setPower(0.3);
+                motorRF.setPower(0.3);
+                jankySleep(300);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
+                this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+                jankySleep(1000);
+                motorRB.setPower(-0.3);
+                motorRF.setPower(-0.3);
+                motorLB.setPower(-0.3);
+                motorLF.setPower(-0.3);
+                jankySleep(300);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
             }
             else{
-                knockJewel(JewelPosition.RIGHT);
+                //knockJewel(JewelPosition.LEFT);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
+                motorRB.setPower(-0.3);
+                motorRF.setPower(-0.3);
+                motorLB.setPower(-0.3);
+                motorLF.setPower(-0.3);
+                jankySleep(300);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
+                this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+                jankySleep(1000);
+                motorRB.setPower(0.3);
+                motorRF.setPower(0.3);
+                motorLB.setPower(0.3);
+                motorLF.setPower(0.3);
+                jankySleep(300);
+                motorLB.setPower(0);
+                motorLF.setPower(0);
+                motorRB.setPower(0);
+                motorRF.setPower(0);
             }
+        }
+        else {
+            this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+            jankySleep(1000);
         }
 
 
+        if(startPosition.equals("RED_MIDDLE")){
+            steering.moveDegrees(220);
+            steering.finishSteering();
+            jankySleep(1000);
+            steering.stopAllMotors();
+        }
+        else if(startPosition.equals("RED_RELIC")){
+            steering.moveDegrees(160);
+            steering.finishSteering();
+            jankySleep(1000);
+            steering.stopAllMotors();
+        }
+        else if(startPosition.equals("BLUE_MIDDLE")){
+            motorRF.setPower(0);
+            motorRB.setPower(0);
+            motorLF.setPower(0);
+            motorLB.setPower(0);
+            motorRF.setPower(-0.5);
+            motorRB.setPower(0.5);
+            motorLF.setPower(-0.5);
+            motorLB.setPower(0.5);
+            jankySleep(1400);
+            motorRF.setPower(0);
+            motorRB.setPower(0);
+            motorLF.setPower(0);
+            motorLB.setPower(0);
+            motorRF.setPower(0.5);
+            motorRB.setPower(0.5);
+            motorLF.setPower(-0.5);
+            motorLB.setPower(-0.5);
+            jankySleep(300);
+            motorRF.setPower(0);
+            motorRB.setPower(0);
+            motorLF.setPower(0);
+            motorLB.setPower(0);
+        }
+        else if(startPosition.equals("BLUE_RELIC")){
+            steering.moveDegrees(20);
+            steering.finishSteering();
+            jankySleep(1000);
+            steering.stopAllMotors();
+        }
     }
 
+    //Currently not working for some reason. Test at home at a later time.
     public void knockJewel(JewelPosition jewelPosition) {
         if (jewelPosition == JewelPosition.LEFT) telemetry.addData("Knocking", "left");
         if (jewelPosition == JewelPosition.RIGHT) telemetry.addData("Knocking", "right");
         telemetry.update();
-
-        steering.setSpeedRatio(0.3);
-
+        int i = 0;
+        double a;
         long startTime = System.currentTimeMillis();
+        //steering.setSpeedRatio(0.6);
+
+
         if (jewelPosition == JewelPosition.LEFT) {
             steering.turnCounterclockwise();
+            telemetry.addData("Actually knocking", "left");
         } else {
+            telemetry.addData("Actually knocking", "right");
             steering.turnClockwise();
         }
+        telemetry.addData("Actually knocking", "not really");
+        telemetry.update();
         steering.finishSteering();
-        sleep(200);
+        i = 0;
+        startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis()-startTime < 2000) {
+            a = Math.sqrt(Math.abs(i));
+            i++;
+        }
         steering.stopAllMotors();
 
         this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+        i = 0;
+        startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis()-startTime < 2000) {
+            a = Math.sqrt(Math.abs(i));
+            i++;
+        }
+    }
+
+    public void jankySleep(long time) {
+        int count = 0;
+        double root;
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < time) {
+            root = Math.sqrt(Math.abs(count));
+            count++;
+        }
+
     }
 
     public enum JewelPosition {

@@ -22,10 +22,10 @@ public class RRTeleOp extends OpMode {
     protected Servo jewelPusher = null;
 
 
-    protected UltrasonicSensor ultrasonicLeft;
-    protected UltrasonicSensor ultrasonicRight;
-    protected UltrasonicSensor ultrasonicLF;
-    protected UltrasonicSensor ultrasonicRF;
+    //protected UltrasonicSensor ultrasonicLeft;
+    //protected UltrasonicSensor ultrasonicRight;
+    //protected UltrasonicSensor ultrasonicLF;
+    //protected UltrasonicSensor ultrasonicRF;
 
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
@@ -38,11 +38,11 @@ public class RRTeleOp extends OpMode {
     private boolean disableB1 = false;
 
 
-    private static double BLOCK_ROTATION_WEIGHT = 0.5; // make this final later
+    private final static double BLOCK_ROTATION_WEIGHT = 0.5; // make this final later
     
     public void loop() {
         // TESTING
-
+        /*
         if (this.gamepad1.a) {
             if (!disableA1) BLOCK_ROTATION_WEIGHT += 0.05;
             disableA1 = true;
@@ -55,7 +55,7 @@ public class RRTeleOp extends OpMode {
         } else {
             disableB1 = false;
         }
-        telemetry.addData("block rotation weight: ", BLOCK_ROTATION_WEIGHT);
+        telemetry.addData("block rotation weight: ", BLOCK_ROTATION_WEIGHT);*/
 
         // GAMEPAD 1 (DRIVER)
         // Right stick: turn
@@ -150,10 +150,10 @@ public class RRTeleOp extends OpMode {
         //telemetry.addData("Right stick x: ", this.gamepad1.right_stick_x);
         //telemetry.addData("Left stick x: ", this.gamepad1.left_stick_x);
         //telemetry.addData("Left stick y: ", this.gamepad1.left_stick_y);
-        telemetry.addData("Ultrasonic Left: ", ultrasonicFunction.getLeft());
-        telemetry.addData("Ultrasonic Right: ", ultrasonicFunction.getRight());
-        telemetry.addData("Ultrasonic Left Front: ", ultrasonicFunction.getLF());
-        telemetry.addData("Ultrasonic Right Front: ", ultrasonicFunction.getRF());
+        //telemetry.addData("Ultrasonic Left: ", ultrasonicFunction.getLeft());
+        //telemetry.addData("Ultrasonic Right: ", ultrasonicFunction.getRight());
+        //telemetry.addData("Ultrasonic Left Front: ", ultrasonicFunction.getLF());
+        //telemetry.addData("Ultrasonic Right Front: ", ultrasonicFunction.getRF());
         telemetry.update();
     }
 
@@ -174,10 +174,10 @@ public class RRTeleOp extends OpMode {
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         
-        this.ultrasonicLeft = this.hardwareMap.ultrasonicSensor.get("ultrasonicLeft");
-        this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");
-        this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF");
-        this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF");
+        //this.ultrasonicLeft = this.hardwareMap.ultrasonicSensor.get("ultrasonicLeft");
+        //this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");
+        //this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF");
+        //this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF");
 
         this.jewelPusher = this.hardwareMap.servo.get("jewelPusher");
 
@@ -188,7 +188,7 @@ public class RRTeleOp extends OpMode {
         
         steering = robotDriving.getSteering();
 
-        ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
+        //ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
 
         // Snap the glyphter rotation servo into the correct spot
         gunnerFunction.rotateGlyphter();
