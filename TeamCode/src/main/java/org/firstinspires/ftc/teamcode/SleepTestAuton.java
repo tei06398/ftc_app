@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name = "Sleep Test")
-public class SleepTestAuton extends LinearOpMode {
+public class SleepTestMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
