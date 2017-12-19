@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -10,7 +11,15 @@ public class UltrasonicFunction {
     private SmoothUltrasonic ultrasonicLF;
 
     private Telemetry telemetry;
-
+    
+    public UltrasonicFunction (HardwareMap hardwareMap, Telemetry telemetry) {
+        this.ultrasonicLeft = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLeft")); //module 2, port 1
+        this.ultrasonicRight = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRight"));//module 2, port 2
+        this.ultrasonicLF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLF")); //module 3, port 3
+        this.ultrasonicRF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRF")); //module 4, port 4
+        this.telemetry = telemetry;
+    }
+    
     public UltrasonicFunction (UltrasonicSensor ultrasonicLeft, UltrasonicSensor ultrasonicRight, UltrasonicSensor ultrasonicRF, UltrasonicSensor ultrasonicLF, Telemetry telemetry) {
         this.ultrasonicLeft = new SmoothUltrasonic(ultrasonicLeft, telemetry);
         this.ultrasonicRight = new SmoothUltrasonic(ultrasonicRight, telemetry);
