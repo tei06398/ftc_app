@@ -55,4 +55,12 @@ public class UltrasonicFunction {
             return distance;
         }
     }
+    
+    public void test() {
+        telemetry.addData("Ultrasonic LEFT", getLeft());
+        telemetry.addData("Ultrasonic RIGHT", getRight());
+        telemetry.addData("Ultrasonic LEFT_FRONT", getLF());
+        telemetry.addData("Ultrasonic RIGHT_FRONT", getRF());
+        telemetry.update();
+    }
 }
