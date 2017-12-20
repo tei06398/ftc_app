@@ -34,6 +34,15 @@ public class RobotDriving {
     
     public static final double DEFAULT_SMOOTHNESS = 0.1;
     
+    public RobotDriving(HardwareMap hardwareMap, Telemetry telemetry) {
+        this.lf = new DrivingMotor(this.hardwareMap.dcMotor.get("lfMotor"), smoothness);
+        this.lb = new DrivingMotor(this.hardwareMap.dcMotor.get("lbMotor"), smoothness);
+        this.rf = new DrivingMotor(this.hardwareMap.dcMotor.get("rfMotor"), smoothness);
+        this.rb = new DrivingMotor(this.hardwareMap.dcMotor.get("rbMotor"), smoothness);
+        
+        this.telemetry = telemetry;
+    }
+    
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
         this(LF, LB, RF, RB, telemetry, DEFAULT_SMOOTHNESS);
     }
@@ -66,6 +75,7 @@ public class RobotDriving {
         
         public DrivingMotor(DcMotor motor, double smoothness) {
             this.motor = motor;
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             acceleration = new WeightedValue(smoothness);
         }
         
