@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /*
@@ -34,13 +35,17 @@ public class RobotDriving {
     
     public static final double DEFAULT_SMOOTHNESS = 0.1;
     
-    public RobotDriving(HardwareMap hardwareMap, Telemetry telemetry) {
-        this.lf = new DrivingMotor(this.hardwareMap.dcMotor.get("lfMotor"), smoothness);
-        this.lb = new DrivingMotor(this.hardwareMap.dcMotor.get("lbMotor"), smoothness);
-        this.rf = new DrivingMotor(this.hardwareMap.dcMotor.get("rfMotor"), smoothness);
-        this.rb = new DrivingMotor(this.hardwareMap.dcMotor.get("rbMotor"), smoothness);
+    public RobotDriving(HardwareMap hardwareMap, Telemetry telemetry, double smoothness) {
+        this.lf = new DrivingMotor(hardwareMap.dcMotor.get("lfMotor"), smoothness);
+        this.lb = new DrivingMotor(hardwareMap.dcMotor.get("lbMotor"), smoothness);
+        this.rf = new DrivingMotor(hardwareMap.dcMotor.get("rfMotor"), smoothness);
+        this.rb = new DrivingMotor(hardwareMap.dcMotor.get("rbMotor"), smoothness);
         
         this.telemetry = telemetry;
+    }
+
+    public RobotDriving(HardwareMap hardwareMap, Telemetry telemetry) {
+        this(hardwareMap, telemetry, DEFAULT_SMOOTHNESS);
     }
     
     public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
@@ -142,12 +147,8 @@ public class RobotDriving {
             double speedX = Math.cos(angle - Math.toRadians(45));
             double speedY = Math.sin(angle - Math.toRadians(45));
 
-            telemetry.addData("speed x: ", speedX);
-            telemetry.addData("speed y: ", speedY);
-
             // so there's always going to be a speed that's +-1
             double divider = Math.max(Math.abs(speedX), Math.abs(speedY));
-            telemetry.addData("divider: ", divider);
 
             powerLF += speedX / divider * power;
             powerRB -= speedX / divider * power;
@@ -178,7 +179,7 @@ public class RobotDriving {
             addToAllPowers(isClockwise ? power : -power);
         }
 
-        public void turn(double power) { addToAllPowers(power > 0 ? power : -power);}
+        public void turn(double power) { addToAllPowers(power);}
 
         public void turnClockwise(double power) {
             turn(true, power);
@@ -215,13 +216,6 @@ public class RobotDriving {
             // Now, actually set the powers for the motors. Dividing by maxRawPower makes the "biggest" power +-1, and multiplying by speedRatio
             // makes the maximum power speedRatio.
             if (maxRawPower != 0) {
-                telemetry.addData("power lf: ", powerLF);
-                telemetry.addData("power lb: ", powerLB);
-                telemetry.addData("power rf: ", powerRF);
-                telemetry.addData("power rb: ", powerRB);
-
-                telemetry.addData("max raw power: ", maxRawPower);
-                
                 lf.applyPower(powerLF / maxRawPower * speedRatio);
                 lb.applyPower(powerLB / maxRawPower * speedRatio);
                 rf.applyPower(powerRF / maxRawPower * speedRatio);

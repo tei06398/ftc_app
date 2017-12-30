@@ -64,24 +64,11 @@ public class JewelAuton extends LinearOpMode {
         gunnerFunction.defaultServos();
 
         waitForStart();
-        long startTime = System.currentTimeMillis();
-        double a;
-        int i =0;
-        while (System.currentTimeMillis()-startTime < 2000) {
-            a = Math.sqrt(Math.abs(i));
-            i++;
-        }
         telemetry.setAutoClear(false);
 
         this.jewelPusher.setPosition(JEWEL_PUSHER_DOWN);
-        //sleep(2000);
 
-        i = 0;
-        startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis()-startTime < 2000) {
-            a = Math.sqrt(Math.abs(i));
-            i++;
-        }
+        jankySleep(2000);
 
         double red = colorSensor.red();
         double blue = colorSensor.blue();
@@ -92,16 +79,12 @@ public class JewelAuton extends LinearOpMode {
         telemetry.addData("Blue", blue);
         telemetry.addData("Is red team", isRedTeam);
         telemetry.update();
-        startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis()-startTime < 2000) {
-            a = Math.sqrt(Math.abs(i));
-            i++;
-        }
+        jankySleep(1000);
 
         if(red > blue) {
             if(isRedTeam){
-                //knockJewel(JewelPosition.LEFT);
-                motorLB.setPower(0);
+                knockJewel(JewelPosition.LEFT);
+                /*motorLB.setPower(0);
                 motorLF.setPower(0);
                 motorRB.setPower(0);
                 motorRF.setPower(0);
@@ -124,11 +107,11 @@ public class JewelAuton extends LinearOpMode {
                 motorLB.setPower(0);
                 motorLF.setPower(0);
                 motorRB.setPower(0);
-                motorRF.setPower(0);
+                motorRF.setPower(0);*/
             }
             else{
-                //knockJewel(JewelPosition.RIGHT);
-                motorLB.setPower(0.3);
+                knockJewel(JewelPosition.RIGHT);
+                /*motorLB.setPower(0.3);
                 motorLF.setPower(0.3);
                 motorRB.setPower(0.3);
                 motorRF.setPower(0.3);
@@ -147,13 +130,13 @@ public class JewelAuton extends LinearOpMode {
                 motorLB.setPower(0);
                 motorLF.setPower(0);
                 motorRB.setPower(0);
-                motorRF.setPower(0);
+                motorRF.setPower(0);*/
             }
         }
         else if (red < blue){
             if(isRedTeam){
-                //knockJewel(JewelPosition.RIGHT);
-                motorLB.setPower(0.3);
+                knockJewel(JewelPosition.RIGHT);
+                /*motorLB.setPower(0.3);
                 motorLF.setPower(0.3);
                 motorRB.setPower(0.3);
                 motorRF.setPower(0.3);
@@ -172,11 +155,11 @@ public class JewelAuton extends LinearOpMode {
                 motorLB.setPower(0);
                 motorLF.setPower(0);
                 motorRB.setPower(0);
-                motorRF.setPower(0);
+                motorRF.setPower(0);*/
             }
             else{
-                //knockJewel(JewelPosition.LEFT);
-                motorLB.setPower(0);
+                knockJewel(JewelPosition.LEFT);
+                /*motorLB.setPower(0);
                 motorLF.setPower(0);
                 motorRB.setPower(0);
                 motorRF.setPower(0);
@@ -199,7 +182,7 @@ public class JewelAuton extends LinearOpMode {
                 motorLB.setPower(0);
                 motorLF.setPower(0);
                 motorRB.setPower(0);
-                motorRF.setPower(0);
+                motorRF.setPower(0);*/
             }
         }
         else {
@@ -257,37 +240,24 @@ public class JewelAuton extends LinearOpMode {
         if (jewelPosition == JewelPosition.LEFT) telemetry.addData("Knocking", "left");
         if (jewelPosition == JewelPosition.RIGHT) telemetry.addData("Knocking", "right");
         telemetry.update();
-        int i = 0;
-        double a;
-        long startTime = System.currentTimeMillis();
-        //steering.setSpeedRatio(0.6);
-
-
-        if (jewelPosition == JewelPosition.LEFT) {
-            steering.turnCounterclockwise();
-            telemetry.addData("Actually knocking", "left");
-        } else {
-            telemetry.addData("Actually knocking", "right");
-            steering.turnClockwise();
-        }
-        telemetry.addData("Actually knocking", "not really");
-        telemetry.update();
-        steering.finishSteering();
-        i = 0;
-        startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis()-startTime < 2000) {
-            a = Math.sqrt(Math.abs(i));
-            i++;
-        }
+        steering.setSpeedRatio(0.3);
         steering.stopAllMotors();
 
+        //Move to knock jewel
+        if (jewelPosition == JewelPosition.LEFT) steering.turnCounterclockwise();
+        else steering.turnClockwise();
+        jankySleep(300);
+        steering.stopAllMotors();
+
+        //Bring jewel pusher back up
         this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
-        i = 0;
-        startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis()-startTime < 2000) {
-            a = Math.sqrt(Math.abs(i));
-            i++;
-        }
+        jankySleep(1000);
+
+        //Return to original position
+        if (jewelPosition == JewelPosition.LEFT) steering.turnClockwise();
+        else steering.turnCounterclockwise();
+        jankySleep(300);
+        steering.stopAllMotors();
     }
 
     public void jankySleep(long time) {

@@ -13,10 +13,10 @@ public class UltrasonicFunction {
     private Telemetry telemetry;
     
     public UltrasonicFunction (HardwareMap hardwareMap, Telemetry telemetry) {
-        this.ultrasonicLeft = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLeft")); //module 2, port 1
-        this.ultrasonicRight = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRight"));//module 2, port 2
-        this.ultrasonicLF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLF")); //module 3, port 3
-        this.ultrasonicRF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRF")); //module 4, port 4
+        this.ultrasonicLeft = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLeft"), telemetry); //module 2, port 1
+        this.ultrasonicRight = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRight"), telemetry);//module 2, port 2
+        this.ultrasonicLF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLF"), telemetry); //module 3, port 3
+        this.ultrasonicRF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRF"), telemetry); //module 4, port 4
         this.telemetry = telemetry;
     }
     
@@ -40,15 +40,7 @@ public class UltrasonicFunction {
 
         public SmoothUltrasonic (UltrasonicSensor ultrasonicSensor, Telemetry telemetry) {
             this.ultrasonicSensor = ultrasonicSensor;
-            double outputValue;
-
-            for (int attempt = 0; attempt < 20; attempt++) {
-                outputValue = ultrasonicSensor.getUltrasonicLevel();
-                if (outputValue != 0 && outputValue != 255) {
-                    distance = outputValue;
-                }
-
-            }
+            getDistance();
         }
 
         public double getDistance () {
@@ -56,7 +48,7 @@ public class UltrasonicFunction {
 
             for (int attempt = 0; attempt < 20; attempt++) {
                 outputValue = ultrasonicSensor.getUltrasonicLevel();
-                if (outputValue != 0 && outputValue != 255) {
+                if (outputValue != 0 && outputValue != 255 && outputValue != 127) {
                     distance = outputValue;
                     return outputValue;
                 }
@@ -66,10 +58,14 @@ public class UltrasonicFunction {
     }
     
     public void test() {
+        printTestData();
+        telemetry.update();
+    }
+
+    public void printTestData() {
         telemetry.addData("Ultrasonic LEFT", getLeft());
         telemetry.addData("Ultrasonic RIGHT", getRight());
         telemetry.addData("Ultrasonic LEFT_FRONT", getLF());
         telemetry.addData("Ultrasonic RIGHT_FRONT", getRF());
-        telemetry.update();
     }
 }

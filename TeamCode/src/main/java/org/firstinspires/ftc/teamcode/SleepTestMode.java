@@ -10,7 +10,7 @@ public class SleepTestMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         waitForStart();
-        telemetry.setAutoClear(false)
+        telemetry.setAutoClear(false);
         telemetry.addData("Sleep", "begins");
         sleep(2000);
         telemetry.addData("Sleep", "ends");
