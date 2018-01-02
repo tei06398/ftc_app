@@ -40,6 +40,7 @@ public class UltrasonicFunction {
 
         public SmoothUltrasonic (UltrasonicSensor ultrasonicSensor, Telemetry telemetry) {
             this.ultrasonicSensor = ultrasonicSensor;
+            distance = 255;
             getDistance();
         }
 
