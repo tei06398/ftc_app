@@ -106,6 +106,10 @@ public class UltrasonicAutonTest extends LinearOpMode {
         double distanceRF;
         boolean keepMoving = true;
         while (keepMoving && opModeIsActive()) {
+        if (moveRight && senseRight) ultrasonicFunction.setRight(255);
+        else if (moveRight && !senseRight) ultrasonicFunction.setLeft(0);
+        else if (!moveRight && senseRight) ultrasonicFunction.setRight(0);
+        else if (!moveRight && !senseRight) ultrasonicFunction.setLeft(255);
 
             //Set power in direction of motion
             if (moveRight) {

@@ -32,7 +32,10 @@ public class UltrasonicFunction {
     public double getRight() {return ultrasonicRight.getDistance();}
     public double getLF() {return ultrasonicLF.getDistance();}
     public double getRF() {return ultrasonicRF.getDistance();}
-
+    public void setLeft(double input) {ultrasonicLeft.setDistance(input);}
+    public void setLF(double input) {ultrasonicLF.setDistance(input);}
+    public void setRF(double input) {ultrasonicRF.setDistance(input);}
+    public void setRight(double input) {ultrasonicRight.setDistance(input);}
 
     public static class SmoothUltrasonic {
         private UltrasonicSensor ultrasonicSensor;
@@ -44,7 +47,7 @@ public class UltrasonicFunction {
             getDistance();
         }
 
-        public double getDistance () {
+        public double getDistance() {
             double outputValue;
 
             for (int attempt = 0; attempt < 20; attempt++) {
@@ -55,6 +58,10 @@ public class UltrasonicFunction {
                 }
             }
             return distance;
+        }
+
+        public void setDistance (double input) {
+            distance = input;
         }
     }
     
