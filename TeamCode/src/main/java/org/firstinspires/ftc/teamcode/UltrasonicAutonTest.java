@@ -89,7 +89,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
         telemetry.addData("Now starting movement along wall: ", "true");
         telemetry.update();
         //sleep(1000);
-        moveAlongWall(false, false, 50, 50);
+        moveAlongWall(false, false, 25, 50);
         telemetry.addData("Now starting turn process: ", "true");
         telemetry.update();
         sleep(1000);
@@ -168,6 +168,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
     }
 
     public void turnNinety(boolean isClockwise) {
+        steering.setSpeedRatio(0.1);
         if (isClockwise) {
             //leftDist is the distance detected from ultrasonicLeft in the previous tick
             double leftDist = 255;
@@ -179,16 +180,18 @@ public class UltrasonicAutonTest extends LinearOpMode {
             steering.stopAllMotors();
             alignToWall();
         } else {
-            //rightDist is the distance detected from ultrasonicLeft in the previous tick
+            //rightDist is the distance detected from ultrasonicRight in the previous tick
             double rightDist = 255;
-            while (ultrasonicFunction.getLeft() <= rightDist) {
+            while (ultrasonicFunction.getRight() <= rightDist) {
                 steering.turn(-1);
                 steering.finishSteering();
                 rightDist = ultrasonicFunction.getRight();
             }
             steering.stopAllMotors();
+            sleep(1000);
             alignToWall();
         }
+        steering.setAllPowers(SPEED_RATIO);
     }
 
     public void alignToWall() {

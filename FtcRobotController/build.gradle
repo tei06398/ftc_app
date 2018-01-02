@@ -24,5 +24,15 @@ repositories {
         dirs '../libs'
     }
 }
+dependencies {
+    compile (name:'Inspection-release', ext: 'aar')
+    compile (name:'Blocks-release', ext: 'aar')
+    compile (name:'RobotCore-release', ext: 'aar')
+    compile (name:'Hardware-release', ext: 'aar')
+    compile (name:'FtcCommon-release', ext: 'aar')
+    compile (name:'Analytics-release', ext:'aar')
+    compile (name:'WirelessP2p-release', ext:'aar')
+    compile (name:'opencv-310', ext:'jar')
+}
 
-apply from: 'build.release.gradle'
+//apply from: 'build.release.gradle'
