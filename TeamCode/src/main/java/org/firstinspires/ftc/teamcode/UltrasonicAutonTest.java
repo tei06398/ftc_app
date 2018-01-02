@@ -82,10 +82,16 @@ public class UltrasonicAutonTest extends LinearOpMode {
         telemetry.setAutoClear(true);
 
         moveAlongWall(false, true, 160, 50);
+        telemetry.addData("Now starting alignment process: ", "true");
+        telemetry.update();
         sleep(1000);
         alignToWall();
+        telemetry.addData("Now starting movement along wall: ", "true");
+        telemetry.update();
         sleep(1000);
         moveAlongWall(false, false, 50, 50);
+        telemetry.addData("Now starting turn process: ", "true");
+        telemetry.update();
         sleep(1000);
         turnNinety(false);
         //driveToCryptobox(pictograph == 'l'? CrypoboxPosition.LEFT : (pictograph == 'r' ? CrypoboxPosition.RIGHT : CrypoboxPosition.CENTER));
@@ -184,9 +190,9 @@ public class UltrasonicAutonTest extends LinearOpMode {
     public void alignToWall() {
         while (Math.abs(ultrasonicFunction.getLF() - ultrasonicFunction.getRF()) > 1) {
             if (ultrasonicFunction.getLF() + 1 < ultrasonicFunction.getRF()) {
-                steering.turn(1);
-            } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()) {
                 steering.turn(-1);
+            } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()) {
+                steering.turn(1);
             } else {
                 steering.stopAllMotors();
                 break;
