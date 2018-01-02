@@ -195,6 +195,10 @@ public class UltrasonicAutonTest extends LinearOpMode {
         }
     }
 
+    public void approachCryptobox() {
+
+    }
+
     public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {
         if (startPosition.equals("RED_RELIC")) {
             moveAlongWall(false, true, 150, 50);
