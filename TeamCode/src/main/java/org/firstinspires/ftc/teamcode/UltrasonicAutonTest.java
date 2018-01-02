@@ -105,12 +105,11 @@ public class UltrasonicAutonTest extends LinearOpMode {
         double distanceLF;
         double distanceRF;
         boolean keepMoving = true;
-        while (keepMoving && opModeIsActive()) {
         if (moveRight && senseRight) ultrasonicFunction.setRight(255);
         else if (moveRight && !senseRight) ultrasonicFunction.setLeft(0);
         else if (!moveRight && senseRight) ultrasonicFunction.setRight(0);
         else if (!moveRight && !senseRight) ultrasonicFunction.setLeft(255);
-
+        while (keepMoving && opModeIsActive()) {
             //Set power in direction of motion
             if (moveRight) {
                 steering.moveDegrees(0, 1);
@@ -165,6 +164,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
                 keepMoving = ultrasonicFunction.getLeft() > sideDistance;
             }
         }
+        steering.stopAllMotors();
     }
 
     public void turnNinety(boolean isClockwise) {
