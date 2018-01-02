@@ -81,10 +81,10 @@ public class UltrasonicAutonTest extends LinearOpMode {
 
         telemetry.setAutoClear(true);
 
-        moveAlongWall(false, true, 160, 50);
+        //moveAlongWall(false, true, 160, 50);
         telemetry.addData("Now starting alignment process: ", "true");
         telemetry.update();
-        sleep(1000);
+        //sleep(1000);
         alignToWall();
         telemetry.addData("Now starting movement along wall: ", "true");
         telemetry.update();
@@ -101,7 +101,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
         double clockwiseTurnWeight = 0;
         double forwardWeight = 0;
         final double MAX_TURN_WEIGHT = 0.2;
-        final double MAX_FORWARD_WEIGHT = 0.4;
+        final double MAX_FORWARD_WEIGHT = 0.2;
         double distanceLF;
         double distanceRF;
         boolean keepMoving = true;
@@ -192,17 +192,20 @@ public class UltrasonicAutonTest extends LinearOpMode {
     }
 
     public void alignToWall() {
-        while (Math.abs(ultrasonicFunction.getLF() - ultrasonicFunction.getRF()) > 1) {
-            if (ultrasonicFunction.getLF() + 1 < ultrasonicFunction.getRF()) {
+        steering.setSpeedRatio(0.1);
+        while (Math.abs(ultrasonicFunction.getLF() - ultrasonicFunction.getRF()) >= 1) {
+            if (ultrasonicFunction.getLF() < ultrasonicFunction.getRF()) {
                 steering.turn(-1);
-            } else if (ultrasonicFunction.getRF() + 1 < ultrasonicFunction.getLF()) {
+            } else if (ultrasonicFunction.getRF() < ultrasonicFunction.getLF()) {
                 steering.turn(1);
-            } else {
+            }
+            steering.finishSteering();
+             if (ultrasonicFunction.getLF() == ultrasonicFunction.getRF()) {
                 steering.stopAllMotors();
                 break;
             }
-            steering.finishSteering();
         }
+        steering.setSpeedRatio(SPEED_RATIO);
     }
 
     public void approachCryptobox() {
