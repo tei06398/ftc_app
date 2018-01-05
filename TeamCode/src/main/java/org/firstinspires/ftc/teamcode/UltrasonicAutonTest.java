@@ -71,7 +71,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
-        robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry, 1);
+        robotDriving = new RobotDriving(hardwareMap, telemetry, 1);
         steering = robotDriving.getSteering();
         steering.setSpeedRatio(SPEED_RATIO);
 
