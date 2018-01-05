@@ -38,13 +38,13 @@ public class UltrasonicAutonTest extends LinearOpMode {
     protected RobotDriving.Steering steering;
 
     protected UltrasonicFunction ultrasonicFunction;
+    protected GunnerFunction gunnerFunction;
     protected ColorSensor colorSensor;
 
     SharedPreferences sharedPref;
     protected String startPosition; //RED_RELIC, RED_MIDDLE, BLUE_RELIC, BLUE_MIDDLE
 
     private static final double SPEED_RATIO = 0.2;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -58,8 +58,8 @@ public class UltrasonicAutonTest extends LinearOpMode {
         this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF"); //module 3, port 3
         this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF"); //module 4, port 4
         this.colorSensor = this.hardwareMap.colorSensor.get("colorSensor");
-        this.glyphterServoLeft = this.hardwareMap.servo.get("glyphterServoLeft");
-        this.glyphterServoRight = this.hardwareMap.servo.get("glyphterServoRight");
+        //this.glyphterServoLeft = this.hardwareMap.servo.get("glyphterServoLeft");
+        //this.glyphterServoRight = this.hardwareMap.servo.get("glyphterServoRight");
 
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -71,34 +71,34 @@ public class UltrasonicAutonTest extends LinearOpMode {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
-        // RobotDriving instantiation
         robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry, 1);
         steering = robotDriving.getSteering();
         steering.setSpeedRatio(SPEED_RATIO);
 
-        //Ultrasonic function instantiation
         ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
+
+        //gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         waitForStart();
 
         telemetry.setAutoClear(true);
 
-        glyphterServoRight.setPosition(0.47);
-        glyphterServoLeft.setPosition(0.53);
+        //gunnerFunction.closeGlyphter();
         telemetry.addData("Now starting movement process", "");
         telemetry.update();
-        moveAlongWall(false, true, 160, 40);
+        sleep(1000);
+        moveAlongWall(false, true, 160, 50);
         telemetry.addData("Now starting alignment process", "");
         telemetry.update();
+        sleep(1000);
         alignToWall();
         telemetry.addData("Now starting approach to cryptobox", "");
         telemetry.update();
+        sleep(1000);
         approachCryptobox();
-        glyphterServoRight.setPosition(0.53);
-        glyphterServoLeft.setPosition(0.47);
+        //gunnerFunction.openGlyphter();
         sleep(300);
-        glyphterServoRight.setPosition(0.5);
-        glyphterServoLeft.setPosition(0.5);
+        //gunnerFunction.stopGlyphter();
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
@@ -133,21 +133,33 @@ public class UltrasonicAutonTest extends LinearOpMode {
 
             //Determine robot turning off course
             if (distanceLF + 1 < distanceRF) {
-                if (clockwiseTurnWeight > 0) clockwiseTurnWeight = Math.max(clockwiseTurnWeight - NORMALIZE_RATE, -MAX_TURN_WEIGHT);
-                else clockwiseTurnWeight = Math.max(clockwiseTurnWeight - INCREASE_RATE, -MAX_TURN_WEIGHT);
+                if (clockwiseTurnWeight > 0) {
+                    clockwiseTurnWeight = Math.max(clockwiseTurnWeight - NORMALIZE_RATE, -MAX_TURN_WEIGHT);
+                } else {
+                    clockwiseTurnWeight = Math.max(clockwiseTurnWeight - INCREASE_RATE, -MAX_TURN_WEIGHT);
+                }
 
             } else if (distanceRF + 1 < distanceLF) {
-                if (clockwiseTurnWeight > 0) clockwiseTurnWeight = Math.min(clockwiseTurnWeight + INCREASE_RATE, MAX_TURN_WEIGHT);
-                else clockwiseTurnWeight = Math.min(clockwiseTurnWeight + NORMALIZE_RATE, MAX_TURN_WEIGHT);
+                if (clockwiseTurnWeight > 0) {
+                    clockwiseTurnWeight = Math.min(clockwiseTurnWeight + INCREASE_RATE, MAX_TURN_WEIGHT);
+                } else {
+                    clockwiseTurnWeight = Math.min(clockwiseTurnWeight + NORMALIZE_RATE, MAX_TURN_WEIGHT);
+                }
             }
 
             //Determine robot drifting off course
             if ((distanceLF + distanceRF) / 2 + 1 < wallDistance) {
-                if (forwardWeight > 0) forwardWeight = Math.max(forwardWeight - NORMALIZE_RATE, -MAX_FORWARD_WEIGHT);
-                else forwardWeight = Math.max(forwardWeight - INCREASE_RATE, -MAX_FORWARD_WEIGHT);
+                if (forwardWeight > 0) {
+                    forwardWeight = Math.max(forwardWeight - NORMALIZE_RATE, -MAX_FORWARD_WEIGHT);
+                } else {
+                    forwardWeight = Math.max(forwardWeight - INCREASE_RATE, -MAX_FORWARD_WEIGHT);
+                }
             } else if ((distanceLF + distanceRF) / 2 - 1 > wallDistance) {
-                if (forwardWeight > 0) forwardWeight = Math.min(forwardWeight + INCREASE_RATE, MAX_FORWARD_WEIGHT);
-                else forwardWeight = Math.min(forwardWeight + NORMALIZE_RATE, MAX_FORWARD_WEIGHT);
+                if (forwardWeight > 0) {
+                    forwardWeight = Math.min(forwardWeight + INCREASE_RATE, MAX_FORWARD_WEIGHT);
+                } else {
+                    forwardWeight = Math.min(forwardWeight + NORMALIZE_RATE, MAX_FORWARD_WEIGHT);
+                }
             }
 
             telemetry.addData("Forward weight", forwardWeight);
@@ -243,20 +255,21 @@ public class UltrasonicAutonTest extends LinearOpMode {
     }
 
     public void approachCryptobox() {
-        steering.setSpeedRatio(0.1);
-        alignToWall();
-        final int wallDistance = 20;
+        final int wallDistance = 28;
         while (ultrasonicFunction.getRF() + ultrasonicFunction.getLF() > wallDistance * 2) {
+            telemetry.addData("getRF: ", ultrasonicFunction.getRF());
+            telemetry.addData("getLF: ", ultrasonicFunction.getLF());
+            telemetry.update();
             steering.moveDegrees(90, 1);
-            if (ultrasonicFunction.getLF() > ultrasonicFunction.getRF()) {
+            if (ultrasonicFunction.getLF() > ultrasonicFunction.getRF() + 1) {
                 steering.turn(0.1);
             }
-            else if (ultrasonicFunction.getRF() > ultrasonicFunction.getLF()) {
+            else if (ultrasonicFunction.getRF() > ultrasonicFunction.getLF() + 1) {
                 steering.turn(-0.1);
             }
+            steering.finishSteering();
         }
         steering.stopAllMotors();
-        steering.setSpeedRatio(SPEED_RATIO);
     }
 
     public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {

@@ -49,15 +49,20 @@ public class UltrasonicFunction {
 
         public double getDistance() {
             double outputValue;
-
+            double sum = 0;
+            double successes = 0;
             for (int attempt = 0; attempt < 20; attempt++) {
                 outputValue = ultrasonicSensor.getUltrasonicLevel();
                 if (outputValue != 0 && outputValue != 255 && outputValue != 127) {
-                    distance = outputValue;
-                    return outputValue;
+                    sum += outputValue;
+                    successes++;
                 }
             }
-            return distance;
+            if (successes > 0) {
+                return sum/successes;
+            } else {
+                return distance;
+            }
         }
 
         public void setDistance (double input) {
