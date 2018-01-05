@@ -31,6 +31,8 @@ public class UltrasonicAutonTest extends LinearOpMode {
     protected UltrasonicSensor ultrasonicRF = null;
     protected UltrasonicSensor ultrasonicLF = null;
     protected Servo jewelPusher = null;
+    protected Servo glyphterServoRight = null;
+    protected Servo glyphterServoLeft = null;
 
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
@@ -43,8 +45,6 @@ public class UltrasonicAutonTest extends LinearOpMode {
 
     private static final double SPEED_RATIO = 0.2;
 
-    //Required distance from wall at the beginning
-    protected int wallDistance = 30;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -58,6 +58,8 @@ public class UltrasonicAutonTest extends LinearOpMode {
         this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF"); //module 3, port 3
         this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF"); //module 4, port 4
         this.colorSensor = this.hardwareMap.colorSensor.get("colorSensor");
+        this.glyphterServoLeft = this.hardwareMap.servo.get("glyphterServoLeft");
+        this.glyphterServoRight = this.hardwareMap.servo.get("glyphterServoRight");
 
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -81,20 +83,22 @@ public class UltrasonicAutonTest extends LinearOpMode {
 
         telemetry.setAutoClear(true);
 
-        //moveAlongWall(false, true, 160, 50);
-        telemetry.addData("Now starting alignment process: ", "true");
+        glyphterServoRight.setPosition(0.47);
+        glyphterServoLeft.setPosition(0.53);
+        telemetry.addData("Now starting movement process", "");
         telemetry.update();
-        //sleep(1000);
-        //alignToWall();
-        telemetry.addData("Now starting movement along wall: ", "true");
+        moveAlongWall(false, true, 160, 40);
+        telemetry.addData("Now starting alignment process", "");
         telemetry.update();
-        //sleep(1000);
-        moveAlongWall(false, false, 25, 50);
-        telemetry.addData("Now starting turn process: ", "true");
+        alignToWall();
+        telemetry.addData("Now starting approach to cryptobox", "");
         telemetry.update();
-        sleep(1000);
-        turnNinety(false);
-        //driveToCryptobox(pictograph == 'l'? CrypoboxPosition.LEFT : (pictograph == 'r' ? CrypoboxPosition.RIGHT : CrypoboxPosition.CENTER));
+        approachCryptobox();
+        glyphterServoRight.setPosition(0.53);
+        glyphterServoLeft.setPosition(0.47);
+        sleep(300);
+        glyphterServoRight.setPosition(0.5);
+        glyphterServoLeft.setPosition(0.5);
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
@@ -102,6 +106,12 @@ public class UltrasonicAutonTest extends LinearOpMode {
         double forwardWeight = 0;
         final double MAX_TURN_WEIGHT = 0.2;
         final double MAX_FORWARD_WEIGHT = 0.2;
+
+        //Rate of acceleration
+        final double INCREASE_RATE = 0.005;
+
+        //Rate of deceleration
+        final double NORMALIZE_RATE = 0.02;
         double distanceLF;
         double distanceRF;
         boolean keepMoving = true;
@@ -123,16 +133,21 @@ public class UltrasonicAutonTest extends LinearOpMode {
 
             //Determine robot turning off course
             if (distanceLF + 1 < distanceRF) {
-                clockwiseTurnWeight = Math.max(clockwiseTurnWeight - 0.005, -MAX_TURN_WEIGHT);
+                if (clockwiseTurnWeight > 0) clockwiseTurnWeight = Math.max(clockwiseTurnWeight - NORMALIZE_RATE, -MAX_TURN_WEIGHT);
+                else clockwiseTurnWeight = Math.max(clockwiseTurnWeight - INCREASE_RATE, -MAX_TURN_WEIGHT);
+
             } else if (distanceRF + 1 < distanceLF) {
-                clockwiseTurnWeight = Math.min(clockwiseTurnWeight + 0.005, MAX_TURN_WEIGHT);
+                if (clockwiseTurnWeight > 0) clockwiseTurnWeight = Math.min(clockwiseTurnWeight + INCREASE_RATE, MAX_TURN_WEIGHT);
+                else clockwiseTurnWeight = Math.min(clockwiseTurnWeight + NORMALIZE_RATE, MAX_TURN_WEIGHT);
             }
 
             //Determine robot drifting off course
             if ((distanceLF + distanceRF) / 2 + 1 < wallDistance) {
-                forwardWeight = Math.max(forwardWeight - 0.005, -MAX_FORWARD_WEIGHT);
+                if (forwardWeight > 0) forwardWeight = Math.max(forwardWeight - NORMALIZE_RATE, -MAX_FORWARD_WEIGHT);
+                else forwardWeight = Math.max(forwardWeight - INCREASE_RATE, -MAX_FORWARD_WEIGHT);
             } else if ((distanceLF + distanceRF) / 2 - 1 > wallDistance) {
-                forwardWeight = Math.min(forwardWeight + 0.005, MAX_FORWARD_WEIGHT);
+                if (forwardWeight > 0) forwardWeight = Math.min(forwardWeight + INCREASE_RATE, MAX_FORWARD_WEIGHT);
+                else forwardWeight = Math.min(forwardWeight + NORMALIZE_RATE, MAX_FORWARD_WEIGHT);
             }
 
             telemetry.addData("Forward weight", forwardWeight);
@@ -165,6 +180,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
             }
         }
         steering.stopAllMotors();
+        alignToWall();
     }
 
     public void turnNinety(boolean isClockwise) {
@@ -172,23 +188,38 @@ public class UltrasonicAutonTest extends LinearOpMode {
         if (isClockwise) {
             //leftDist is the distance detected from ultrasonicLeft in the previous tick
             double leftDist = 255;
+
+            //Turn until left distance begins to increase (meaning that robot has passed the position that it should reach)
             while (ultrasonicFunction.getLeft() <= leftDist) {
                 steering.turn(1);
                 steering.finishSteering();
                 leftDist = ultrasonicFunction.getLeft();
             }
             steering.stopAllMotors();
+            //Return to position of minimum left distance
+            while (ultrasonicFunction.getLeft() > leftDist) {
+                steering.turn(-1);
+                steering.finishSteering();
+                leftDist = ultrasonicFunction.getLeft();
+            }
             alignToWall();
         } else {
             //rightDist is the distance detected from ultrasonicRight in the previous tick
             double rightDist = 255;
+
+            //Turn until right distance begins to increase (meaning that robot has passed the position that it should reach)
             while (ultrasonicFunction.getRight() <= rightDist) {
                 steering.turn(-1);
                 steering.finishSteering();
                 rightDist = ultrasonicFunction.getRight();
             }
             steering.stopAllMotors();
-            sleep(1000);
+            //Return to position of minimum right distance
+            while (ultrasonicFunction.getRight() > rightDist) {
+                steering.turn(1);
+                steering.finishSteering();
+                rightDist = ultrasonicFunction.getRight();
+            }
             alignToWall();
         }
         steering.setAllPowers(SPEED_RATIO);
@@ -212,7 +243,20 @@ public class UltrasonicAutonTest extends LinearOpMode {
     }
 
     public void approachCryptobox() {
-
+        steering.setSpeedRatio(0.1);
+        alignToWall();
+        final int wallDistance = 20;
+        while (ultrasonicFunction.getRF() + ultrasonicFunction.getLF() > wallDistance * 2) {
+            steering.moveDegrees(90, 1);
+            if (ultrasonicFunction.getLF() > ultrasonicFunction.getRF()) {
+                steering.turn(0.1);
+            }
+            else if (ultrasonicFunction.getRF() > ultrasonicFunction.getLF()) {
+                steering.turn(-0.1);
+            }
+        }
+        steering.stopAllMotors();
+        steering.setSpeedRatio(SPEED_RATIO);
     }
 
     public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {
