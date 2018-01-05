@@ -4,67 +4,45 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-/*
-    A utility class for robot driving.
-    Use it like this:
-    RobotDriving rd = new RobotDriving();
-    rd.setMotorLF( [motor object] );
-    rd.setMotorLB( [motor object] );
-    ...
-    
-    RobotDriving.TimedSteering ts = rd.getSteering();
-    
-    ts.forward(1); // forward for 1 sec
-    ts.turnClockwise(0.2); // clockwise for 2 sec
-    ts.move(30, 2); // move at 30 degree angle for 2 sec
-*/
+/**
+ * Encapsulates robot driving utilities.
+ */
 public class RobotDriving {
-    // DrivingMotors are not real motors. They are a utility class that wraps over a motor object,
-    // and the main feature is that their powers are weighted so when you "apply" power to them,
-    // the power is gradually shifted.
-    private DrivingMotor lf;
-    private DrivingMotor lb;
-    private DrivingMotor rf;
-    private DrivingMotor rb;
+    private DrivingMotor lf; // stands for left front
+    private DrivingMotor lb; // stands for left back
+    private DrivingMotor rf; // stands for right front
+    private DrivingMotor rb; // stands for right back
 
     private Telemetry telemetry;
     
     public static final double MAX_SPEED_RATIO = 1;
     public static final double NORMAL_SPEED_RATIO = 0.5;
     public static final double MIN_SPEED_RATIO = 0.3;
-    
+
     public static final double DEFAULT_SMOOTHNESS = 0.1;
-    
+
+    public RobotDriving(HardwareMap hardwareMap, Telemetry telemetry) {
+        this(hardwareMap, telemetry, DEFAULT_SMOOTHNESS);
+    }
+
     public RobotDriving(HardwareMap hardwareMap, Telemetry telemetry, double smoothness) {
         this.lf = new DrivingMotor(hardwareMap.dcMotor.get("lfMotor"), smoothness);
         this.lb = new DrivingMotor(hardwareMap.dcMotor.get("lbMotor"), smoothness);
         this.rf = new DrivingMotor(hardwareMap.dcMotor.get("rfMotor"), smoothness);
         this.rb = new DrivingMotor(hardwareMap.dcMotor.get("rbMotor"), smoothness);
-        
-        this.telemetry = telemetry;
-    }
 
-    public RobotDriving(HardwareMap hardwareMap, Telemetry telemetry) {
-        this(hardwareMap, telemetry, DEFAULT_SMOOTHNESS);
-    }
-    
-    public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry) {
-        this(LF, LB, RF, RB, telemetry, DEFAULT_SMOOTHNESS);
-    }
-
-    public RobotDriving(DcMotor LF, DcMotor LB, DcMotor RF, DcMotor RB, Telemetry telemetry, double smoothness) {
-        this.lf = new DrivingMotor(LF, smoothness);
-        this.lb = new DrivingMotor(LB, smoothness);
-        this.rf = new DrivingMotor(RF, smoothness);
-        this.rb = new DrivingMotor(RB, smoothness);
         this.telemetry = telemetry;
     }
 
     public Steering getSteering() {
         return new Steering();
     }
-    
-    // Encapsulates a motor and all its utilities.
+
+    /**
+     * This class wraps a regular motor and adds utilities to it.
+     * The main feature is that their powers are smoothed so when you "apply" power to them,
+     * the power is gradually shifted.
+     */
     public static class DrivingMotor {
         private DcMotor motor;
         private WeightedValue acceleration;
@@ -74,7 +52,11 @@ public class RobotDriving {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             acceleration = new WeightedValue(smoothness);
         }
-        
+
+        /**
+         * Apply a power to the motor.
+         * @param power Power, between -1 and 1 as with normal motors.
+         */
         public void applyPower(double power) {
             this.motor.setPower(acceleration.applyValue(power));
         }
@@ -105,6 +87,10 @@ public class RobotDriving {
             powerRB = power;
         }
 
+        /**
+         * Add a certain power to each motor.
+         * @param power The power to add.
+         */
         public void addToAllPowers(double power) {
             powerLF += power;
             powerLB += power;
@@ -121,14 +107,18 @@ public class RobotDriving {
 
         /* LINEAR MOVEMENT */
 
-        // **Angle is in radians, not degrees.**
         public void moveRadians(double angle) {
             moveRadians(angle, 1);
         }
 
+        /**
+         * Strafe the robot in any direction, at a certain power.
+         * @param angle Angle, specified in radians where 0 is right.
+         * @param power The power of the strafe.
+         */
         public void moveRadians(double angle, double power) {
             // This "fixes" a really annoying bug where the left and right controls are inverted. We don't know where it
-            // is, so we just inverted the angle by reflecting it over the y-axis.
+            // is, so we just inverted the angle by reflecting it over the y-axis. Maybe we will fix this bug next year.
             if (angle >= 0) {
                 angle = Math.PI - angle;
             } else {
@@ -138,7 +128,7 @@ public class RobotDriving {
             double speedX = Math.cos(angle - Math.toRadians(45));
             double speedY = Math.sin(angle - Math.toRadians(45));
 
-            // so there's always going to be a speed that's +-1
+            // so there's always going to be a speed that's plus or minus 1
             double divider = Math.max(Math.abs(speedX), Math.abs(speedY));
 
             powerLF += speedX / divider * power;
@@ -147,7 +137,10 @@ public class RobotDriving {
             powerRF -= speedY / divider * power;
         }
 
-        // **Angle is in degrees, not radians.**
+        /**
+         * Strafe in any direction.
+         * @param angle The angle of the direction, in degrees.
+         */
         public void move(double angle) {
             moveRadians(Math.toRadians(angle));
         }
@@ -194,18 +187,26 @@ public class RobotDriving {
 
         /* MISC */
 
+        /**
+         * Pivot around the point.
+         * @param isClockwise Whether to pivot clockwise.
+         * @param rotationWeight The weight given to rotation, where one unit of weight is already given to strafing.
+         */
         public void aroundPoint(boolean isClockwise, double rotationWeight) {
             moveDegrees(isClockwise ? 180 : 0);
             turn(isClockwise, rotationWeight);
         }
 
-        // Actually makes the motors spin. You must call this once all the movements are set for anything to happen.
+        /**
+         * Finish up steering and actually spin the motors.
+         * This method must be called after any steering operations for anything to happen.
+         */
         public void finishSteering() {
             // The maximum base power.
             double maxRawPower = Math.max(Math.max(Math.abs(powerLF), Math.abs(powerLB)), Math.max(Math.abs(powerRF), Math.abs(powerRB)));
 
-            // Now, actually set the powers for the motors. Dividing by maxRawPower makes the "biggest" power +-1, and multiplying by speedRatio
-            // makes the maximum power speedRatio.
+            // Actually set the powers for the motors. Dividing by maxRawPower makes the "biggest" power plus or minus 1,
+            // and multiplying by speedRatio makes the maximum power equal to speedRatio.
             if (maxRawPower != 0) {
                 lf.applyPower(powerLF / maxRawPower * speedRatio);
                 lb.applyPower(powerLB / maxRawPower * speedRatio);

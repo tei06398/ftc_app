@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Various tests involving teleop.
+ * Various tests involving tele-op. Nothing meaningful here.
  */
 @TeleOp(name = "Test Mode")
 public class TestTeleOp extends OpMode {
