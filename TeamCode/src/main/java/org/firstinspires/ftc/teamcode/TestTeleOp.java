@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Last Modified 11/13/2017
+ * Various tests involving teleop.
  */
 @TeleOp(name = "Test Mode")
 public class TestTeleOp extends OpMode {
@@ -16,26 +16,23 @@ public class TestTeleOp extends OpMode {
     protected DcMotor motorRF = null;
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
-    protected Servo glyphterServo = null;
-    protected Servo glyphterRotationServo = null;
-    protected UltrasonicSensor ultrasonic1 = null;
+    protected Servo glyphterServoLeft = null;
+    protected Servo glyphterServoRight = null;
+    private double position = 0;
+    private double position2 = 0;
 
     public void loop(){
-        double position = 0;
-        double position2 = 0;
-
         if (this.gamepad1.y) position += 10;
         if (this.gamepad1.a) position -= 10;
         if (this.gamepad1.x) position2 += 10;
         if (this.gamepad1.y) position2 -= 10;
 
-        this.glyphterServo.setPosition(position);
-        this.glyphterRotationServo.setPosition(position2);
+        this.glyphterServoLeft.setPosition(position);
+        this.glyphterServoRight.setPosition(position2);
 
-        telemetry.addData("Position: ", position);
-        telemetry.addData("Position2: ", position2);
+        telemetry.addData("glyphterServoLeft", position);
+        telemetry.addData("glyphterServoRight", position2);
 
-        telemetry.addData("Ultrasonic: ", ultrasonic1.getUltrasonicLevel());
         telemetry.update();
     }
 
@@ -45,9 +42,8 @@ public class TestTeleOp extends OpMode {
         this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
         this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
         this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
-        this.glyphterServo = this.hardwareMap.servo.get("glyphterServo");
-        this.glyphterRotationServo = this.hardwareMap.servo.get("glyphterRotationServo");
-        this.ultrasonic1 = this.hardwareMap.ultrasonicSensor.get("ultrasonic1");
+        this.glyphterServoLeft = this.hardwareMap.servo.get("glyphterServoLeft");
+        this.glyphterServoRight = this.hardwareMap.servo.get("glyphterServoRight");
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

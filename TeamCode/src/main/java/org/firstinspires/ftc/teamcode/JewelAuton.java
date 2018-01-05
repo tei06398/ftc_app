@@ -55,13 +55,13 @@ public class JewelAuton extends LinearOpMode {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
-        gunnerFunction = new GunnerFunction(motorWinch, motorRelicSlide, servoGlyphter, servoGlyphterRotation, jewelPusher, telemetry);
+        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
 
         // RobotDriving instantiation
         robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry, 1);
         steering = robotDriving.getSteering();
-        gunnerFunction.defaultServos();
+        gunnerFunction.reset();
 
         waitForStart();
         telemetry.setAutoClear(false);

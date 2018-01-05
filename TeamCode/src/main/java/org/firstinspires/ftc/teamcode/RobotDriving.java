@@ -64,15 +64,6 @@ public class RobotDriving {
         return new Steering();
     }
     
-    /*public void wait(double seconds) {
-        try {
-            Thread.sleep((long) (seconds * 1000));
-        } catch (InterruptedException e) {
-            // maybe have a better exception handling system?
-            e.printStackTrace();
-        }
-    }*/
-    
     // Encapsulates a motor and all its utilities.
     public static class DrivingMotor {
         private DcMotor motor;
