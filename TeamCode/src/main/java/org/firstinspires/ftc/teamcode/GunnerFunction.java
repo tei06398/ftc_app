@@ -9,10 +9,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * A utility class that controls all the gunner functions (opening and closing the glyphter, rotating the glypter, etc).
  */
 public class GunnerFunction {
-    private static final double GLYPHTER_SERVO_LEFT_CLOSE_POSITION = 0.6;
-    private static final double GLYPHTER_SERVO_LEFT_OPEN_POSITION = 0.1;
-    private static final double GLYPHTER_SERVO_RIGHT_CLOSE_POSITION = 0.4;
-    private static final double GLYPHTER_SERVO_RIGHT_OPEN_POSITION = 0.9;
+    private static final double GLYPHTER_SERVO_LEFT_CLOSE_POSITION = 0.7;
+    private static final double GLYPHTER_SERVO_LEFT_OPEN_POSITION = 0.2;
+    private static final double GLYPHTER_SERVO_RIGHT_CLOSE_POSITION = 0.3;
+    private static final double GLYPHTER_SERVO_RIGHT_OPEN_POSITION = 0.8;
 
     private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 180;
     private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0;
