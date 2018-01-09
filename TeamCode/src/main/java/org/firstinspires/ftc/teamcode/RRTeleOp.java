@@ -114,9 +114,6 @@ public class RRTeleOp extends OpMode {
             gunnerFunction.closeGlyphter();
         } else if (this.gamepad2.right_bumper) {
             gunnerFunction.openGlyphter();
-        } else {
-            // TODO: Might remove later
-            gunnerFunction.stopGlyphter();
         }
 
         // Left trigger required for endgame functions

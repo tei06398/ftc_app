@@ -11,6 +11,7 @@ import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.FtcRobotControllerServiceState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
@@ -32,20 +33,17 @@ import java.nio.ByteBuffer;
 @Autonomous(name = "RR Official Auton Mode")
 public class RRAuton extends LinearOpMode {
     //Declares Motors
-    protected DcMotor motorLF = null;
-    protected DcMotor motorRF = null;
-    protected DcMotor motorLB = null;
-    protected DcMotor motorRB = null;
     protected UltrasonicSensor ultrasonicLeft = null;
     protected UltrasonicSensor ultrasonicRight = null;
     protected UltrasonicSensor ultrasonicRF = null;
     protected UltrasonicSensor ultrasonicLF = null;
-    protected Servo jewelPusher = null;
+    protected ColorSensor colorSensor;
 
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
 
     protected UltrasonicFunction ultrasonicFunction;
+    protected GunnerFunction gunnerFunction;
 
     SharedPreferences sharedPref;
     protected String startPosition; //RED_RELIC, RED_MIDDLE, BLUE_RELIC, BLUE_MIDDLE
@@ -111,29 +109,21 @@ public class RRAuton extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         //Sets up Motors
-        this.motorLF = this.hardwareMap.dcMotor.get("lfMotor");
-        this.motorRF = this.hardwareMap.dcMotor.get("rfMotor");
-        this.motorLB = this.hardwareMap.dcMotor.get("lbMotor");
-        this.motorRB = this.hardwareMap.dcMotor.get("rbMotor");
+
         this.ultrasonicLeft = this.hardwareMap.ultrasonicSensor.get("ultrasonicLeft"); //module 2, port 1
         this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");//module 2, port 2
         this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF"); //module 3, port 3
         this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF"); //module 4, port 4
-
-        this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.colorSensor = this.hardwareMap.colorSensor.get("colorSensor");
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
-        // RobotDriving instantiation
         robotDriving = new RobotDriving(hardwareMap, telemetry);
         steering = robotDriving.getSteering();
 
-        //Ultrasonic function instantiation
         ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
+        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         //Tell Vuforia to display video feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -163,37 +153,28 @@ public class RRAuton extends LinearOpMode {
         telemetry.setMsTransmissionInterval(0);
 
         //Get a semi-reliable reading of the Pictograph
-        while (this.opModeIsActive()) {
-            int total = 0;
-            char pictograph = 'E';
-            //while (total < 3) {
-            pictograph = readVuMark(relicTemplate);
-            //    if (pictograph != '!') {
-            //        total = 3;
-            //    } else {
-            //         total++;
-            //    }
-            //}
-            telemetry.addData("Pictograph", "" + pictograph);
-            telemetry.update();
+        char pictograph = 'E';
+        pictograph = readVuMark(relicTemplate);
 
-            if (pictograph == '!') {
-                telemetry.addData("Pictograph", "Unreliable");
-                //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
-            } else if (pictograph == 'l') {
-                telemetry.addData("Pictograph", "Left");
-            } else if (pictograph == 'r') {
-                telemetry.addData("Pictograph", "Right");
-            } else if (pictograph == 'c') {
-                telemetry.addData("Pictograph", "Center");
-            } else {
-                telemetry.addData("Pictograph", "ERROR");
-                //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
-            }
+        telemetry.addData("Pictograph", "" + pictograph);
+        telemetry.update();
 
-            //Detect whiffle ball location
-            telemetry.update();
+        if (pictograph == '!') {
+            telemetry.addData("Pictograph", "Unreliable");
+            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
+        } else if (pictograph == 'l') {
+            telemetry.addData("Pictograph", "Left");
+        } else if (pictograph == 'r') {
+            telemetry.addData("Pictograph", "Right");
+        } else if (pictograph == 'c') {
+            telemetry.addData("Pictograph", "Center");
+        } else {
+            telemetry.addData("Pictograph", "ERROR");
+            //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
         }
+
+        //Detect whiffle ball location
+        telemetry.update();
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
@@ -379,24 +360,58 @@ public class RRAuton extends LinearOpMode {
         }
     }
 
-    public void knockJewel(JewelPosition jewelPosition) {
-        this.jewelPusher.setPosition(JEWEL_PUSHER_DOWN);
-        steering.setSpeedRatio(0.3);
-        long startTime = System.currentTimeMillis();
-        if (jewelPosition == JewelPosition.LEFT) {
-            while ((System.currentTimeMillis() - startTime) < 50) {
-                steering.turn(false);
-                steering.finishSteering();
+    public void knockJewel() {
+        steering.setSpeedRatio(MOVE_SPEED_RATIO);
+        gunnerFunction.lowerJewelPusher();
+        sleep(2000);
+        double red = colorSensor.red();
+        double blue = colorSensor.blue();
+
+        boolean isRedTeam = startPosition.equals("RED_RELIC") || startPosition.equals("RED_MIDDLE");
+
+        if(red > blue) {
+            if(isRedTeam){
+                pushJewel(JewelPosition.LEFT);
             }
-        } else {
-            while ((System.currentTimeMillis() - startTime) < 50) {
-                steering.turn(true);
-                steering.finishSteering();
+            else{
+                pushJewel(JewelPosition.RIGHT);
             }
         }
-        steering.stopAllMotors();
-        steering.finishSteering();
-        this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+        else if (red < blue){
+            if(isRedTeam){
+                pushJewel(JewelPosition.RIGHT);
+            }
+            else{
+                pushJewel(JewelPosition.LEFT);
+            }
+        }
+        alignToWall();
+    }
+
+    public void pushJewel(JewelPosition jewelPosition) {
+        if (jewelPosition == JewelPosition.LEFT) {
+            steering.turn(-0.1);
+            steering.finishSteering();
+            sleep(200);
+            steering.stopAllMotors();
+            gunnerFunction.raiseJewelPusher();
+            sleep(1000);
+            steering.turn(0.1);
+            steering.finishSteering();
+            sleep(200);
+            steering.stopAllMotors();
+        } else {
+            steering.turn(0.1);
+            steering.finishSteering();
+            sleep(200);
+            steering.stopAllMotors();
+            gunnerFunction.raiseJewelPusher();
+            sleep(1000);
+            steering.turn(-0.1);
+            steering.finishSteering();
+            sleep(200);
+            steering.stopAllMotors();
+        }
     }
 
     public enum CrypoboxPosition {

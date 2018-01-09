@@ -84,105 +84,21 @@ public class JewelAuton extends LinearOpMode {
         if(red > blue) {
             if(isRedTeam){
                 knockJewel(JewelPosition.LEFT);
-                /*motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);
-                motorRB.setPower(-0.3);
-                motorRF.setPower(-0.3);
-                motorLB.setPower(-0.3);
-                motorLF.setPower(-0.3);
-                jankySleep(300);
-                motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);
-                this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
-                jankySleep(1000);
-                motorRB.setPower(0.3);
-                motorRF.setPower(0.3);
-                motorLB.setPower(0.3);
-                motorLF.setPower(0.3);
-                jankySleep(300);
-                motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);*/
+
             }
             else{
                 knockJewel(JewelPosition.RIGHT);
-                /*motorLB.setPower(0.3);
-                motorLF.setPower(0.3);
-                motorRB.setPower(0.3);
-                motorRF.setPower(0.3);
-                jankySleep(300);
-                motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);
-                this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
-                jankySleep(1000);
-                motorRB.setPower(-0.3);
-                motorRF.setPower(-0.3);
-                motorLB.setPower(-0.3);
-                motorLF.setPower(-0.3);
-                jankySleep(300);
-                motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);*/
+
             }
         }
         else if (red < blue){
             if(isRedTeam){
                 knockJewel(JewelPosition.RIGHT);
-                /*motorLB.setPower(0.3);
-                motorLF.setPower(0.3);
-                motorRB.setPower(0.3);
-                motorRF.setPower(0.3);
-                jankySleep(300);
-                motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);
-                this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
-                jankySleep(1000);
-                motorRB.setPower(-0.3);
-                motorRF.setPower(-0.3);
-                motorLB.setPower(-0.3);
-                motorLF.setPower(-0.3);
-                jankySleep(300);
-                motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);*/
+
             }
             else{
                 knockJewel(JewelPosition.LEFT);
-                /*motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);
-                motorRB.setPower(-0.3);
-                motorRF.setPower(-0.3);
-                motorLB.setPower(-0.3);
-                motorLF.setPower(-0.3);
-                jankySleep(300);
-                motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);
-                this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
-                jankySleep(1000);
-                motorRB.setPower(0.3);
-                motorRF.setPower(0.3);
-                motorLB.setPower(0.3);
-                motorLF.setPower(0.3);
-                jankySleep(300);
-                motorLB.setPower(0);
-                motorLF.setPower(0);
-                motorRB.setPower(0);
-                motorRF.setPower(0);*/
+
             }
         }
         else {
