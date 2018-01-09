@@ -126,7 +126,7 @@ public class RRAuton extends LinearOpMode {
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
         // RobotDriving instantiation
-        robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry);
+        robotDriving = new RobotDriving(hardwareMap, telemetry);
         steering = robotDriving.getSteering();
 
         //Ultrasonic function instantiation

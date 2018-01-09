@@ -18,20 +18,23 @@ public class TestTeleOp extends OpMode {
     protected DcMotor motorRB = null;
     protected Servo glyphterServoLeft = null;
     protected Servo glyphterServoRight = null;
-    private double position = 0;
-    private double position2 = 0;
+
+    private double position = 100;
+    private double position2 = 100;
 
     public void loop(){
-        if (this.gamepad1.y) position += 10;
-        if (this.gamepad1.a) position -= 10;
-        if (this.gamepad1.x) position2 += 10;
-        if (this.gamepad1.y) position2 -= 10;
+        if (this.gamepad1.y) position += 0.1;
+        if (this.gamepad1.a) position -= 0.1;
+        if (this.gamepad1.x) position2 += 0.1;
+        if (this.gamepad1.b) position2 -= 0.1;
 
         this.glyphterServoLeft.setPosition(position);
         this.glyphterServoRight.setPosition(position2);
 
         telemetry.addData("glyphterServoLeft", position);
         telemetry.addData("glyphterServoRight", position2);
+        telemetry.addData("glyphterServoLeft reading", glyphterServoLeft.getPosition());
+        telemetry.addData("glyphterServoRight reading", glyphterServoRight.getPosition());
 
         telemetry.update();
     }

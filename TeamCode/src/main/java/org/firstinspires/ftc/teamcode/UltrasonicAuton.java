@@ -115,7 +115,7 @@ public class UltrasonicAuton extends LinearOpMode {
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
         // RobotDriving instantiation
-        robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry, 1);
+        robotDriving = new RobotDriving(hardwareMap, telemetry, 1);
         steering = robotDriving.getSteering();
         steering.setSpeedRatio(SPEED_RATIO);
 

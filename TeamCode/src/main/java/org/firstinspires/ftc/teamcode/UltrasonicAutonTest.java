@@ -77,13 +77,13 @@ public class UltrasonicAutonTest extends LinearOpMode {
 
         ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
 
-        //gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         waitForStart();
 
         telemetry.setAutoClear(true);
 
-        //gunnerFunction.closeGlyphter();
+        gunnerFunction.closeGlyphter();
         telemetry.addData("Now starting movement process", "");
         telemetry.update();
         sleep(1000);
@@ -96,9 +96,9 @@ public class UltrasonicAutonTest extends LinearOpMode {
         telemetry.update();
         sleep(1000);
         approachCryptobox();
-        //gunnerFunction.openGlyphter();
+        gunnerFunction.openGlyphter();
         sleep(300);
-        //gunnerFunction.stopGlyphter();
+        gunnerFunction.stopGlyphter();
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {

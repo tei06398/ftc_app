@@ -59,7 +59,7 @@ public class JewelAuton extends LinearOpMode {
 
 
         // RobotDriving instantiation
-        robotDriving = new RobotDriving(motorLF, motorLB, motorRF, motorRB, telemetry, 1);
+        robotDriving = new RobotDriving(hardwareMap, telemetry, 1);
         steering = robotDriving.getSteering();
         gunnerFunction.reset();
 
