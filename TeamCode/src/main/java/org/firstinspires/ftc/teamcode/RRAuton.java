@@ -175,6 +175,66 @@ public class RRAuton extends LinearOpMode {
 
         //Detect whiffle ball location
         telemetry.update();
+
+        gunnerFunction.closeGlyphter();
+        knockJewel();
+
+        if (startPosition.equals("RED_MIDDLE")) {
+            int sideDistance;
+            if (pictograph == 'l') {
+                sideDistance = 110;
+            } else if (pictograph == 'r') {
+                sideDistance = 70;
+            } else {
+                sideDistance = 90;
+            }
+            moveAlongWall(false, false, 25, 50);
+            turnNinety(false);
+            moveAlongWall(false, true, sideDistance, 50);
+            approachCryptobox();
+            gunnerFunction.openGlyphter();
+
+        } else if (startPosition.equals("RED_RELIC")) {
+            int sideDistance;
+            if (pictograph == 'l') {
+                sideDistance = 180;
+            } else if (pictograph == 'r') {
+                sideDistance = 140;
+            } else {
+                sideDistance = 160;
+            }
+            moveAlongWall(false, true, sideDistance, 50);
+            approachCryptobox();
+            gunnerFunction.openGlyphter();
+
+        } else if (startPosition.equals("BLUE_MIDDLE")) {
+            int sideDistance;
+            if (pictograph == 'l') {
+                sideDistance = 70;
+            } else if (pictograph == 'r') {
+                sideDistance = 110;
+            } else {
+                sideDistance = 90;
+            }
+            moveAlongWall(true, true, 25, 50);
+            turnNinety(true);
+            moveAlongWall(true, false, sideDistance, 50);
+            approachCryptobox();
+            gunnerFunction.openGlyphter();
+
+        } else {
+            int sideDistance;
+            if (pictograph == 'l') {
+                sideDistance = 140;
+            } else if (pictograph == 'r') {
+                sideDistance = 180;
+            } else {
+                sideDistance = 160;
+            }
+            moveAlongWall(true, false, sideDistance, 50);
+            approachCryptobox();
+            gunnerFunction.openGlyphter();
+        }
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
