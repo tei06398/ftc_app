@@ -98,7 +98,6 @@ public class UltrasonicAutonTest extends LinearOpMode {
         approachCryptobox();
         gunnerFunction.openGlyphter();
         sleep(300);
-        gunnerFunction.stopGlyphter();
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
