@@ -29,8 +29,8 @@ import java.nio.ByteBuffer;
 /**
  * Created 11/13/2017
  */
-@Autonomous(name = "RR Official Auton Mode")
-public class RRAuton extends LinearOpMode {
+@Autonomous(name = "Deprecated Auton Mode")
+public class RRAutonDeprecated extends LinearOpMode {
     //Declares Motors
     protected DcMotor motorLF = null;
     protected DcMotor motorRF = null;
@@ -56,9 +56,6 @@ public class RRAuton extends LinearOpMode {
     protected int wallDistance = 30;
     protected double clockwiseTurnWeight = 0;
     protected double forwardWeight = 0;
-    protected final double MOVE_SPEED_RATIO = 0.2;
-    protected final double TURN_SPEED_RATIO = 0.1;
-
 
     //protected VideoCapture camera = null;
 
@@ -193,29 +190,125 @@ public class RRAuton extends LinearOpMode {
 
             //Detect whiffle ball location
             telemetry.update();
+
+            vuforia.setFrameQueueCapacity(10);
+            VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+
+            long numImages = frame.getNumImages();
+            Image rgb = null;
+            for (int i = 0; i < numImages; i++) {
+                if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
+                    rgb = frame.getImage(i);
+                    break;
+                }
+            }
+            /* TEST */
+            telemetry.addData("Testing: ", "Image spot 1");
+            telemetry.addData("RGB: ", rgb);
+            telemetry.update();
+
+            // https://developer.vuforia.com/forum/android/how-transform-camera-image-androidgraphicsbitmap
+            ByteBuffer pixels = rgb.getPixels();
+            telemetry.addData("Pixels: ", pixels);telemetry.update();
+            byte[] pixelArray = new byte[pixels.remaining()];
+            telemetry.addData("Pixel array: ", pixelArray);telemetry.update();
+            telemetry.addData("Pixel length: ", pixelArray.length);telemetry.update();
+            pixels.get(pixelArray, 0, pixelArray.length);
+            telemetry.addData("Pixel array2: ", pixelArray);telemetry.update();
+            telemetry.addData("Pixel length2: ", pixelArray.length);telemetry.update();
+
+            //BitmapFactory.Options opts = new BitmapFactory.Options();
+            //opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap bmp = BitmapFactory.decodeByteArray(pixelArray, 0, pixelArray.length, null);
+            telemetry.addData("bmp: ", bmp);telemetry.update();
+
+            /*rgb is now the Image object that weve used in the video*/
+            //Bitmap bmp = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
+            frame.close();
+            int width = bmp.getWidth();
+            int height = bmp.getHeight();
+
+            /* TEST */
+            telemetry.addData("Testing: ", "Image spot 2");
+            telemetry.update();
+
+            double redWeight = 0;
+            double blueWeight = 0;
+
+            double red;
+            double blue;
+            double green;
+            double weight;
+
+            for (int row = 0; row < 2 * height / 3; row += 10) {
+                for (int col = 0; col < width / 2; col += 10) {
+                    red = Color.red(bmp.getPixel(col, row));
+                    blue = Color.blue(bmp.getPixel(col, row));
+                    green = Color.green(bmp.getPixel(col, row));
+                    telemetry.addData("red:", red);
+                    telemetry.addData("green: ", green);
+                    telemetry.addData("blue: ", blue);
+                    telemetry.update();
+                    if (red > blue && red > green) {
+                        weight = 1 / (Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2) + 1);
+                        redWeight += red * weight;
+                    } else if (blue > red && blue > green) {
+                        weight = 1 / (Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2) + 1);
+                        blueWeight += blue * weight;
+                    }
+                }
+            }
+            /* TEST */
+            telemetry.addData("blue weight: ", blueWeight);
+            telemetry.addData("red weight: ", redWeight);
+            telemetry.update();
+            if (redWeight > blueWeight) {
+                setJewelResult("red");
+                telemetry.addData("Testing: ", "RED JEWEL DETECTED");
+                telemetry.update();
+                sleep(30000);
+            } else {
+                setJewelResult("blue");
+                telemetry.addData("Testing: ", "BLUE JEWEL DETECTED");
+                telemetry.update();
+                sleep(30000);
+            }
+            /* TEST */
+            telemetry.addData("Testing: ", "Image spot 4");
+            telemetry.update();
+
+            //TODO: Replace the Telemetry with actual boops when we have the booper -Seth
+            if (getJewelResult().equals("red")) {
+                //RED
+                if (startPosition.equals("RED_RELIC") || startPosition.equals("RED_MIDDLE")) {
+                    //thing.knockright();
+                    telemetry.addData("Knock: ", "RIGHT");
+                } else {
+                    telemetry.addData("Knock: ", "LEFT");
+                }
+            } else if (getJewelResult().equals("blue")) {
+                if (startPosition.equals("BLUE_RELIC") || startPosition.equals("BLUE_MIDDLE")) {
+                    telemetry.addData("Knock: ", "RIGHT");
+                } else {
+                    telemetry.addData("Knock: ", "LEFT");
+                }
+            } else {
+                telemetry.addData("Knock: ", "NaN - Björk 404: Ball Not Found");
+                telemetry.update();
+            }
+            telemetry.update();
+
+            knockJewel(JewelPosition.LEFT);
+            driveToCryptobox(CrypoboxPosition.LEFT);
         }
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
-        double clockwiseTurnWeight = 0;
-        double forwardWeight = 0;
-        final double MAX_TURN_WEIGHT = 0.2;
-        final double MAX_FORWARD_WEIGHT = 0.2;
-
-        //Rate of acceleration
-        final double INCREASE_RATE = 0.005;
-
-        //Rate of deceleration
-        final double NORMALIZE_RATE = 0.02;
         double distanceLF;
         double distanceRF;
         boolean keepMoving = true;
-        if (moveRight && senseRight) ultrasonicFunction.setRight(255);
-        else if (moveRight && !senseRight) ultrasonicFunction.setLeft(0);
-        else if (!moveRight && senseRight) ultrasonicFunction.setRight(0);
-        else if (!moveRight && !senseRight) ultrasonicFunction.setLeft(255);
-        while (keepMoving && opModeIsActive()) {
+        while (keepMoving) {
+
             //Set power in direction of motion
             if (moveRight) {
                 steering.moveDegrees(0, 1);
@@ -225,55 +318,28 @@ public class RRAuton extends LinearOpMode {
 
             //Sense distances to walls
             distanceLF = ultrasonicFunction.getLF();
-            distanceRF = ultrasonicFunction.getRF();
+            distanceRF = ultrasonicFunction.getLF();
 
             //Determine robot turning off course
             if (distanceLF + 1 < distanceRF) {
-                if (clockwiseTurnWeight > 0) {
-                    clockwiseTurnWeight = Math.max(clockwiseTurnWeight - NORMALIZE_RATE, -MAX_TURN_WEIGHT);
-                } else {
-                    clockwiseTurnWeight = Math.max(clockwiseTurnWeight - INCREASE_RATE, -MAX_TURN_WEIGHT);
-                }
-
+                clockwiseTurnWeight -= 0.01;
             } else if (distanceRF + 1 < distanceLF) {
-                if (clockwiseTurnWeight > 0) {
-                    clockwiseTurnWeight = Math.min(clockwiseTurnWeight + INCREASE_RATE, MAX_TURN_WEIGHT);
-                } else {
-                    clockwiseTurnWeight = Math.min(clockwiseTurnWeight + NORMALIZE_RATE, MAX_TURN_WEIGHT);
-                }
+                clockwiseTurnWeight += 0.01;
             }
 
             //Determine robot drifting off course
             if ((distanceLF + distanceRF) / 2 + 1 < wallDistance) {
-                if (forwardWeight > 0) {
-                    forwardWeight = Math.max(forwardWeight - NORMALIZE_RATE, -MAX_FORWARD_WEIGHT);
-                } else {
-                    forwardWeight = Math.max(forwardWeight - INCREASE_RATE, -MAX_FORWARD_WEIGHT);
-                }
+                forwardWeight += 0.01;
             } else if ((distanceLF + distanceRF) / 2 - 1 > wallDistance) {
-                if (forwardWeight > 0) {
-                    forwardWeight = Math.min(forwardWeight + INCREASE_RATE, MAX_FORWARD_WEIGHT);
-                } else {
-                    forwardWeight = Math.min(forwardWeight + NORMALIZE_RATE, MAX_FORWARD_WEIGHT);
-                }
+                forwardWeight -= 0.01;
             }
-
-            telemetry.addData("Forward weight", forwardWeight);
-            telemetry.addData("Clockwise turn weight", clockwiseTurnWeight);
-            telemetry.addData("Code RF", distanceRF);
-            telemetry.addData("Code LF", distanceLF);
-            ultrasonicFunction.printTestData();
-            telemetry.update();
 
             if (forwardWeight > 0) {
                 steering.moveDegrees(90, forwardWeight);
             } else {
                 steering.moveDegrees(270, -forwardWeight);
             }
-
-            //Weird issue with left/right mirroring, that's why clockwiseTurnWeight is negated
             steering.turn(clockwiseTurnWeight);
-
             steering.finishSteering();
 
             //determine whether to keep moving
@@ -281,90 +347,26 @@ public class RRAuton extends LinearOpMode {
                 keepMoving = ultrasonicFunction.getRight() > sideDistance;
             } else if (!moveRight && senseRight) {
                 keepMoving = ultrasonicFunction.getRight() < sideDistance;
-            } else if (moveRight) {
+            } else if (moveRight && !senseRight) {
                 keepMoving = ultrasonicFunction.getLeft() < sideDistance;
             } else {
                 keepMoving = ultrasonicFunction.getLeft() > sideDistance;
             }
         }
-        steering.stopAllMotors();
-        alignToWall();
     }
 
     public void turnNinety(boolean isClockwise) {
-        steering.setSpeedRatio(TURN_SPEED_RATIO);
         if (isClockwise) {
-            //leftDist is the distance detected from ultrasonicLeft in the previous tick
-            double leftDist = 255;
-
-            //Turn until left distance begins to increase (meaning that robot has passed the position that it should reach)
-            while (ultrasonicFunction.getLeft() <= leftDist) {
-                steering.turn(1);
-                steering.finishSteering();
-                leftDist = ultrasonicFunction.getLeft();
-            }
-            steering.stopAllMotors();
-            //Return to position of minimum left distance
-            while (ultrasonicFunction.getLeft() > leftDist) {
-                steering.turn(-1);
-                steering.finishSteering();
-                leftDist = ultrasonicFunction.getLeft();
-            }
-            alignToWall();
-        } else {
-            //rightDist is the distance detected from ultrasonicRight in the previous tick
-            double rightDist = 255;
-
-            //Turn until right distance begins to increase (meaning that robot has passed the position that it should reach)
-            while (ultrasonicFunction.getRight() <= rightDist) {
-                steering.turn(-1);
-                steering.finishSteering();
-                rightDist = ultrasonicFunction.getRight();
-            }
-            steering.stopAllMotors();
-            //Return to position of minimum right distance
-            while (ultrasonicFunction.getRight() > rightDist) {
-                steering.turn(1);
-                steering.finishSteering();
-                rightDist = ultrasonicFunction.getRight();
-            }
-            alignToWall();
-        }
-    }
-
-    public void alignToWall() {
-        steering.setSpeedRatio(TURN_SPEED_RATIO);
-        while (Math.abs(ultrasonicFunction.getLF() - ultrasonicFunction.getRF()) >= 1) {
-            if (ultrasonicFunction.getLF() < ultrasonicFunction.getRF()) {
-                steering.turn(-1);
-            } else if (ultrasonicFunction.getRF() < ultrasonicFunction.getLF()) {
-                steering.turn(1);
-            }
-            steering.finishSteering();
-            if (ultrasonicFunction.getLF() == ultrasonicFunction.getRF()) {
+            while (ultrasonicFunction.getLeft() > ultrasonicFunction.getRight() || ultrasonicFunction.getLF() > ultrasonicFunction.getRF()) {
+                steering.turn(true);
                 steering.stopAllMotors();
-                break;
+            }
+        } else {
+            while (ultrasonicFunction.getLeft() < ultrasonicFunction.getRight() || ultrasonicFunction.getLF() < ultrasonicFunction.getRF()) {
+                steering.turn(false);
+                steering.stopAllMotors();
             }
         }
-    }
-
-    public void approachCryptobox() {
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
-        final int wallDistance = 28;
-        while (ultrasonicFunction.getRF() + ultrasonicFunction.getLF() > wallDistance * 2) {
-            telemetry.addData("getRF: ", ultrasonicFunction.getRF());
-            telemetry.addData("getLF: ", ultrasonicFunction.getLF());
-            telemetry.update();
-            steering.moveDegrees(90, 1);
-            if (ultrasonicFunction.getLF() > ultrasonicFunction.getRF() + 1) {
-                steering.turn(0.1);
-            }
-            else if (ultrasonicFunction.getRF() > ultrasonicFunction.getLF() + 1) {
-                steering.turn(-0.1);
-            }
-            steering.finishSteering();
-        }
-        steering.stopAllMotors();
     }
 
     public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {
@@ -384,12 +386,12 @@ public class RRAuton extends LinearOpMode {
         steering.setSpeedRatio(0.3);
         long startTime = System.currentTimeMillis();
         if (jewelPosition == JewelPosition.LEFT) {
-            while ((System.currentTimeMillis() - startTime) < 50) {
+            while ((System.currentTimeMillis() - startTime) < 100) {
                 steering.turn(false);
                 steering.finishSteering();
             }
         } else {
-            while ((System.currentTimeMillis() - startTime) < 50) {
+            while ((System.currentTimeMillis() - startTime) < 100) {
                 steering.turn(true);
                 steering.finishSteering();
             }
