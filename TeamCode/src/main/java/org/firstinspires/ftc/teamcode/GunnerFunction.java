@@ -29,18 +29,21 @@ public class GunnerFunction {
     // TODO: Move jewel pusher utilities to separate class
     private static final double JEWELPUSHER_SERVO_DOWN_POS = 0;
 
-    // Assume that the glyphter is rotated at the beginning so we can fix it at the beginning of tele-op
-    private boolean isGlyphterRotated = true;
+    private boolean isGlyphterRotated = false;
 
     GunnerFunction(HardwareMap hardwareMap, Telemetry telemetry) {
         // Load the needed devices from the hardware map
         this.motorWinch = hardwareMap.dcMotor.get("winchMotor");
         this.motorRelicSlide = hardwareMap.dcMotor.get("relicSlideMotor");
         this.servoGlyphterLeft = hardwareMap.servo.get("glyphterServoLeft");
+        servoGlyphterLeft.setPosition(GLYPHTER_SERVO_LEFT_CLOSE_POSITION);
         this.servoGlyphterRight = hardwareMap.servo.get("glyphterServoRight");
+        servoGlyphterRight.setPosition(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION);
         this.servoGlyphterRotation = hardwareMap.servo.get("glyphterRotationServo");
         this.servoJewelPusher = hardwareMap.servo.get("jewelPusher");
         this.telemetry = telemetry;
+        servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_NORMAL_POS);
+        servoJewelPusher.setPosition(JEWELPUSHER_SERVO_UP_POS);
     }
 
     public void upWinch() {

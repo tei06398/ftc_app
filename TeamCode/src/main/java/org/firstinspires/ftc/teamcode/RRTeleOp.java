@@ -29,8 +29,6 @@ public class RRTeleOp extends OpMode {
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         steering = robotDriving.getSteering();
-
-        gunnerFunction.reset();
     }
 
     public void loop() {
