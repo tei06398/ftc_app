@@ -19,6 +19,8 @@ public class TestTeleOp extends OpMode {
     protected Servo glyphterServoLeft = null;
     protected Servo glyphterServoRight = null;
 
+    GunnerFunction gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+
     private double position = 100;
     private double position2 = 100;
 
@@ -27,6 +29,8 @@ public class TestTeleOp extends OpMode {
         if (this.gamepad1.a) position -= 0.1;
         if (this.gamepad1.x) position2 += 0.1;
         if (this.gamepad1.b) position2 -= 0.1;
+        if (this.gamepad1.left_bumper) {gunnerFunction.lowerJewelPusher();}
+        if (this.gamepad1.right_bumper) {gunnerFunction.raiseJewelPusher();}
 
         this.glyphterServoLeft.setPosition(position);
         this.glyphterServoRight.setPosition(position2);
