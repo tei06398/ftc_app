@@ -17,7 +17,7 @@ public class GunnerFunction {
 
     private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 180;
     private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0;
-    private static final double JEWELPUSHER_SERVO_UP_POS = 100;
+    private static final double JEWELPUSHER_SERVO_UP_POS = 1;
 
     private final DcMotor motorRelicSlide;
     private final DcMotor motorWinch;

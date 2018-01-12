@@ -10,14 +10,23 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 @TeleOp(name = "Test Mode")
 public class TestTeleOp extends OpMode {
-    private GunnerFunction gunnerFunction;
+    private Servo jewelPusher;
+    double jewelPusherPosition;
 
     public void loop(){
-        if (this.gamepad1.left_bumper) {gunnerFunction.lowerJewelPusher();}
-        if (this.gamepad1.right_bumper) {gunnerFunction.raiseJewelPusher();}
+        if (this.gamepad1.left_bumper) {
+            jewelPusherPosition += 0.01;
+        }
+        if (this.gamepad1.right_bumper) {
+            jewelPusherPosition -= 0.01;
+        }
+        jewelPusher.setPosition(jewelPusherPosition);
+        telemetry.addData("Pos", jewelPusherPosition);
+        telemetry.update();
     }
 
     public void init(){
-        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        jewelPusher = this.hardwareMap.servo.get("jewelPusher");
+        jewelPusherPosition = 0;
     }
 }
