@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
 /**
  * Created 11/13/2017
  */
-@Autonomous(name = "Deprecated Auton Mode")
+//@Autonomous(name = "Deprecated Auton Mode")
 public class RRAutonDeprecated extends LinearOpMode {
     //Declares Motors
     protected DcMotor motorLF = null;
@@ -130,7 +130,7 @@ public class RRAutonDeprecated extends LinearOpMode {
         steering = robotDriving.getSteering();
 
         //Ultrasonic function instantiation
-        ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
+        ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
 
         //Tell Vuforia to display video feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

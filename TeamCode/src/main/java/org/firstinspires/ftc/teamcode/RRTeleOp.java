@@ -114,29 +114,34 @@ public class RRTeleOp extends OpMode {
             gunnerFunction.openGlyphter();
         }
 
-        // Left trigger required for endgame functions
+        // Left trigger: close glyphter incrementally
+        // Right trigger: open glyphter incrementally
         if (this.gamepad2.left_trigger > 0) {
-            // A: expand relic slide
-            // Y: retract
-            if (this.gamepad2.a) {
-                gunnerFunction.expandRelicSlide();
-            }
-            else if (this.gamepad2.y) {
-                gunnerFunction.retractRelicSlide();
-            }
-            else {
-                gunnerFunction.stopRelicSlide();
-            }
+            gunnerFunction.closeGlyphterIncremental();
+        } else if (this.gamepad2.right_trigger > 0) {
+            gunnerFunction.openGlyphterIncremental();
+        }
 
-            // B: toggle glyphter rotation
-            if (this.gamepad2.b) {
-                if (allowGamepad2B) {
-                    allowGamepad2B = false;
-                    gunnerFunction.rotateGlyphter();
-                }
-            } else {
-                allowGamepad2B = true;
+        // A: expand relic slide
+        // Y: retract
+        if (this.gamepad2.a) {
+            gunnerFunction.expandRelicSlide();
+        }
+        else if (this.gamepad2.y) {
+            gunnerFunction.retractRelicSlide();
+        }
+        else {
+            gunnerFunction.stopRelicSlide();
+        }
+
+        // B: toggle glyphter rotation
+        if (this.gamepad2.b) {
+            if (allowGamepad2B) {
+                allowGamepad2B = false;
+                gunnerFunction.rotateGlyphter();
             }
+        } else {
+            allowGamepad2B = true;
         }
 
         // Finish the steering, which puts power in the motors.

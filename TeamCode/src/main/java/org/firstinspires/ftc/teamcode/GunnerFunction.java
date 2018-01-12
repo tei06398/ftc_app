@@ -13,6 +13,7 @@ public class GunnerFunction {
     private static final double GLYPHTER_SERVO_LEFT_OPEN_POSITION = 0.2;
     private static final double GLYPHTER_SERVO_RIGHT_CLOSE_POSITION = 0.3;
     private static final double GLYPHTER_SERVO_RIGHT_OPEN_POSITION = 0.8;
+    private static final double GLYPHTER_SERVO_INCREMENTAL_SPEED = 0.01;
 
     private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 180;
     private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0;
@@ -66,6 +67,28 @@ public class GunnerFunction {
     public void closeGlyphter() {
         servoGlyphterLeft.setPosition(GLYPHTER_SERVO_LEFT_CLOSE_POSITION);
         servoGlyphterRight.setPosition(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION);
+    }
+
+    public void openGlyphterIncremental() {
+        servoGlyphterLeft.setPosition(clipRange(GLYPHTER_SERVO_LEFT_OPEN_POSITION,
+                GLYPHTER_SERVO_LEFT_CLOSE_POSITION,
+                servoGlyphterLeft.getPosition() - GLYPHTER_SERVO_INCREMENTAL_SPEED));
+        servoGlyphterRight.setPosition(clipRange(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION,
+                GLYPHTER_SERVO_RIGHT_OPEN_POSITION,
+                servoGlyphterRight.getPosition() + GLYPHTER_SERVO_INCREMENTAL_SPEED));
+    }
+
+    private double clipRange(double min, double max, double value) {
+        return Math.min(max, Math.max(value, min));
+    }
+
+    public void closeGlyphterIncremental() {
+        servoGlyphterLeft.setPosition(clipRange(GLYPHTER_SERVO_LEFT_OPEN_POSITION,
+                GLYPHTER_SERVO_LEFT_CLOSE_POSITION,
+                servoGlyphterLeft.getPosition() + GLYPHTER_SERVO_INCREMENTAL_SPEED));
+        servoGlyphterRight.setPosition(clipRange(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION,
+                GLYPHTER_SERVO_RIGHT_OPEN_POSITION,
+                servoGlyphterRight.getPosition() - GLYPHTER_SERVO_INCREMENTAL_SPEED));
     }
 
     public void lowerJewelPusher() { servoJewelPusher.setPosition(JEWELPUSHER_SERVO_DOWN_POS); }

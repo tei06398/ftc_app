@@ -22,7 +22,9 @@ public class UltrasonicFunction {
         this.ultrasonicLF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLF"), telemetry); //module 3, port 3
         this.ultrasonicRF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRF"), telemetry); //module 4, port 4
 
-        hardwareMap.legacyModule.get("Legacy Module 2").enable9v(3, true);
+        hardwareMap.legacyModule.get("Legacy Module 2").enable9v(4, true);
+        hardwareMap.legacyModule.get("Legacy Module 2").enable9v(5, true);
+
 
         this.telemetry = telemetry;
     }

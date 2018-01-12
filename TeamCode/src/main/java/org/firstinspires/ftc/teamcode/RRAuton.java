@@ -90,7 +90,6 @@ public class RRAuton extends LinearOpMode {
         //Activate the VuMark Dataset as Current Tracked Object
         relicTrackables.activate();
 
-        telemetry.setAutoClear(false);
         telemetry.setMsTransmissionInterval(0);
 
         /* GET PICTOGRAPH */
@@ -215,6 +214,7 @@ public class RRAuton extends LinearOpMode {
         int center = 0;
         while (total < 3) {
             vuMark = RelicRecoveryVuMark.from(relicTemplate);
+            sleep(100);
             if (vuMark == RelicRecoveryVuMark.LEFT) {
                 left++;
                 total++;
@@ -499,6 +499,8 @@ public class RRAuton extends LinearOpMode {
      * Knock the correct jewel down.
      */
     public void knockJewel() {
+        telemetry.addData("knockJewel Method called", "");
+        telemetry.update();
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
         gunnerFunction.lowerJewelPusher();
         sleep(2000);

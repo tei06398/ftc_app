@@ -75,7 +75,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
         steering = robotDriving.getSteering();
         steering.setSpeedRatio(SPEED_RATIO);
 
-        ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
+        ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
 
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 

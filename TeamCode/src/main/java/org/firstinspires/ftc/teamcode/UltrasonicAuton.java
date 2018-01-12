@@ -120,7 +120,7 @@ public class UltrasonicAuton extends LinearOpMode {
         steering.setSpeedRatio(SPEED_RATIO);
 
         //Ultrasonic function instantiation
-        ultrasonicFunction = new UltrasonicFunction(ultrasonicLeft, ultrasonicRight, ultrasonicRF, ultrasonicLF, telemetry);
+        ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
 
         //Tell Vuforia to display video feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
