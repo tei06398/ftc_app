@@ -47,6 +47,7 @@ public class RRAuton extends LinearOpMode {
 
     protected final double MOVE_SPEED_RATIO = 0.2;
     protected final double TURN_SPEED_RATIO = 0.1;
+    protected char pictograph;
 
     //protected VideoCapture camera = null;
 
@@ -59,7 +60,7 @@ public class RRAuton extends LinearOpMode {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
-        robotDriving = new RobotDriving(hardwareMap, telemetry);
+        robotDriving = new RobotDriving(hardwareMap, telemetry, 1); // higher smoothness = faster changes
         steering = robotDriving.getSteering();
 
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
@@ -84,17 +85,19 @@ public class RRAuton extends LinearOpMode {
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
 
-        //Wait for OpMode Init Button to be Pressed
-        waitForStart();
 
         //Activate the VuMark Dataset as Current Tracked Object
         relicTrackables.activate();
+
+        //Wait for OpMode Init Button to be Pressed
+        waitForStart();
+
 
         telemetry.setMsTransmissionInterval(0);
 
         /* GET PICTOGRAPH */
 
-        char pictograph = readVuMark(relicTemplate);
+        pictograph = readVuMark(relicTemplate);
 
         telemetry.addData("Pictograph", "" + pictograph);
         telemetry.update();
@@ -115,23 +118,59 @@ public class RRAuton extends LinearOpMode {
 
         /* KNOCK JEWEL */
 
-        telemetry.update();
+        /*telemetry.update();
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
-        steering.moveDegrees(90);
-        steering.finishSteering();
-        sleep(400);
-        steering.stopAllMotors();
 
+        // Lift
         gunnerFunction.upWinch();
         sleep(4000);
         gunnerFunction.stopWinch();
+
+        //Forward
+        steering.setSpeedRatio(0.1);
+        steering.moveDegrees(90);
+        steering.finishSteering();
+        double lf;
+        double rf;
+        double cwtw = 0;
+        while (ultrasonicFunction.getRF() + ultrasonicFunction.getLF() > 110) {
+            telemetry.addData("getRF: ", ultrasonicFunction.getRF());
+            telemetry.addData("getLF: ", ultrasonicFunction.getLF());
+            telemetry.update();
+            lf = ultrasonicFunction.getLF();
+            rf = ultrasonicFunction.getRF();
+            if (lf > rf + 1) {
+                cwtw = Math.min(cwtw + 0.01, 0.1);
+            }
+            else if (rf > lf + 1) {
+                cwtw = Math.max(cwtw - 0.01, -0.1);
+            }
+            steering.moveDegrees(90, 1);
+            steering.turn(cwtw);
+            steering.finishSteering();
+        }
+        steering.stopAllMotors();
+        alignToWall();
+
+        // Knock jewel
         knockJewel();
+
+        // Lower
         gunnerFunction.downWinch();
         sleep(1300);
         gunnerFunction.stopWinch();
 
+        // Backward
+        steering.moveDegrees(270);
+        steering.finishSteering();
+        sleep(650);
+        steering.stopAllMotors();
+
         /* DRIVE TO CRYPTOBOX */
 
+        gunnerFunction.upWinch();
+        sleep(100);
+        gunnerFunction.stopWinch();
         if (startPosition.equals("RED_MIDDLE")) {
             int sideDistance;
             if (pictograph == 'l') {
@@ -147,9 +186,10 @@ public class RRAuton extends LinearOpMode {
             sleep(1000);
             moveAlongWall(false, true, sideDistance, 50);
             sleep(1000);
-            approachCryptobox(true, sideDistance);
-            sleep(1000);
             gunnerFunction.openGlyphter();
+            sleep(1000);
+            approachCryptobox(true, sideDistance);
+
 
         } else if (startPosition.equals("RED_RELIC")) {
             int sideDistance;
@@ -162,9 +202,10 @@ public class RRAuton extends LinearOpMode {
             }
             moveAlongWall(false, true, sideDistance, 50);
             sleep(1000);
-            approachCryptobox(true, sideDistance);
-            sleep(1000);
             gunnerFunction.openGlyphter();
+            sleep(1000);
+            approachCryptobox(true, sideDistance);
+
 
         } else if (startPosition.equals("BLUE_MIDDLE")) {
             int sideDistance;
@@ -181,9 +222,10 @@ public class RRAuton extends LinearOpMode {
             sleep(1000);
             moveAlongWall(true, false, sideDistance, 50);
             sleep(1000);
-            approachCryptobox(false, sideDistance);
-            sleep(1000);
             gunnerFunction.openGlyphter();
+            sleep(1000);
+            approachCryptobox(false, sideDistance);
+
 
         } else {
             int sideDistance;
@@ -197,8 +239,6 @@ public class RRAuton extends LinearOpMode {
             moveAlongWall(true, false, sideDistance, 50);
             sleep(1000);
             approachCryptobox(false, sideDistance);
-            sleep(1000);
-            gunnerFunction.openGlyphter();
         }
     }
 
@@ -212,7 +252,7 @@ public class RRAuton extends LinearOpMode {
         int left = 0;
         int right = 0;
         int center = 0;
-        while (total < 3) {
+        while (total < 9) {
             vuMark = RelicRecoveryVuMark.from(relicTemplate);
             sleep(100);
             if (vuMark == RelicRecoveryVuMark.LEFT) {
@@ -238,6 +278,8 @@ public class RRAuton extends LinearOpMode {
             return 'r'; //Right is most likely Correct
         } else if (center > right && center > left) {
             return 'c'; //Center is most likely Correct
+        } else if (right == left && right == center) {
+            telemetry.addData("Error:", "Math Bork - Pictograph Values Equal");
         }
         return '!';
     }
@@ -249,8 +291,8 @@ public class RRAuton extends LinearOpMode {
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
         double clockwiseTurnWeight = 0;
         double forwardWeight = 0;
-        final double MAX_TURN_WEIGHT = 0.2;
-        final double MAX_FORWARD_WEIGHT = 0.2;
+        final double MAX_TURN_WEIGHT = 0.1;
+        final double MAX_FORWARD_WEIGHT = 0.1;
 
         //Rate of acceleration
         final double INCREASE_RATE = 0.005;
@@ -311,6 +353,7 @@ public class RRAuton extends LinearOpMode {
             telemetry.addData("Clockwise turn weight", clockwiseTurnWeight);
             telemetry.addData("Code RF", distanceRF);
             telemetry.addData("Code LF", distanceLF);
+            telemetry.addData("Pictograph", "" + pictograph);
             ultrasonicFunction.printTestData();
             telemetry.update();
 
@@ -420,7 +463,7 @@ public class RRAuton extends LinearOpMode {
         double distanceLF;
         double distanceRF;
         boolean keepMoving = true;
-        final int wallDistance = 28;
+        final int wallDistance = 35;
 
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
         while (ultrasonicFunction.getRF() + ultrasonicFunction.getLF() > wallDistance * 2) {
@@ -428,7 +471,7 @@ public class RRAuton extends LinearOpMode {
             telemetry.addData("getLF: ", ultrasonicFunction.getLF());
             telemetry.update();
             distanceLF = ultrasonicFunction.getLF();
-            distanceRF = ultrasonicFunction.getLF();
+            distanceRF = ultrasonicFunction.getRF();
             sideDistance = senseRight ? ultrasonicFunction.getRight() : ultrasonicFunction.getLeft();
             if (distanceLF > distanceRF + 1) {
                 if (clockwiseTurnWeight < 0) {
@@ -480,6 +523,18 @@ public class RRAuton extends LinearOpMode {
             steering.moveDegrees(0, rightWeight);
             steering.finishSteering();
         }
+        steering.stopAllMotors();
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < 5000) {
+            steering.moveDegrees(90, 0.2);
+            steering.moveDegrees(0, Math.sin(Math.PI*(System.currentTimeMillis()-startTime)/500));
+            steering.finishSteering();
+        }
+        steering.stopAllMotors();
+        gunnerFunction.openGlyphter();
+        steering.moveDegrees(270);
+        steering.finishSteering();
+        sleep(1000);
         steering.stopAllMotors();
     }
 
@@ -536,6 +591,8 @@ public class RRAuton extends LinearOpMode {
      */
     public void pushJewel(JewelPosition jewelPosition) {
         if (jewelPosition == JewelPosition.LEFT) {
+            telemetry.addData("reached checkpoint 1", "");
+            telemetry.update();
             steering.turn(-0.1);
             steering.finishSteering();
             sleep(200);
@@ -547,6 +604,8 @@ public class RRAuton extends LinearOpMode {
             sleep(200);
             steering.stopAllMotors();
         } else {
+            telemetry.addData("reached checkpoint 1", "");
+            telemetry.update();
             steering.turn(0.1);
             steering.finishSteering();
             sleep(200);
