@@ -81,23 +81,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
 
         waitForStart();
 
-        telemetry.setAutoClear(true);
-
-        gunnerFunction.closeGlyphter();
-        telemetry.addData("Now starting movement process", "");
-        telemetry.update();
-        sleep(1000);
-        moveAlongWall(false, true, 160, 50);
-        telemetry.addData("Now starting alignment process", "");
-        telemetry.update();
-        sleep(1000);
-        alignToWall();
-        telemetry.addData("Now starting approach to cryptobox", "");
-        telemetry.update();
-        sleep(1000);
-        approachCryptobox();
-        gunnerFunction.openGlyphter();
-        sleep(300);
+        turnNinety(true);
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
@@ -194,48 +178,6 @@ public class UltrasonicAutonTest extends LinearOpMode {
         alignToWall();
     }
 
-    public void turnNinety(boolean isClockwise) {
-        steering.setSpeedRatio(0.1);
-        if (isClockwise) {
-            //leftDist is the distance detected from ultrasonicLeft in the previous tick
-            double leftDist = 255;
-
-            //Turn until left distance begins to increase (meaning that robot has passed the position that it should reach)
-            while (ultrasonicFunction.getLeft() <= leftDist) {
-                steering.turn(1);
-                steering.finishSteering();
-                leftDist = ultrasonicFunction.getLeft();
-            }
-            steering.stopAllMotors();
-            //Return to position of minimum left distance
-            while (ultrasonicFunction.getLeft() > leftDist) {
-                steering.turn(-1);
-                steering.finishSteering();
-                leftDist = ultrasonicFunction.getLeft();
-            }
-            alignToWall();
-        } else {
-            //rightDist is the distance detected from ultrasonicRight in the previous tick
-            double rightDist = 255;
-
-            //Turn until right distance begins to increase (meaning that robot has passed the position that it should reach)
-            while (ultrasonicFunction.getRight() <= rightDist) {
-                steering.turn(-1);
-                steering.finishSteering();
-                rightDist = ultrasonicFunction.getRight();
-            }
-            steering.stopAllMotors();
-            //Return to position of minimum right distance
-            while (ultrasonicFunction.getRight() > rightDist) {
-                steering.turn(1);
-                steering.finishSteering();
-                rightDist = ultrasonicFunction.getRight();
-            }
-            alignToWall();
-        }
-        steering.setAllPowers(SPEED_RATIO);
-    }
-
     public void alignToWall() {
         steering.setSpeedRatio(0.1);
         while (Math.abs(ultrasonicFunction.getLF() - ultrasonicFunction.getRF()) >= 1) {
@@ -280,6 +222,53 @@ public class UltrasonicAutonTest extends LinearOpMode {
             moveAlongWall(true, false, 150, 50);
         } else {
             moveAlongWall(true, true, 60, 50);
+        }
+    }
+
+    public void turnNinety(boolean isClockwise) {
+        steering.setSpeedRatio(0.1);
+        if (isClockwise) {
+            //leftDist is the distance detected from ultrasonicLeft in the previous tick
+            double leftDist = 255;
+            steering.turn(1);
+            steering.finishSteering();
+            sleep(1000);
+            steering.stopAllMotors();
+            //Turn until left distance begins to increase (meaning that robot has passed the position that it should reach)
+            while (ultrasonicFunction.getLeft() <= leftDist && opModeIsActive()) {
+                steering.turn(1);
+                steering.finishSteering();
+                leftDist = ultrasonicFunction.getLeft();
+            }
+            steering.stopAllMotors();
+            //Return to position of minimum left distance
+            while (ultrasonicFunction.getLeft() > leftDist && opModeIsActive()) {
+                steering.turn(-1);
+                steering.finishSteering();
+                leftDist = ultrasonicFunction.getLeft();
+            }
+            alignToWall();
+        } else {
+            //rightDist is the distance detected from ultrasonicRight in the previous tick
+            double rightDist = 255;
+            steering.turn(-1);
+            steering.finishSteering();
+            sleep(1000);
+            steering.stopAllMotors();
+            //Turn until right distance begins to increase (meaning that robot has passed the position that it should reach)
+            while (ultrasonicFunction.getRight() <= rightDist && opModeIsActive()) {
+                steering.turn(-1);
+                steering.finishSteering();
+                rightDist = ultrasonicFunction.getRight();
+            }
+            steering.stopAllMotors();
+            //Return to position of minimum right distance
+            while (ultrasonicFunction.getRight() > rightDist && opModeIsActive()) {
+                steering.turn(1);
+                steering.finishSteering();
+                rightDist = ultrasonicFunction.getRight();
+            }
+            alignToWall();
         }
     }
 

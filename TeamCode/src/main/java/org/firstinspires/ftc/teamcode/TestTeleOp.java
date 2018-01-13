@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 @TeleOp(name = "Test Mode")
 public class TestTeleOp extends OpMode {
-    GunnerFunction gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+    GunnerFunction gunnerFunction;
     String pusherPos;
     public void loop(){
         if (this.gamepad1.dpad_down) {
@@ -22,10 +22,14 @@ public class TestTeleOp extends OpMode {
             pusherPos = "Up";
         }
         telemetry.addData("Pusher Position: ", pusherPos);
+        telemetry.update();
     }
 
     public void init(){
+        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
         gunnerFunction.raiseJewelPusher();
         pusherPos = "Up";
     }
+
+
 }
