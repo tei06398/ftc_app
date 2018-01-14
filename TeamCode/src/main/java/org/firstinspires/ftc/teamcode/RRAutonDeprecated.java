@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
 /**
  * Created 11/13/2017
  */
-//@Autonomous(name = "Deprecated Auton Mode")
+@Autonomous(name = "Deprecated Auton Mode")
 public class RRAutonDeprecated extends LinearOpMode {
     //Declares Motors
     protected DcMotor motorLF = null;
@@ -149,11 +149,13 @@ public class RRAutonDeprecated extends LinearOpMode {
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
 
-        //Wait for OpMode Init Button to be Pressed
-        waitForStart();
 
         //Activate the VuMark Dataset as Current Tracked Object
         relicTrackables.activate();
+
+        //Wait for OpMode Init Button to be Pressed
+        waitForStart();
+
 
         /* TEST */
         telemetry.setAutoClear(false);
@@ -163,14 +165,15 @@ public class RRAutonDeprecated extends LinearOpMode {
         while (this.opModeIsActive()) {
             int total = 0;
             char pictograph = 'E';
-            //while (total < 3) {
-            pictograph = readVuMark(relicTemplate);
-            //    if (pictograph != '!') {
-            //        total = 3;
-            //    } else {
-            //         total++;
-            //    }
-            //}
+            while (total < 3) {
+                pictograph = readVuMark(relicTemplate);
+                sleep(100);
+                 if (pictograph != '!') {
+                   total = 3;
+                } else {
+                     total++;
+                }
+            }
             telemetry.addData("Pictograph", "" + pictograph);
             telemetry.update();
 
@@ -190,8 +193,8 @@ public class RRAutonDeprecated extends LinearOpMode {
 
             //Detect whiffle ball location
             telemetry.update();
-
-            vuforia.setFrameQueueCapacity(10);
+            sleep(3000);
+            /*vuforia.setFrameQueueCapacity(10);
             VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
 
             long numImages = frame.getNumImages();
@@ -202,7 +205,7 @@ public class RRAutonDeprecated extends LinearOpMode {
                     break;
                 }
             }
-            /* TEST */
+            /* TEST
             telemetry.addData("Testing: ", "Image spot 1");
             telemetry.addData("RGB: ", rgb);
             telemetry.update();
@@ -224,11 +227,11 @@ public class RRAutonDeprecated extends LinearOpMode {
 
             /*rgb is now the Image object that weve used in the video*/
             //Bitmap bmp = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
-            frame.close();
+            /*frame.close();
             int width = bmp.getWidth();
             int height = bmp.getHeight();
 
-            /* TEST */
+            /* TEST
             telemetry.addData("Testing: ", "Image spot 2");
             telemetry.update();
 
@@ -258,7 +261,7 @@ public class RRAutonDeprecated extends LinearOpMode {
                     }
                 }
             }
-            /* TEST */
+            /*
             telemetry.addData("blue weight: ", blueWeight);
             telemetry.addData("red weight: ", redWeight);
             telemetry.update();
@@ -273,7 +276,7 @@ public class RRAutonDeprecated extends LinearOpMode {
                 telemetry.update();
                 sleep(30000);
             }
-            /* TEST */
+            /* TEST
             telemetry.addData("Testing: ", "Image spot 4");
             telemetry.update();
 
@@ -300,6 +303,7 @@ public class RRAutonDeprecated extends LinearOpMode {
 
             knockJewel(JewelPosition.LEFT);
             driveToCryptobox(CrypoboxPosition.LEFT);
+            */
         }
     }
 

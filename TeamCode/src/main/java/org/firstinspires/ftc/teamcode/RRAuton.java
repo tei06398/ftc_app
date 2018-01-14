@@ -104,7 +104,7 @@ public class RRAuton extends LinearOpMode {
 
         if (pictograph == '!') {
             telemetry.addData("Pictograph", "Unreliable");
-            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
+            //Displays in the event that every time, the data returned by readVuMark() has been 1L:1C:1R, not allowing for a logical interpretation.
         } else if (pictograph == 'l') {
             telemetry.addData("Pictograph", "Left");
         } else if (pictograph == 'r') {
@@ -511,8 +511,8 @@ public class RRAuton extends LinearOpMode {
         steering.stopAllMotors();
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - startTime < 5000 && opModeIsActive()) {
-            steering.moveDegrees(90, 0.2);
-            steering.moveDegrees(0, Math.sin(Math.PI*(System.currentTimeMillis()-startTime)/500));
+            steering.moveDegrees(90, 0.1);
+            steering.moveDegrees(0, Math.cos(Math.PI*(System.currentTimeMillis()-startTime)/1000));
             steering.finishSteering();
         }
         steering.stopAllMotors();

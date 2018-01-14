@@ -84,6 +84,8 @@ public class UltrasonicAutonTest extends LinearOpMode {
         turnNinety(true);
     }
 
+    //code for moving along the wall
+
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
         double clockwiseTurnWeight = 0;
         double forwardWeight = 0;
