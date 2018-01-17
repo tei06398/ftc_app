@@ -9,10 +9,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * A utility class that controls all the gunner functions (opening and closing the glyphter, rotating the glypter, etc).
  */
 public class GunnerFunction {
-    private static final double GLYPHTER_SERVO_LEFT_CLOSE_POSITION = 0.7;
-    private static final double GLYPHTER_SERVO_LEFT_OPEN_POSITION = 0.2;
-    private static final double GLYPHTER_SERVO_RIGHT_CLOSE_POSITION = 0.3;
-    private static final double GLYPHTER_SERVO_RIGHT_OPEN_POSITION = 0.8;
+    private static final double GLYPHTER_SERVO_LEFT_CLOSE_POSITION = 0.8;
+    private static final double GLYPHTER_SERVO_LEFT_OPEN_POSITION = 0.3;
+    private static final double GLYPHTER_SERVO_RIGHT_CLOSE_POSITION = 0.2;
+    private static final double GLYPHTER_SERVO_RIGHT_OPEN_POSITION = 0.7;
     private static final double GLYPHTER_SERVO_INCREMENTAL_SPEED = 0.01;
 
     private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 180;
@@ -76,6 +76,11 @@ public class GunnerFunction {
         servoGlyphterRight.setPosition(clipRange(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION,
                 GLYPHTER_SERVO_RIGHT_OPEN_POSITION,
                 servoGlyphterRight.getPosition() + GLYPHTER_SERVO_INCREMENTAL_SPEED));
+    }
+
+    public void setGlyphterPosition(double leftPos, double rightPos) {
+        servoGlyphterLeft.setPosition(leftPos);
+        servoGlyphterRight.setPosition(rightPos);
     }
 
     private double clipRange(double min, double max, double value) {
