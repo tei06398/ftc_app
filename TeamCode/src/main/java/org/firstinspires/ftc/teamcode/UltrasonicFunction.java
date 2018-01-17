@@ -87,11 +87,11 @@ public class UltrasonicFunction {
                     successes++;
                 }
             }
+            telemetry.addData("Number of successes: ", successes);
             if (successes > 0) {
-                return sum/successes;
-            } else {
-                return distance;
+                distance = sum/successes;
             }
+            return distance;
         }
 
         public void setDistance (double input) {
