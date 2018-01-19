@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.teamcode.util.GunnerFunction;
-import org.firstinspires.ftc.teamcode.util.RobotDriving;
+import org.firstinspires.ftc.teamcode.util.SleepFunction;
+import org.firstinspires.ftc.teamcode.util.drive.DiagonalVectorSteeringBuilder;
+import org.firstinspires.ftc.teamcode.util.drive.MecanumDriveFunction;
 
 import static org.firstinspires.ftc.teamcode.util.RobotDriving.MAX_SPEED_RATIO;
 import static org.firstinspires.ftc.teamcode.util.RobotDriving.MIN_SPEED_RATIO;
@@ -11,9 +14,9 @@ import static org.firstinspires.ftc.teamcode.util.RobotDriving.NORMAL_SPEED_RATI
 
 @TeleOp(name = "Main Teleop")
 public class MainTeleop extends OpMode {
-    protected RobotDriving robotDriving;
-    protected RobotDriving.Steering steering;
-    protected GunnerFunction gunnerFunction;
+    private MecanumDriveFunction driveFunction;
+    private DiagonalVectorSteeringBuilder steering;
+    private GunnerFunction gunnerFunction;
 
     private boolean allowGamepad2B = true; // Toggles gamepad2's B key
 
@@ -24,11 +27,11 @@ public class MainTeleop extends OpMode {
         // No motors/servos are instantiated here because everything is done in the RobotDriving, GunnerFunction, etc.
         // classes.
 
-        robotDriving = new RobotDriving(hardwareMap, telemetry);
+        driveFunction = new MecanumDriveFunction(hardwareMap, telemetry, 1);
 
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
-        steering = robotDriving.getSteering();
+        steering = new DiagonalVectorSteeringBuilder();
     }
 
     public void loop() {
@@ -61,40 +64,40 @@ public class MainTeleop extends OpMode {
             double angle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x);
             telemetry.addData("angle: ", angle);
 
-            steering.moveRadians(angle);
+            steering.strafeRadians(angle);
         } else {
             telemetry.addData("angle: ", 0);
         }
 
         // Arrow keys: also driving
         if (this.gamepad1.dpad_right) {
-            steering.moveDegrees(0, MIN_SPEED_RATIO);
+            steering.strafeDegrees(0, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_up) {
-            steering.moveDegrees(90, MIN_SPEED_RATIO);
+            steering.strafeDegrees(90, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_left) {
-            steering.moveDegrees(180, MIN_SPEED_RATIO);
+            steering.strafeDegrees(180, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_down) {
-            steering.moveDegrees(270, MIN_SPEED_RATIO);
+            steering.strafeDegrees(270, MIN_SPEED_RATIO);
         }
 
         // Right trigger: minimum speed
         if (this.gamepad1.right_trigger > 0.5) {
-            steering.setSpeedRatio(MIN_SPEED_RATIO);
+            driveFunction.setSpeedRatio(MIN_SPEED_RATIO);
         } else if (this.gamepad1.left_trigger > 0.5) {
             // Left trigger: maximum speed
-            steering.setSpeedRatio(MAX_SPEED_RATIO);
+            driveFunction.setSpeedRatio(MAX_SPEED_RATIO);
         } else {
-            steering.setSpeedRatio(NORMAL_SPEED_RATIO);
+            driveFunction.setSpeedRatio(NORMAL_SPEED_RATIO);
         }
 
         // Right bumper: move around block counterclockwise
-        if (this.gamepad1.right_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
+        if (this.gamepad1.right_bumper) steering.pivot(false, BLOCK_ROTATION_WEIGHT);
 
         // Left bumper: move around block clockwise
-        if (this.gamepad1.left_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
+        if (this.gamepad1.left_bumper) steering.pivot(true, BLOCK_ROTATION_WEIGHT);
 
         // GAMEPAD 2 (GUNNER)
         // Up/down keys: winch
@@ -144,8 +147,8 @@ public class MainTeleop extends OpMode {
             allowGamepad2B = true;
         }
 
-        // Finish the steering, which puts power in the motors.
-        steering.finishSteering();
+        // Build steering object and put power in the motors.
+        driveFunction.steer(steering);
 
         telemetry.update();
     }

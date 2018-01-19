@@ -9,10 +9,14 @@ import com.qualcomm.robotcore.hardware.*;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
+import org.firstinspires.ftc.teamcode.util.SleepFunction;
 import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
 import org.firstinspires.ftc.teamcode.util.GunnerFunction;
-import org.firstinspires.ftc.teamcode.util.RobotDriving;
+import org.firstinspires.ftc.teamcode.util.drive.DiagonalVectorSteeringBuilder;
+import org.firstinspires.ftc.teamcode.util.drive.MecanumDriveFunction;
+import org.firstinspires.ftc.teamcode.util.drive.SleepMecanumDriveFunction;
 
 /**
  * The official autonomous mode.
@@ -21,8 +25,8 @@ import org.firstinspires.ftc.teamcode.util.RobotDriving;
 public class MainAuton extends LinearOpMode {
     protected ColorSensor colorSensor;
 
-    protected RobotDriving robotDriving;
-    protected RobotDriving.Steering steering;
+    protected MecanumDriveFunction drive;
+    protected DiagonalVectorSteeringBuilder steering;
 
     protected UltrasonicFunction ultrasonicFunction;
     protected GunnerFunction gunnerFunction;
@@ -50,8 +54,15 @@ public class MainAuton extends LinearOpMode {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
-        robotDriving = new RobotDriving(hardwareMap, telemetry, 1); // higher smoothness = faster changes
-        steering = robotDriving.getSteering();
+        drive = new SleepMecanumDriveFunction(hardwareMap, telemetry, new SleepFunction(new Consumer<Long>(){
+            @Override
+            public void accept(Long milliseconds) {
+                sleep(milliseconds);
+            }
+        }), 1);
+
+        // higher smoothness = faster changes
+        steering = new DiagonalVectorSteeringBuilder();
 
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
@@ -108,7 +119,7 @@ public class MainAuton extends LinearOpMode {
 
         /* KNOCK JEWEL */
 
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
+        drive.setSpeedRatio(MOVE_SPEED_RATIO);
 
         // Lift
         gunnerFunction.upWinch();
@@ -126,10 +137,9 @@ public class MainAuton extends LinearOpMode {
         /* DRIVE TO CRYPTOBOX */
 
         checkActive();
-        steering.moveDegrees(270);
-        steering.finishSteering();
+        drive.steer(steering.strafeDegrees(270));
         sleep(500);
-        steering.stopAllMotors();
+        drive.steer(steering.noMotion());
         checkActive();
         gunnerFunction.upWinch();
         sleep(100);
@@ -258,7 +268,7 @@ public class MainAuton extends LinearOpMode {
      * Move along a wall.
      */
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
+        drive.setSpeedRatio(MOVE_SPEED_RATIO);
         double clockwiseTurnWeight = 0;
         double forwardWeight = 0;
         final double MAX_TURN_WEIGHT = 0.1;
@@ -279,9 +289,9 @@ public class MainAuton extends LinearOpMode {
         while (keepMoving && opModeIsActive()) {
             //Set power in direction of motion
             if (moveRight) {
-                steering.moveDegrees(0, 1);
+                steering.strafeDegrees(0, 1);
             } else {
-                steering.moveDegrees(180, 1);
+                steering.strafeDegrees(180, 1);
             }
 
             //Sense distances to walls
@@ -328,14 +338,14 @@ public class MainAuton extends LinearOpMode {
             telemetry.update();
 
             if (forwardWeight > 0) {
-                steering.moveDegrees(90, forwardWeight);
+                steering.strafeDegrees(90, forwardWeight);
             } else {
-                steering.moveDegrees(270, -forwardWeight);
+                steering.strafeDegrees(270, -forwardWeight);
             }
 
             steering.turn(clockwiseTurnWeight);
 
-            steering.finishSteering();
+            drive.steer(steering);
 
             //determine whether to keep moving
             if (moveRight && senseRight) {
@@ -348,53 +358,48 @@ public class MainAuton extends LinearOpMode {
                 keepMoving = ultrasonicFunction.getLeft() > sideDistance;
             }
         }
-        steering.stopAllMotors();
+
+        drive.steer(steering.noMotion());
     }
 
     /**
      * Turn ninety degrees.
      */
     public void turnNinety(boolean isClockwise) {
-        steering.setSpeedRatio(TURN_SPEED_RATIO);
+        drive.setSpeedRatio(TURN_SPEED_RATIO);
         if (isClockwise) {
             //leftDist is the distance detected from ultrasonicLeft in the previous tick
             double leftDist = 255;
-            steering.turn(1);
-            steering.finishSteering();
+            drive.steer(steering.turn(1));
             sleep(1000);
-            steering.stopAllMotors();
+            drive.steer(steering.noMotion());
             //Turn until left distance begins to increase (meaning that robot has passed the position that it should reach)
             while (ultrasonicFunction.getLeft() <= leftDist && opModeIsActive()) {
-                steering.turn(1);
-                steering.finishSteering();
+                drive.steer(steering.turn(1));
                 leftDist = ultrasonicFunction.getLeft();
             }
-            steering.stopAllMotors();
+            drive.steer(steering.noMotion());
             //Return to position of minimum left distance
             while (ultrasonicFunction.getLeft() > leftDist && opModeIsActive()) {
-                steering.turn(-1);
-                steering.finishSteering();
+                drive.steer(steering.turn(-1));
                 leftDist = ultrasonicFunction.getLeft();
             }
             alignToWall();
         } else {
             //rightDist is the distance detected from ultrasonicRight in the previous tick
             double rightDist = 255;
-            steering.turn(-1);
-            steering.finishSteering();
+            drive.steer(steering.turn(-1));
             sleep(1000);
-            steering.stopAllMotors();
+            drive.steer(steering.noMotion());
             //Turn until right distance begins to increase (meaning that robot has passed the position that it should reach)
             while (ultrasonicFunction.getRight() <= rightDist && opModeIsActive()) {
-                steering.turn(-1);
-                steering.finishSteering();
+                drive.steer(steering.turn(-1));
                 rightDist = ultrasonicFunction.getRight();
             }
-            steering.stopAllMotors();
+            drive.stopMotors();
             //Return to position of minimum right distance
             while (ultrasonicFunction.getRight() > rightDist && opModeIsActive()) {
-                steering.turn(1);
-                steering.finishSteering();
+                drive.steer(steering.turn(1));
                 rightDist = ultrasonicFunction.getRight();
             }
             alignToWall();
@@ -405,16 +410,16 @@ public class MainAuton extends LinearOpMode {
      * Align to a wall.
      */
     public void alignToWall() {
-        steering.setSpeedRatio(TURN_SPEED_RATIO);
+        drive.setSpeedRatio(TURN_SPEED_RATIO);
         while (Math.abs(ultrasonicFunction.getLF() - ultrasonicFunction.getRF()) >= 1 && opModeIsActive()) {
             if (ultrasonicFunction.getLF() < ultrasonicFunction.getRF()) {
                 steering.turn(-1);
             } else if (ultrasonicFunction.getRF() < ultrasonicFunction.getLF()) {
                 steering.turn(1);
             }
-            steering.finishSteering();
+            drive.steer(steering);
             if (ultrasonicFunction.getLF() == ultrasonicFunction.getRF()) {
-                steering.stopAllMotors();
+                drive.stopMotors();
                 break;
             }
         }
@@ -440,7 +445,7 @@ public class MainAuton extends LinearOpMode {
         boolean keepMoving = true;
         final int wallDistance = 35;
 
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
+        drive.setSpeedRatio(MOVE_SPEED_RATIO);
         while (ultrasonicFunction.getRF() + ultrasonicFunction.getLF() > wallDistance * 2 && opModeIsActive()) {
             telemetry.addData("getRF: ", ultrasonicFunction.getRF());
             telemetry.addData("getLF: ", ultrasonicFunction.getLF());
@@ -493,24 +498,23 @@ public class MainAuton extends LinearOpMode {
                     }
                 }
             }
-            steering.moveDegrees(90, 1);
+            steering.strafeDegrees(90, 1);
             steering.turn(clockwiseTurnWeight);
-            steering.moveDegrees(0, rightWeight);
-            steering.finishSteering();
+            steering.strafeDegrees(0, rightWeight);
+            drive.steer(steering);
         }
-        steering.stopAllMotors();
+        drive.stopMotors();
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - startTime < 5000 && opModeIsActive()) {
-            steering.moveDegrees(90, 0.1);
-            steering.moveDegrees(0, Math.cos(Math.PI*(System.currentTimeMillis()-startTime)/1000));
-            steering.finishSteering();
+            steering.strafeDegrees(90, 0.1);
+            steering.strafeDegrees(0, Math.cos(Math.PI*(System.currentTimeMillis()-startTime)/1000));
+            drive.steer(steering);
         }
-        steering.stopAllMotors();
+        drive.stopMotors();
         gunnerFunction.openGlyphter();
-        steering.moveDegrees(270);
-        steering.finishSteering();
+        drive.steer(steering.strafeDegrees(270));
         sleep(1000);
-        steering.stopAllMotors();
+        drive.stopMotors();
     }
 
     /*public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {
@@ -531,7 +535,7 @@ public class MainAuton extends LinearOpMode {
     public void knockJewel() {
         telemetry.addData("knockJewel Method called", "");
         telemetry.update();
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
+        drive.setSpeedRatio(MOVE_SPEED_RATIO);
         gunnerFunction.lowerJewelPusher();
         sleep(1000);
         double red = colorSensor.red();
@@ -569,31 +573,27 @@ public class MainAuton extends LinearOpMode {
         if (jewelPosition == JewelPosition.LEFT) {
             telemetry.addData("reached checkpoint 1", "");
             telemetry.update();
-            steering.stopAllMotors();
-            steering.turn(-0.1);
-            steering.finishSteering();
+            drive.stopMotors();
+            drive.steer(steering.turn(-0.1));
             sleep(200);
-            steering.stopAllMotors();
+            drive.stopMotors();
             gunnerFunction.raiseJewelPusher();
             sleep(1000);
-            steering.turn(0.1);
-            steering.finishSteering();
+            drive.steer(steering.turn(0.1));
             sleep(200);
-            steering.stopAllMotors();
+            drive.stopMotors();
         } else {
             telemetry.addData("reached checkpoint 1", "");
             telemetry.update();
-            steering.stopAllMotors();
-            steering.turn(0.1);
-            steering.finishSteering();
+            drive.stopMotors();
+            drive.steer(steering.turn(0.1));
             sleep(200);
-            steering.stopAllMotors();
+            drive.stopMotors();
             gunnerFunction.raiseJewelPusher();
             sleep(1000);
-            steering.turn(-0.1);
-            steering.finishSteering();
+            drive.steer(steering.turn(-0.1));
             sleep(200);
-            steering.stopAllMotors();
+            drive.stopMotors();
         }
     }
 
