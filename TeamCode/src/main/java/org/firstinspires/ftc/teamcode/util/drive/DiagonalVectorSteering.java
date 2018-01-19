@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.util.drive;
 
+/**
+ * Implements steering that uses motors placed in a diagonal (45 degree) vector layout.
+ */
 public class DiagonalVectorSteering implements Steering<DiagonalVectorSteering> {
     private final double lf;
 

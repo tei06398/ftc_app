@@ -2,16 +2,17 @@ package org.firstinspires.ftc.teamcode.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.teamcode.util.GunnerFunction;
-import org.firstinspires.ftc.teamcode.util.SleepFunction;
 import org.firstinspires.ftc.teamcode.util.drive.DiagonalVectorSteeringBuilder;
 import org.firstinspires.ftc.teamcode.util.drive.MecanumDriveFunction;
 
-import static org.firstinspires.ftc.teamcode.util.RobotDriving.MAX_SPEED_RATIO;
-import static org.firstinspires.ftc.teamcode.util.RobotDriving.MIN_SPEED_RATIO;
-import static org.firstinspires.ftc.teamcode.util.RobotDriving.NORMAL_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving.MAX_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving.MIN_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving.NORMAL_SPEED_RATIO;
 
+/**
+ * The main teleop which is used at competitions.
+ */
 @TeleOp(name = "Main Teleop")
 public class MainTeleop extends OpMode {
     private MecanumDriveFunction driveFunction;

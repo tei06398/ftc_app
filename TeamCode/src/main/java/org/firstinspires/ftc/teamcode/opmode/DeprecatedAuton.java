@@ -13,7 +13,7 @@ import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
-import org.firstinspires.ftc.teamcode.util.RobotDriving;
+import org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving;
 
 /**
  * Created 11/13/2017

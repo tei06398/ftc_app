@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 
+/**
+ * Implements weighted averages.
+ */
 public class WeightedValue {
     private double value = 0;
     private double smoothness;

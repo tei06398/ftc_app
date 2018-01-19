@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
-import org.firstinspires.ftc.teamcode.util.RobotDriving;
+import org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving;
 
 /**
  * Created 12/30/2017

@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.SleepFunction;
 
+/**
+ * This class adds the ability to perform a steering operation for a certain amount of time, after which it stops.
+ */
 public class SleepMecanumDriveFunction extends MecanumDriveFunction {
     private SleepFunction sleepFunction;
 

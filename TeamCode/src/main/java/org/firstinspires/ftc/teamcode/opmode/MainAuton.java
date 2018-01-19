@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.util.drive.MecanumDriveFunction;
 import org.firstinspires.ftc.teamcode.util.drive.SleepMecanumDriveFunction;
 
 /**
- * The official autonomous mode.
+ * The main autonomous which is used at competitions.
  */
 @Autonomous(name = "Main Auton")
 public class MainAuton extends LinearOpMode {

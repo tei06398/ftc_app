@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.util.drive;
 
+/**
+ * Builds DiagonalVectorSteering objects, implementing movement logic such as strafe, pivot, and rotate.
+ */
 public class DiagonalVectorSteeringBuilder implements SteeringBuilder<DiagonalVectorSteering> {
     private double lf = 0;
     private double lb = 0;

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving;
 
 @Autonomous(name = "Jewel Auton")
 public class JewelAuton extends LinearOpMode {

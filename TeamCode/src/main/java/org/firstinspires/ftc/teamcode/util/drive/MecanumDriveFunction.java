@@ -2,12 +2,11 @@ package org.firstinspires.ftc.teamcode.util.drive;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.SleepFunction;
 
 /**
  * Encapsulates robot driving utilities.
  */
-public class MecanumDriveFunction implements DriveFunction<DiagonalVectorSteering> {
+public class MecanumDriveFunction implements Steerable<DiagonalVectorSteering> {
     private DriveMotor lf; // stands for left front
     private DriveMotor lb; // stands for left back
     private DriveMotor rf; // stands for right front

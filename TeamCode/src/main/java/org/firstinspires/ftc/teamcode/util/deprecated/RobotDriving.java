@@ -1,12 +1,14 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.util.deprecated;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.util.WeightedValue;
 
 /**
- * Encapsulates robot driving utilities.
+ * DEPRECATED: DO NOT USE.
  */
+@Deprecated
 public class RobotDriving {
     private DrivingMotor lf; // stands for left front
     private DrivingMotor lb; // stands for left back
