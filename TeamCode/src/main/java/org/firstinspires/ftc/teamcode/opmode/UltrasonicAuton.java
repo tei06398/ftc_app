@@ -146,16 +146,9 @@ public class UltrasonicAuton extends LinearOpMode {
         telemetry.setMsTransmissionInterval(0);
 
         //Get a semi-reliable reading of the Pictograph
-        int total = 0;
         char pictograph = 'E';
-        //while (total < 3) {
         pictograph = readVuMark(relicTemplate);
-        //    if (pictograph != '!') {
-        //        total = 3;
-        //    } else {
-        //         total++;
-        //    }
-        //}
+
         telemetry.addData("Pictograph", "" + pictograph);
         telemetry.update();
 
