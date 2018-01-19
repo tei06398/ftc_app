@@ -1,15 +1,14 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.util.GunnerFunction;
 
 /**
  * Various tests involving tele-op. Nothing meaningful here.
  */
-@TeleOp(name = "Test Mode")
-public class TestTeleOp extends OpMode {
+@TeleOp(name = "Main Test")
+public class MainTestMode extends OpMode {
     GunnerFunction gunnerFunction;
     String pusherPos;
     public void loop(){

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,19 +8,15 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.Vuforia;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
+import org.firstinspires.ftc.teamcode.util.GunnerFunction;
+import org.firstinspires.ftc.teamcode.util.RobotDriving;
 
 /**
  * Created 12/30/2017
  */
-@Autonomous(name = "RR Ultrasonic Auton Mode Test")
-public class UltrasonicAutonTest extends LinearOpMode {
+@Autonomous(name = "Ultrasonic Auton Test")
+public class UltrasonicAutonTestMode extends LinearOpMode {
     //Declares Motors
     protected DcMotor motorLF = null;
     protected DcMotor motorRF = null;

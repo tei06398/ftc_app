@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.util;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "Jewel Auton Relic Recovery")
+@Autonomous(name = "Jewel Auton")
 public class JewelAuton extends LinearOpMode {
     protected DcMotor motorLF = null;
     protected DcMotor motorRF = null;

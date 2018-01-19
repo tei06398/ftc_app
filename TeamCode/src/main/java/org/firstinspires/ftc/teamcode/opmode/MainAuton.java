@@ -1,34 +1,24 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.hardware.Camera;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
-import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.FtcRobotControllerServiceState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.*;
 
-import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.nio.ByteBuffer;
+import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
+import org.firstinspires.ftc.teamcode.util.GunnerFunction;
+import org.firstinspires.ftc.teamcode.util.RobotDriving;
 
 /**
  * The official autonomous mode.
  */
-@Autonomous(name = "RR Official Auton Mode")
-public class RRAuton extends LinearOpMode {
+@Autonomous(name = "Main Auton")
+public class MainAuton extends LinearOpMode {
     protected ColorSensor colorSensor;
 
     protected RobotDriving robotDriving;

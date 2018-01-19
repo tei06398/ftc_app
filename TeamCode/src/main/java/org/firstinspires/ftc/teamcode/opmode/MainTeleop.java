@@ -1,16 +1,16 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opmode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.util.GunnerFunction;
+import org.firstinspires.ftc.teamcode.util.RobotDriving;
 
-import static org.firstinspires.ftc.teamcode.RobotDriving.MAX_SPEED_RATIO;
-import static org.firstinspires.ftc.teamcode.RobotDriving.MIN_SPEED_RATIO;
-import static org.firstinspires.ftc.teamcode.RobotDriving.NORMAL_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.util.RobotDriving.MAX_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.util.RobotDriving.MIN_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.util.RobotDriving.NORMAL_SPEED_RATIO;
 
-@TeleOp(name = "Relic Recovery Official Tele-Op Mode")
-public class RRTeleOp extends OpMode {
+@TeleOp(name = "Main Teleop")
+public class MainTeleop extends OpMode {
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
     protected GunnerFunction gunnerFunction;

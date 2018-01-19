@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -32,7 +32,7 @@ public class GunnerFunction {
 
     private boolean isGlyphterRotated = false;
 
-    GunnerFunction(HardwareMap hardwareMap, Telemetry telemetry) {
+    public GunnerFunction(HardwareMap hardwareMap, Telemetry telemetry) {
         // Load the needed devices from the hardware map
         this.motorWinch = hardwareMap.dcMotor.get("winchMotor");
         this.motorRelicSlide = hardwareMap.dcMotor.get("relicSlideMotor");
