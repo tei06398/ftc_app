@@ -368,38 +368,34 @@ public class MainAuton extends LinearOpMode {
     public void turnNinety(boolean isClockwise) {
         drive.setSpeedRatio(TURN_SPEED_RATIO);
         if (isClockwise) {
-            //leftDist is the distance detected from ultrasonicLeft in the previous tick
+            // leftDist is the distance detected from ultrasonicLeft in the previous tick
             double leftDist = 255;
             drive.steer(steering.turn(1));
             sleep(1000);
-            drive.steer(steering.noMotion());
-            //Turn until left distance begins to increase (meaning that robot has passed the position that it should reach)
+            // Keep turning until left distance begins to increase (meaning that robot has passed the position that it should reach)
             while (ultrasonicFunction.getLeft() <= leftDist && opModeIsActive()) {
-                drive.steer(steering.turn(1));
                 leftDist = ultrasonicFunction.getLeft();
             }
-            drive.steer(steering.noMotion());
+            
             //Return to position of minimum left distance
+            drive.steer(steering.turn(-1));
             while (ultrasonicFunction.getLeft() > leftDist && opModeIsActive()) {
-                drive.steer(steering.turn(-1));
                 leftDist = ultrasonicFunction.getLeft();
             }
             alignToWall();
         } else {
-            //rightDist is the distance detected from ultrasonicRight in the previous tick
+            // rightDist is the distance detected from ultrasonicRight in the previous tick
             double rightDist = 255;
             drive.steer(steering.turn(-1));
             sleep(1000);
-            drive.steer(steering.noMotion());
-            //Turn until right distance begins to increase (meaning that robot has passed the position that it should reach)
+            // Keep turning until right distance begins to increase (meaning that robot has passed the position that it should reach)
             while (ultrasonicFunction.getRight() <= rightDist && opModeIsActive()) {
-                drive.steer(steering.turn(-1));
                 rightDist = ultrasonicFunction.getRight();
             }
             drive.stopMotors();
+            drive.steer(steering.turn(1));
             //Return to position of minimum right distance
             while (ultrasonicFunction.getRight() > rightDist && opModeIsActive()) {
-                drive.steer(steering.turn(1));
                 rightDist = ultrasonicFunction.getRight();
             }
             alignToWall();
