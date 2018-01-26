@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -11,12 +11,6 @@ import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Consumer;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
-import org.firstinspires.ftc.teamcode.util.SleepFunction;
-import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
-import org.firstinspires.ftc.teamcode.util.GunnerFunction;
-import org.firstinspires.ftc.teamcode.util.drive.DiagonalVectorSteeringBuilder;
-import org.firstinspires.ftc.teamcode.util.drive.MecanumDriveFunction;
-import org.firstinspires.ftc.teamcode.util.drive.SleepMecanumDriveFunction;
 
 /**
  * The main autonomous which is used at competitions.

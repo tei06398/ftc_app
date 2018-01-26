@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.util.drive;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.util.WeightedValue;
+import org.firstinspires.ftc.teamcode.WeightedValue;
 
 /**
  * This class wraps a regular motor and adds utilities to it.

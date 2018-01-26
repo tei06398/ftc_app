@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;

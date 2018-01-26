@@ -1,25 +1,26 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.*;
-import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
-import org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
- * Created 11/13/2017
+ * Created 12/30/2017
  */
-@Autonomous(name = "Deprecated Auton")
-public class DeprecatedAuton extends LinearOpMode {
+@Autonomous(name = "Ultrasonic Auton")
+public class UltrasonicAuton extends LinearOpMode {
     //Declares Motors
     protected DcMotor motorLF = null;
     protected DcMotor motorRF = null;
@@ -35,29 +36,19 @@ public class DeprecatedAuton extends LinearOpMode {
     protected RobotDriving.Steering steering;
 
     protected UltrasonicFunction ultrasonicFunction;
+    protected ColorSensor colorSensor;
 
     SharedPreferences sharedPref;
     protected String startPosition; //RED_RELIC, RED_MIDDLE, BLUE_RELIC, BLUE_MIDDLE
     protected int JEWEL_PUSHER_DOWN = 0;
     protected int JEWEL_PUSHER_UP = 100;
 
+    private static final double SPEED_RATIO = 0.3;
+
     //Required distance from wall at the beginning
     protected int wallDistance = 30;
-    protected double clockwiseTurnWeight = 0;
-    protected double forwardWeight = 0;
-
-    //protected VideoCapture camera = null;
 
     private VuforiaLocalizer vuforia;
-    public static String jewelResult = "";
-
-    public static final void setJewelResult(String result) {
-        jewelResult = result;
-    }
-
-    public static String getJewelResult() {
-        return jewelResult;
-    }
 
     char readVuMark(VuforiaTrackable relicTemplate) {
         RelicRecoveryVuMark vuMark = null;
@@ -105,18 +96,22 @@ public class DeprecatedAuton extends LinearOpMode {
         this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");//module 2, port 2
         this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF"); //module 3, port 3
         this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF"); //module 4, port 4
+        this.colorSensor = this.hardwareMap.colorSensor.get("colorSensor");
 
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        this.jewelPusher = this.hardwareMap.servo.get("jewelPusher");
+
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
         // RobotDriving instantiation
-        robotDriving = new RobotDriving(hardwareMap, telemetry);
+        robotDriving = new RobotDriving(hardwareMap, telemetry, 1);
         steering = robotDriving.getSteering();
+        steering.setSpeedRatio(SPEED_RATIO);
 
         //Ultrasonic function instantiation
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
@@ -138,180 +133,90 @@ public class DeprecatedAuton extends LinearOpMode {
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
 
-
-        //Activate the VuMark Dataset as Current Tracked Object
-        relicTrackables.activate();
-
         //Wait for OpMode Init Button to be Pressed
         waitForStart();
 
+        //Activate the VuMark Dataset as Current Tracked Object
+        relicTrackables.activate();
 
         /* TEST */
         telemetry.setAutoClear(false);
         telemetry.setMsTransmissionInterval(0);
 
         //Get a semi-reliable reading of the Pictograph
-        while (this.opModeIsActive()) {
-            int total = 0;
-            char pictograph = 'E';
-            while (total < 3) {
-                pictograph = readVuMark(relicTemplate);
-                sleep(100);
-                 if (pictograph != '!') {
-                   total = 3;
-                } else {
-                     total++;
-                }
-            }
-            telemetry.addData("Pictograph", "" + pictograph);
-            telemetry.update();
+        char pictograph = 'E';
+        pictograph = readVuMark(relicTemplate);
 
-            if (pictograph == '!') {
-                telemetry.addData("Pictograph", "Unreliable");
-                //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
-            } else if (pictograph == 'l') {
-                telemetry.addData("Pictograph", "Left");
-            } else if (pictograph == 'r') {
-                telemetry.addData("Pictograph", "Right");
-            } else if (pictograph == 'c') {
-                telemetry.addData("Pictograph", "Center");
-            } else {
-                telemetry.addData("Pictograph", "ERROR");
-                //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
-            }
+        telemetry.addData("Pictograph", "" + pictograph);
+        telemetry.update();
 
-            //Detect whiffle ball location
-            telemetry.update();
-            sleep(3000);
-            /*vuforia.setFrameQueueCapacity(10);
-            VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
-
-            long numImages = frame.getNumImages();
-            Image rgb = null;
-            for (int i = 0; i < numImages; i++) {
-                if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB565) {
-                    rgb = frame.getImage(i);
-                    break;
-                }
-            }
-            /* TEST
-            telemetry.addData("Testing: ", "Image spot 1");
-            telemetry.addData("RGB: ", rgb);
-            telemetry.update();
-
-            // https://developer.vuforia.com/forum/android/how-transform-camera-image-androidgraphicsbitmap
-            ByteBuffer pixels = rgb.getPixels();
-            telemetry.addData("Pixels: ", pixels);telemetry.update();
-            byte[] pixelArray = new byte[pixels.remaining()];
-            telemetry.addData("Pixel array: ", pixelArray);telemetry.update();
-            telemetry.addData("Pixel length: ", pixelArray.length);telemetry.update();
-            pixels.get(pixelArray, 0, pixelArray.length);
-            telemetry.addData("Pixel array2: ", pixelArray);telemetry.update();
-            telemetry.addData("Pixel length2: ", pixelArray.length);telemetry.update();
-
-            //BitmapFactory.Options opts = new BitmapFactory.Options();
-            //opts.inPreferredConfig = Bitmap.Config.RGB_565;
-            Bitmap bmp = BitmapFactory.decodeByteArray(pixelArray, 0, pixelArray.length, null);
-            telemetry.addData("bmp: ", bmp);telemetry.update();
-
-            /*rgb is now the Image object that weve used in the video*/
-            //Bitmap bmp = Bitmap.createBitmap(rgb.getWidth(), rgb.getHeight(), Bitmap.Config.RGB_565);
-            /*frame.close();
-            int width = bmp.getWidth();
-            int height = bmp.getHeight();
-
-            /* TEST
-            telemetry.addData("Testing: ", "Image spot 2");
-            telemetry.update();
-
-            double redWeight = 0;
-            double blueWeight = 0;
-
-            double red;
-            double blue;
-            double green;
-            double weight;
-
-            for (int row = 0; row < 2 * height / 3; row += 10) {
-                for (int col = 0; col < width / 2; col += 10) {
-                    red = Color.red(bmp.getPixel(col, row));
-                    blue = Color.blue(bmp.getPixel(col, row));
-                    green = Color.green(bmp.getPixel(col, row));
-                    telemetry.addData("red:", red);
-                    telemetry.addData("green: ", green);
-                    telemetry.addData("blue: ", blue);
-                    telemetry.update();
-                    if (red > blue && red > green) {
-                        weight = 1 / (Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2) + 1);
-                        redWeight += red * weight;
-                    } else if (blue > red && blue > green) {
-                        weight = 1 / (Math.pow(row - 3 * height / 4, 2) + Math.pow(col - 2 * width / 3, 2) + 1);
-                        blueWeight += blue * weight;
-                    }
-                }
-            }
-            /*
-            telemetry.addData("blue weight: ", blueWeight);
-            telemetry.addData("red weight: ", redWeight);
-            telemetry.update();
-            if (redWeight > blueWeight) {
-                setJewelResult("red");
-                telemetry.addData("Testing: ", "RED JEWEL DETECTED");
-                telemetry.update();
-                sleep(30000);
-            } else {
-                setJewelResult("blue");
-                telemetry.addData("Testing: ", "BLUE JEWEL DETECTED");
-                telemetry.update();
-                sleep(30000);
-            }
-            /* TEST
-            telemetry.addData("Testing: ", "Image spot 4");
-            telemetry.update();
-
-            //TODO: Replace the Telemetry with actual boops when we have the booper -Seth
-            if (getJewelResult().equals("red")) {
-                //RED
-                if (startPosition.equals("RED_RELIC") || startPosition.equals("RED_MIDDLE")) {
-                    //thing.knockright();
-                    telemetry.addData("Knock: ", "RIGHT");
-                } else {
-                    telemetry.addData("Knock: ", "LEFT");
-                }
-            } else if (getJewelResult().equals("blue")) {
-                if (startPosition.equals("BLUE_RELIC") || startPosition.equals("BLUE_MIDDLE")) {
-                    telemetry.addData("Knock: ", "RIGHT");
-                } else {
-                    telemetry.addData("Knock: ", "LEFT");
-                }
-            } else {
-                telemetry.addData("Knock: ", "NaN - Björk 404: Ball Not Found");
-                telemetry.update();
-            }
-            telemetry.update();
-
-            knockJewel(JewelPosition.LEFT);
-            driveToCryptobox(CrypoboxPosition.LEFT);
-            */
+        if (pictograph == '!') {
+            telemetry.addData("Pictograph", "Unreliable");
+            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
+        } else if (pictograph == 'l') {
+            telemetry.addData("Pictograph", "Left");
+        } else if (pictograph == 'r') {
+            telemetry.addData("Pictograph", "Right");
+        } else if (pictograph == 'c') {
+            telemetry.addData("Pictograph", "Center");
+        } else {
+            telemetry.addData("Pictograph", "ERROR");
+            //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
         }
+
+        //Detect whiffle ball location
+        telemetry.update();
+
+        this.jewelPusher.setPosition(JEWEL_PUSHER_DOWN);
+
+        sleep(2000);
+
+        double red = colorSensor.red();
+        double blue = colorSensor.blue();
+
+        boolean isRedTeam = startPosition.equals("RED_RELIC") || startPosition.equals("RED_MIDDLE");
+
+        telemetry.addData("Red", red);
+        telemetry.addData("Blue", blue);
+        telemetry.addData("Is red team", isRedTeam);
+        telemetry.update();
+        sleep(1000);
+
+        if(red > blue) {
+            if(isRedTeam)knockJewel(JewelPosition.LEFT);
+            else knockJewel(JewelPosition.RIGHT);
+        }
+        else if (red < blue){
+            if(isRedTeam) knockJewel(JewelPosition.RIGHT);
+            else knockJewel(JewelPosition.LEFT);
+        }
+        else {
+            this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+            sleep(1000);
+        }
+        telemetry.setAutoClear(true);
+        driveToCryptobox(pictograph == 'l'? CrypoboxPosition.LEFT : (pictograph == 'r' ? CrypoboxPosition.RIGHT : CrypoboxPosition.CENTER));
     }
 
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
+        double clockwiseTurnWeight = 0;
+        double forwardWeight = 0;
+
         double distanceLF;
         double distanceRF;
         boolean keepMoving = true;
-        while (keepMoving) {
+        while (keepMoving && opModeIsActive()) {
 
             //Set power in direction of motion
             if (moveRight) {
-                steering.moveDegrees(0, 1);
+                steering.moveDegrees(0, 0.5);
             } else {
-                steering.moveDegrees(180, 1);
+                steering.moveDegrees(180, 0.5);
             }
 
             //Sense distances to walls
             distanceLF = ultrasonicFunction.getLF();
-            distanceRF = ultrasonicFunction.getLF();
+            distanceRF = ultrasonicFunction.getRF();
 
             //Determine robot turning off course
             if (distanceLF + 1 < distanceRF) {
@@ -322,10 +227,17 @@ public class DeprecatedAuton extends LinearOpMode {
 
             //Determine robot drifting off course
             if ((distanceLF + distanceRF) / 2 + 1 < wallDistance) {
-                forwardWeight += 0.01;
-            } else if ((distanceLF + distanceRF) / 2 - 1 > wallDistance) {
                 forwardWeight -= 0.01;
+            } else if ((distanceLF + distanceRF) / 2 - 1 > wallDistance) {
+                forwardWeight += 0.01;
             }
+
+            telemetry.addData("Forward weight", forwardWeight);
+            telemetry.addData("Clockwise turn weight", clockwiseTurnWeight);
+            telemetry.addData("Code RF", distanceRF);
+            telemetry.addData("Code LF", distanceLF);
+            ultrasonicFunction.printTestData();
+            telemetry.update();
 
             if (forwardWeight > 0) {
                 steering.moveDegrees(90, forwardWeight);
@@ -340,7 +252,7 @@ public class DeprecatedAuton extends LinearOpMode {
                 keepMoving = ultrasonicFunction.getRight() > sideDistance;
             } else if (!moveRight && senseRight) {
                 keepMoving = ultrasonicFunction.getRight() < sideDistance;
-            } else if (moveRight && !senseRight) {
+            } else if (moveRight) {
                 keepMoving = ultrasonicFunction.getLeft() < sideDistance;
             } else {
                 keepMoving = ultrasonicFunction.getLeft() > sideDistance;
@@ -375,31 +287,34 @@ public class DeprecatedAuton extends LinearOpMode {
     }
 
     public void knockJewel(JewelPosition jewelPosition) {
-        this.jewelPusher.setPosition(JEWEL_PUSHER_DOWN);
+        if (jewelPosition == JewelPosition.LEFT) telemetry.addData("Knocking", "left");
+        if (jewelPosition == JewelPosition.RIGHT) telemetry.addData("Knocking", "right");
+        telemetry.update();
         steering.setSpeedRatio(0.3);
-        long startTime = System.currentTimeMillis();
-        if (jewelPosition == JewelPosition.LEFT) {
-            while ((System.currentTimeMillis() - startTime) < 100) {
-                steering.turn(false);
-                steering.finishSteering();
-            }
-        } else {
-            while ((System.currentTimeMillis() - startTime) < 100) {
-                steering.turn(true);
-                steering.finishSteering();
-            }
-        }
         steering.stopAllMotors();
-        steering.finishSteering();
-        this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
-    }
 
-    public enum CrypoboxPosition {
-        LEFT, CENTER, RIGHT;
+        //Move to knock jewel
+        if (jewelPosition == JewelPosition.LEFT) steering.turnCounterclockwise();
+        else steering.turnClockwise();
+        sleep(300);
+        steering.stopAllMotors();
+
+        //Bring jewel pusher back up
+        this.jewelPusher.setPosition(JEWEL_PUSHER_UP);
+        sleep(1000);
+
+        //Return to original position
+        if (jewelPosition == JewelPosition.LEFT) steering.turnClockwise();
+        else steering.turnCounterclockwise();
+        sleep(300);
+        steering.stopAllMotors();
     }
 
     public enum JewelPosition {
-        LEFT, RIGHT;
+        LEFT, RIGHT
     }
 
+    public enum CrypoboxPosition {
+        LEFT, CENTER, RIGHT
+    }
 }

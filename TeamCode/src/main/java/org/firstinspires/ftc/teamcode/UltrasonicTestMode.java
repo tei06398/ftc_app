@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
 
 @TeleOp(name = "Ultrasonic Test")
 public class UltrasonicTestMode extends OpMode {

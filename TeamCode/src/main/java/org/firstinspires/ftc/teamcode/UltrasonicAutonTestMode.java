@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,9 +8,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import org.firstinspires.ftc.teamcode.util.UltrasonicFunction;
-import org.firstinspires.ftc.teamcode.util.GunnerFunction;
-import org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving;
 
 /**
  * Created 12/30/2017

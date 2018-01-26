@@ -1,14 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmode;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.util.GunnerFunction;
-import org.firstinspires.ftc.teamcode.util.drive.DiagonalVectorSteeringBuilder;
-import org.firstinspires.ftc.teamcode.util.drive.MecanumDriveFunction;
 
-import static org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving.MAX_SPEED_RATIO;
-import static org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving.MIN_SPEED_RATIO;
-import static org.firstinspires.ftc.teamcode.util.deprecated.RobotDriving.NORMAL_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.RobotDriving.MAX_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.RobotDriving.MIN_SPEED_RATIO;
+import static org.firstinspires.ftc.teamcode.RobotDriving.NORMAL_SPEED_RATIO;
 
 /**
  * The main teleop which is used at competitions.
