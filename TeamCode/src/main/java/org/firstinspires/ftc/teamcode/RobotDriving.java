@@ -6,6 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Encapsulates robot driving utilities.
+ * Mecanum and omniwheel math is identical, except that all powers are reversed in mecanum.
  */
 public class RobotDriving {
     private DrivingMotor lf; // stands for left front
@@ -131,10 +132,10 @@ public class RobotDriving {
             // so there's always going to be a speed that's plus or minus 1
             double divider = Math.max(Math.abs(speedX), Math.abs(speedY));
 
-            powerLF += speedX / divider * power;
-            powerRB -= speedX / divider * power;
-            powerLB += speedY / divider * power;
-            powerRF -= speedY / divider * power;
+            powerLF -= speedX / divider * power;
+            powerRB += speedX / divider * power;
+            powerLB -= speedY / divider * power;
+            powerRF += speedY / divider * power;
         }
 
         /**
@@ -160,7 +161,7 @@ public class RobotDriving {
         /* ROTATION */
 
         public void turn(boolean isClockwise, double power) {
-            addToAllPowers(isClockwise ? power : -power);
+            addToAllPowers(isClockwise ? -power : power);
         }
 
         public void turn(double power) { addToAllPowers(power);}

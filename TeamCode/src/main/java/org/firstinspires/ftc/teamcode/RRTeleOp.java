@@ -13,7 +13,7 @@ import static org.firstinspires.ftc.teamcode.RobotDriving.NORMAL_SPEED_RATIO;
 public class RRTeleOp extends OpMode {
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
-    protected GunnerFunction gunnerFunction;
+    //protected GunnerFunction gunnerFunction;
 
     private boolean allowGamepad2B = true; // Toggles gamepad2's B key
 
@@ -26,7 +26,7 @@ public class RRTeleOp extends OpMode {
 
         robotDriving = new RobotDriving(hardwareMap, telemetry);
 
-        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        //gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         steering = robotDriving.getSteering();
     }
@@ -96,7 +96,7 @@ public class RRTeleOp extends OpMode {
         // Left bumper: move around block clockwise
         if (this.gamepad1.left_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
 
-        // GAMEPAD 2 (GUNNER)
+        /*// GAMEPAD 2 (GUNNER)
         // Up/down keys: winch
         if (this.gamepad2.dpad_up) {
             gunnerFunction.upWinch();
@@ -142,7 +142,7 @@ public class RRTeleOp extends OpMode {
             }
         } else {
             allowGamepad2B = true;
-        }
+        }*/
 
         // Finish the steering, which puts power in the motors.
         steering.finishSteering();
