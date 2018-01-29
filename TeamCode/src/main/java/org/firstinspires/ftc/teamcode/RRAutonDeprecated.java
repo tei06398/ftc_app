@@ -4,12 +4,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.hardware.Camera;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
-import com.qualcomm.ftccommon.FtcRobotControllerService;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.FtcRobotControllerServiceState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -18,12 +13,9 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.nio.ByteBuffer;
 
 /**
@@ -130,7 +122,7 @@ public class RRAutonDeprecated extends LinearOpMode {
         steering = robotDriving.getSteering();
 
         //Ultrasonic function instantiation
-        ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
+        ultrasonicFunction = new UltrasonicFunction(hardwareMap, new RobotLog("NiskyRobot", telemetry));
 
         //Tell Vuforia to display video feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

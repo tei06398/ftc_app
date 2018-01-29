@@ -8,13 +8,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.Vuforia;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * Created 12/30/2017
@@ -75,7 +68,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
         steering = robotDriving.getSteering();
         steering.setSpeedRatio(SPEED_RATIO);
 
-        ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
+        ultrasonicFunction = new UltrasonicFunction(hardwareMap, new RobotLog("NiskyRobot", telemetry));
 
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 

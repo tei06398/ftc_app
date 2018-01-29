@@ -1,23 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 public class NumberLog {
     private ArrayList<Double> items;
     private ArrayList<Double> allItems;
 
-    private String tag;
+    private RobotLog robotLog;
     private int bufferSize;
     private static int DEFAULT_BUFFER_SIZE = 10;
 
-    public NumberLog(String tag) {
-        this(tag, DEFAULT_BUFFER_SIZE);
+    public NumberLog(RobotLog robotLog) {
+        this(robotLog, DEFAULT_BUFFER_SIZE);
     }
 
-    public NumberLog(String tag, int bufferSize) {
-        this.tag = tag;
+    public NumberLog(RobotLog robotLog, int bufferSize) {
+        this.robotLog = robotLog;
         this.bufferSize = bufferSize;
         items = new ArrayList<>();
         allItems = new ArrayList<>();
@@ -42,7 +40,7 @@ public class NumberLog {
         appendData(msg, "standard deviation", String.valueOf(calculateStandardDeviation(mean)));
         appendData(msg, "raw", raw);
 
-        Log.d(tag, msg.toString());
+        robotLog.d(msg.toString());
 
         items.clear();
     }

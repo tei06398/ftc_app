@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -11,7 +8,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -19,8 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
-import java.nio.ByteBuffer;
 
 /**
  * Created 12/30/2017
@@ -120,7 +114,7 @@ public class UltrasonicAuton extends LinearOpMode {
         steering.setSpeedRatio(SPEED_RATIO);
 
         //Ultrasonic function instantiation
-        ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
+        ultrasonicFunction = new UltrasonicFunction(hardwareMap, RobotLog.getRootInstance(telemetry));
 
         //Tell Vuforia to display video feed
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

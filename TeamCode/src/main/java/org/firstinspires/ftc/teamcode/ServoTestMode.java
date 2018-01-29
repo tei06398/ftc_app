@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.*;
@@ -9,9 +10,15 @@ public class ServoTestMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         //Servo servo = this.hardwareMap.servo.get("digitalServo");
+        //ServoController servoController = this.hardwareMap.servoController.get("Servo Controller 1");this.hardwareMap.logDevices();
+        //servoController.pwmEnable();
         DcMotor motor = this.hardwareMap.dcMotor.get("motor");
-        PWMOutput pwmOutput = hardwareMap.pwmOutput.get("digitalServo");
         Servo servo = this.hardwareMap.servo.get("digitalServo");
+        //ServoImplEx servoImplEx = (ServoImplEx) servo;
+        //Log.i("NiskyRobot", "{Log is here}");
+        //this.hardwareMap.logDevices();
+
+        //PWMOutput pwmOutput = hardwareMap.pwmOutput.get("digitalServo");
 
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double position = 0;
@@ -31,8 +38,8 @@ public class ServoTestMode extends LinearOpMode {
             if (position > 1.0) {
                 position = 1;
             }
-            if (gamepad1.a) pwmOutput.setPulseWidthOutputTime(1000);
-            if (gamepad2.b) pwmOutput.setPulseWidthOutputTime(2000);
+            //if (gamepad1.a) pwmOutput.setPulseWidthOutputTime(1000);
+            //if (gamepad2.b) pwmOutput.setPulseWidthOutputTime(2000);
             if (gamepad1.x) {
                 motor.setPower(.5);
             } else if (gamepad1.y) {

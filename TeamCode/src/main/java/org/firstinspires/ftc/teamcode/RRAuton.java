@@ -1,28 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.hardware.Camera;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
-import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.FtcRobotControllerServiceState;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.*;
 
-import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.nio.ByteBuffer;
 
 /**
  * The official autonomous mode.
@@ -36,6 +23,7 @@ public class RRAuton extends LinearOpMode {
 
     protected UltrasonicFunction ultrasonicFunction;
     protected GunnerFunction gunnerFunction;
+    protected RobotLog log;
 
     SharedPreferences sharedPref;
     protected String startPosition; // RED_RELIC, RED_MIDDLE, BLUE_RELIC, BLUE_MIDDLE
@@ -62,7 +50,8 @@ public class RRAuton extends LinearOpMode {
         robotDriving = new RobotDriving(hardwareMap, telemetry);
         steering = robotDriving.getSteering();
 
-        ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
+        log = RobotLog.getRootInstance(telemetry);
+        ultrasonicFunction = new UltrasonicFunction(hardwareMap, log);
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         /* VUFORIA CODE */

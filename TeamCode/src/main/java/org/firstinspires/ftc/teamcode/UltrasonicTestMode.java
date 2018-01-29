@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.FtcRobotControllerServiceState;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @TeleOp(name = "Ultrasonic Test")
@@ -11,7 +9,7 @@ public class UltrasonicTestMode extends OpMode {
     
     @Override
     public void init() {
-        ultrasonicFunction = new UltrasonicFunction(hardwareMap, telemetry);
+        ultrasonicFunction = new UltrasonicFunction(hardwareMap, RobotLog.getRootInstance(telemetry));
     }
     
     @Override

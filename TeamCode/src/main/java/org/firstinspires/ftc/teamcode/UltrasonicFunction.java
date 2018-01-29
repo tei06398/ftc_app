@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.LegacyModule;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * This class contains utilities that read from ultrasonic sensors.
@@ -14,19 +12,18 @@ public class UltrasonicFunction {
     private SmoothUltrasonic ultrasonicRF;
     private SmoothUltrasonic ultrasonicLF;
 
-    private Telemetry telemetry;
-    
-    public UltrasonicFunction (HardwareMap hardwareMap, Telemetry telemetry) {
-        this.ultrasonicLeft = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLeft"), telemetry); //module 2, port 1
-        this.ultrasonicRight = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRight"), telemetry);//module 2, port 2
-        this.ultrasonicLF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLF"), telemetry); //module 3, port 3
-        this.ultrasonicRF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRF"), telemetry); //module 4, port 4
+    private RobotLog log;
+
+    public UltrasonicFunction (HardwareMap hardwareMap, RobotLog log) {
+        this.log = log;
+
+        this.ultrasonicLeft = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLeft"), log.child("L")); //module 2, port 1
+        this.ultrasonicRight = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRight"), log.child("R"));//module 2, port 2
+        this.ultrasonicLF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLF"), log.child("LF")); //module 3, port 3
+        this.ultrasonicRF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRF"), log.child("RF")); //module 4, port 4
 
         hardwareMap.legacyModule.get("Legacy Module 2").enable9v(4, true);
         hardwareMap.legacyModule.get("Legacy Module 2").enable9v(5, true);
-
-
-        this.telemetry = telemetry;
     }
 
     public double getLeft() {
@@ -66,11 +63,16 @@ public class UltrasonicFunction {
     public static class SmoothUltrasonic {
         private UltrasonicSensor ultrasonicSensor;
         private double distance;
-        private Telemetry telemetry;
+        private NumberLog rawLog;
+        private NumberLog readingLog;
+        private NumberLog successLog;
 
-        public SmoothUltrasonic (UltrasonicSensor ultrasonicSensor, Telemetry telemetry) {
+        public SmoothUltrasonic (UltrasonicSensor ultrasonicSensor, RobotLog log) {
             this.ultrasonicSensor = ultrasonicSensor;
-            this.telemetry = telemetry;
+
+            rawLog = log.child("raw").getNumberLog();
+            readingLog = log.child("readingLog").getNumberLog();
+            successLog = log.child("successLog").getNumberLog();
 
             distance = 255;
             getDistance();
@@ -82,15 +84,17 @@ public class UltrasonicFunction {
             double successes = 0;
             for (int attempt = 0; attempt < 20; attempt++) {
                 outputValue = ultrasonicSensor.getUltrasonicLevel();
+                rawLog.addItem(outputValue);
                 if (outputValue != 0 && outputValue != 255 && outputValue != 127) {
                     sum += outputValue;
                     successes++;
                 }
             }
-            telemetry.addData("Number of successes: ", successes);
+            successLog.addItem(successes);
             if (successes > 0) {
                 distance = sum/successes;
             }
+            readingLog.addItem(distance);
             return distance;
         }
 
@@ -101,13 +105,13 @@ public class UltrasonicFunction {
     
     public void test() {
         printTestData();
-        telemetry.update();
+        log.getTelemetry().update();
     }
 
     public void printTestData() {
-        telemetry.addData("Ultrasonic LEFT", getLeft());
-        telemetry.addData("Ultrasonic RIGHT", getRight());
-        telemetry.addData("Ultrasonic LEFT_FRONT", getLF());
-        telemetry.addData("Ultrasonic RIGHT_FRONT", getRF());
+        log.getTelemetry().addData("Ultrasonic LEFT", getLeft());
+        log.getTelemetry().addData("Ultrasonic RIGHT", getRight());
+        log.getTelemetry().addData("Ultrasonic LEFT_FRONT", getLF());
+        log.getTelemetry().addData("Ultrasonic RIGHT_FRONT", getRF());
     }
 }
