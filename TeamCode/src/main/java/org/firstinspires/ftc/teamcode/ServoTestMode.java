@@ -13,30 +13,49 @@ public class ServoTestMode extends LinearOpMode {
         //ServoController servoController = this.hardwareMap.servoController.get("Servo Controller 1");this.hardwareMap.logDevices();
         //servoController.pwmEnable();
         DcMotor motor = this.hardwareMap.dcMotor.get("motor");
-        Servo servo = this.hardwareMap.servo.get("digitalServo");
+        Servo servo1 = this.hardwareMap.servo.get("digitalServo1");
+        Servo servo2 = this.hardwareMap.servo.get("digitalServo2");
         //ServoImplEx servoImplEx = (ServoImplEx) servo;
         //Log.i("NiskyRobot", "{Log is here}");
         //this.hardwareMap.logDevices();
 
         //PWMOutput pwmOutput = hardwareMap.pwmOutput.get("digitalServo");
 
+
+        //Increase Close and Lift
+        //Grabber servo1
+        //Lifter servo2
+
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double position = 0;
+        double lifterposition = 0;
+        double grabberposition = 0;
         final double rate = 1.0 / 180;
 
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad1.dpad_left) {
-                position -= rate;
+                lifterposition -= rate;
             }
             if (gamepad1.dpad_right) {
-                position += rate;
+                lifterposition += rate;
             }
-            if (position < 0.0) {
-                position = 0;
+            if (gamepad1.dpad_up) {
+                grabberposition += rate;
             }
-            if (position > 1.0) {
-                position = 1;
+            if (gamepad1.dpad_down) {
+                grabberposition -= rate;
+            }
+            if (lifterposition < 0.0) {
+                lifterposition = 0;
+            }
+            if (lifterposition > 1.0) {
+                lifterposition = 1;
+            }
+            if (grabberposition < 0.0) {
+                grabberposition = 0;
+            }
+            if (grabberposition > 1.0) {
+                grabberposition = 1;
             }
             //if (gamepad1.a) pwmOutput.setPulseWidthOutputTime(1000);
             //if (gamepad2.b) pwmOutput.setPulseWidthOutputTime(2000);
@@ -48,8 +67,10 @@ public class ServoTestMode extends LinearOpMode {
                 motor.setPower(0);
             }
 
-            servo.setPosition(position);
-            telemetry.addData("Servo position", position);
+            servo1.setPosition(lifterposition);
+            servo2.setPosition(grabberposition);
+            telemetry.addData("Grabber position", grabberposition);
+            telemetry.addData("Lifter position", lifterposition);
             telemetry.update();
             sleep(10);
         }
