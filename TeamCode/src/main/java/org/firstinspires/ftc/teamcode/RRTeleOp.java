@@ -13,12 +13,13 @@ import static org.firstinspires.ftc.teamcode.RobotDriving.NORMAL_SPEED_RATIO;
 public class RRTeleOp extends OpMode {
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
-    //protected GunnerFunction gunnerFunction;
-
-    private boolean allowGamepad2B = true; // Toggles gamepad2's B key
+    protected GunnerFunction gunnerFunction;
 
     // The weight given to rotation (as opposed to left/right strafe) during pivoting
     private final static double BLOCK_ROTATION_WEIGHT = 0.5;
+
+    private boolean disable2A = false;
+    private boolean disable2B = false;
 
     public void init() {
         // No motors/servos are instantiated here because everything is done in the RobotDriving, GunnerFunction, etc.
@@ -26,7 +27,7 @@ public class RRTeleOp extends OpMode {
 
         robotDriving = new RobotDriving(hardwareMap, telemetry);
 
-        //gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         steering = robotDriving.getSteering();
     }
@@ -96,7 +97,7 @@ public class RRTeleOp extends OpMode {
         // Left bumper: move around block clockwise
         if (this.gamepad1.left_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
 
-        /*// GAMEPAD 2 (GUNNER)
+        // GAMEPAD 2 (GUNNER)
         // Up/down keys: winch
         if (this.gamepad2.dpad_up) {
             gunnerFunction.upWinch();
@@ -122,9 +123,9 @@ public class RRTeleOp extends OpMode {
             gunnerFunction.openGlyphterIncremental();
         }
 
-        // A: expand relic slide
+        // X: expand relic slide
         // Y: retract
-        if (this.gamepad2.a) {
+        if (this.gamepad2.x) {
             gunnerFunction.expandRelicSlide();
         }
         else if (this.gamepad2.y) {
@@ -134,15 +135,25 @@ public class RRTeleOp extends OpMode {
             gunnerFunction.stopRelicSlide();
         }
 
-        // B: toggle glyphter rotation
-        if (this.gamepad2.b) {
-            if (allowGamepad2B) {
-                allowGamepad2B = false;
-                gunnerFunction.rotateGlyphter();
+        // A: toggle relic grabber pivot
+        if (gamepad2.a) {
+            if (!disable2A) {
+                gunnerFunction.toggleRelicGrabberPivot();
             }
+            disable2A = true;
         } else {
-            allowGamepad2B = true;
-        }*/
+            disable2A = false;
+        }
+
+        // B: toggle relic grabber
+        if (gamepad2.b) {
+            if (!disable2B) {
+                gunnerFunction.toggleRelicGrabber();
+            }
+            disable2B = true;
+        } else {
+            disable2B = false;
+        }
 
         // Finish the steering, which puts power in the motors.
         steering.finishSteering();
