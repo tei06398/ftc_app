@@ -31,7 +31,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
     protected RobotDriving.Steering steering;
 
     protected UltrasonicFunction ultrasonicFunction;
-    protected GunnerFunction gunnerFunction;
+    protected GunnerFunctionDeprecated gunnerFunction;
     protected ColorSensor colorSensor;
 
     SharedPreferences sharedPref;
@@ -70,7 +70,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
 
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, new RobotLog("NiskyRobot", telemetry));
 
-        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        gunnerFunction = new GunnerFunctionDeprecated(hardwareMap, telemetry);
 
         waitForStart();
 

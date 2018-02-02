@@ -22,7 +22,7 @@ public class RRAuton extends LinearOpMode {
     protected RobotDriving.Steering steering;
 
     protected UltrasonicFunction ultrasonicFunction;
-    protected GunnerFunction gunnerFunction;
+    protected GunnerFunctionDeprecated gunnerFunction;
     protected RobotLog log;
 
     SharedPreferences sharedPref;
@@ -52,7 +52,7 @@ public class RRAuton extends LinearOpMode {
 
         log = RobotLog.getRootInstance(telemetry);
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, log);
-        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        gunnerFunction = new GunnerFunctionDeprecated(hardwareMap, telemetry);
 
         /* VUFORIA CODE */
 

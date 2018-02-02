@@ -23,8 +23,10 @@ public class ServoTestMode extends LinearOpMode {
 
 
         //Increase Close and Lift
-        //Grabber servo1
-        //Lifter servo2
+        //Lifter servo1
+        //Grabber servo2
+        //Lifter Retracted: 0
+        //Lifter Deployed: 0.73
 
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double lifterposition = 0;

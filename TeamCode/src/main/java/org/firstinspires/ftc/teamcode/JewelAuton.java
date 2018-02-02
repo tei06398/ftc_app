@@ -15,7 +15,7 @@ public class JewelAuton extends LinearOpMode {
     protected DcMotor motorLB = null;
     protected DcMotor motorRB = null;
     protected Servo jewelPusher = null;
-    protected GunnerFunction gunnerFunction;
+    protected GunnerFunctionDeprecated gunnerFunction;
     protected DcMotor motorWinch = null;
     protected DcMotor motorRelicSlide = null;
     protected Servo servoGlyphter = null;
@@ -55,7 +55,7 @@ public class JewelAuton extends LinearOpMode {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
 
-        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        gunnerFunction = new GunnerFunctionDeprecated(hardwareMap, telemetry);
 
 
         // RobotDriving instantiation
