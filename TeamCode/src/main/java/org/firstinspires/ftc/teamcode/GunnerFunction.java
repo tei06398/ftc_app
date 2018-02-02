@@ -9,41 +9,31 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * A utility class that controls all the gunner functions (opening and closing the glyphter, rotating the glypter, etc).
  */
 public class GunnerFunction {
-    private static final double GLYPHTER_SERVO_LEFT_CLOSE_POSITION = 0.7;
-    private static final double GLYPHTER_SERVO_LEFT_OPEN_POSITION = 0.2;
-    private static final double GLYPHTER_SERVO_RIGHT_CLOSE_POSITION = 0.3;
-    private static final double GLYPHTER_SERVO_RIGHT_OPEN_POSITION = 0.8;
-    private static final double GLYPHTER_SERVO_INCREMENTAL_SPEED = 0.01;
-
-    private static final double GLYPHTER_ROTATION_SERVO_NORMAL_POS = 180;
-    private static final double GLYPHTER_ROTATION_SERVO_ROTATED_POS = 0;
+    // TODO: These servos are probably NOT continuous rotation! Change numbers.
     private static final double JEWELPUSHER_SERVO_UP_POS = 1;
+    private static final double JEWELPUSHER_SERVO_DOWN_POS = 0;
 
     private final DcMotor motorRelicSlide;
     private final DcMotor motorWinch;
-    private final Servo servoGlyphterRotation;
     private final Servo servoJewelPusher;
-    private final Servo servoGlyphterLeft;
-    private final Servo servoGlyphterRight;
+    private final TwoStateServo servoGlyphterLeft;
+    private final TwoStateServo servoGlyphterRight;
+    private final TwoStateServo relicGrabber;
+    private final TwoStateServo relicLifter;
     private final Telemetry telemetry;
-
-    // TODO: Move jewel pusher utilities to separate class
-    private static final double JEWELPUSHER_SERVO_DOWN_POS = 0;
-
-    private boolean isGlyphterRotated = false;
 
     GunnerFunction(HardwareMap hardwareMap, Telemetry telemetry) {
         // Load the needed devices from the hardware map
         this.motorWinch = hardwareMap.dcMotor.get("winchMotor");
         this.motorRelicSlide = hardwareMap.dcMotor.get("relicSlideMotor");
-        this.servoGlyphterLeft = hardwareMap.servo.get("glyphterServoLeft");
-        servoGlyphterLeft.setPosition(GLYPHTER_SERVO_LEFT_CLOSE_POSITION);
-        this.servoGlyphterRight = hardwareMap.servo.get("glyphterServoRight");
-        servoGlyphterRight.setPosition(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION);
-        this.servoGlyphterRotation = hardwareMap.servo.get("glyphterRotationServo");
+        this.servoGlyphterLeft = new TwoStateServo(hardwareMap.servo.get("glyphterServoLeft"), 0, 0.5, 1, true);
+        this.servoGlyphterRight = new TwoStateServo(hardwareMap.servo.get("glyphterServoRight"), 0, 0.5, 1, true);
         this.servoJewelPusher = hardwareMap.servo.get("jewelPusher");
+        this.relicGrabber = new TwoStateServo(hardwareMap.servo.get("relicGrabber"), 0, 0.5);
+        this.relicLifter = new TwoStateServo(hardwareMap.servo.get("relicLifter"), 0, 0.5);
+
         this.telemetry = telemetry;
-        servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_NORMAL_POS);
+
         servoJewelPusher.setPosition(JEWELPUSHER_SERVO_UP_POS);
     }
 
@@ -60,35 +50,23 @@ public class GunnerFunction {
     }
 
     public void openGlyphter() {
-        servoGlyphterLeft.setPosition(GLYPHTER_SERVO_LEFT_OPEN_POSITION);
-        servoGlyphterRight.setPosition(GLYPHTER_SERVO_RIGHT_OPEN_POSITION);
+        servoGlyphterLeft.passive();
+        servoGlyphterRight.passive();
     }
 
     public void closeGlyphter() {
-        servoGlyphterLeft.setPosition(GLYPHTER_SERVO_LEFT_CLOSE_POSITION);
-        servoGlyphterRight.setPosition(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION);
+        servoGlyphterLeft.active();
+        servoGlyphterRight.active();
     }
 
     public void openGlyphterIncremental() {
-        servoGlyphterLeft.setPosition(clipRange(GLYPHTER_SERVO_LEFT_OPEN_POSITION,
-                GLYPHTER_SERVO_LEFT_CLOSE_POSITION,
-                servoGlyphterLeft.getPosition() - GLYPHTER_SERVO_INCREMENTAL_SPEED));
-        servoGlyphterRight.setPosition(clipRange(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION,
-                GLYPHTER_SERVO_RIGHT_OPEN_POSITION,
-                servoGlyphterRight.getPosition() + GLYPHTER_SERVO_INCREMENTAL_SPEED));
-    }
-
-    private double clipRange(double min, double max, double value) {
-        return Math.min(max, Math.max(value, min));
+        servoGlyphterLeft.incrementTowardsPassive();
+        servoGlyphterRight.incrementTowardsPassive();
     }
 
     public void closeGlyphterIncremental() {
-        servoGlyphterLeft.setPosition(clipRange(GLYPHTER_SERVO_LEFT_OPEN_POSITION,
-                GLYPHTER_SERVO_LEFT_CLOSE_POSITION,
-                servoGlyphterLeft.getPosition() + GLYPHTER_SERVO_INCREMENTAL_SPEED));
-        servoGlyphterRight.setPosition(clipRange(GLYPHTER_SERVO_RIGHT_CLOSE_POSITION,
-                GLYPHTER_SERVO_RIGHT_OPEN_POSITION,
-                servoGlyphterRight.getPosition() - GLYPHTER_SERVO_INCREMENTAL_SPEED));
+        servoGlyphterLeft.incrementTowardsActive();
+        servoGlyphterRight.incrementTowardsActive();
     }
 
     public void lowerJewelPusher() { servoJewelPusher.setPosition(JEWELPUSHER_SERVO_DOWN_POS); }
@@ -96,31 +74,30 @@ public class GunnerFunction {
     public void raiseJewelPusher() { servoJewelPusher.setPosition(JEWELPUSHER_SERVO_UP_POS); }
 
     public void expandRelicSlide() {
-        motorRelicSlide.setPower(0.2);
+        // TODO: maybe make bigger
+        motorRelicSlide.setPower(0.1);
     }
 
     public void retractRelicSlide() {
-        motorRelicSlide.setPower(-0.2);
+        motorRelicSlide.setPower(-0.1);
     }
 
     public void stopRelicSlide() {
         motorRelicSlide.setPower(0);
     }
 
-    public void rotateGlyphter() {
-        if(isGlyphterRotated){
-            servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_NORMAL_POS);
-            isGlyphterRotated = false;
-        }
-        else{
-            servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_ROTATED_POS);
-            isGlyphterRotated = true;
-        }
+    public void toggleRelicGrabber() {
+        relicGrabber.toggle();
+    }
+
+    public void toggleRelicGrabberPivot() {
+        relicLifter.toggle();
     }
 
     public void reset() {
-        servoGlyphterRotation.setPosition(GLYPHTER_ROTATION_SERVO_NORMAL_POS);
         closeGlyphter();
+        relicGrabber.passive();
+        relicLifter.passive();
         servoJewelPusher.setPosition(JEWELPUSHER_SERVO_UP_POS);
     }
 }
