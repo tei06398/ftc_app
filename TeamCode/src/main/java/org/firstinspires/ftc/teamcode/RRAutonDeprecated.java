@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 /**
  * Created 11/13/2017
  */
+@Deprecated
 //@Autonomous(name = "Deprecated Auton Mode")
 public class RRAutonDeprecated extends LinearOpMode {
     //Declares Motors
@@ -151,7 +152,7 @@ public class RRAutonDeprecated extends LinearOpMode {
         telemetry.setAutoClear(false);
         telemetry.setMsTransmissionInterval(0);
 
-        //Get a semi-reliable reading of the Pictograph
+        //Get retractRelicSlide semi-reliable reading of the Pictograph
         while (this.opModeIsActive()) {
             int total = 0;
             char pictograph = 'E';
@@ -168,7 +169,7 @@ public class RRAutonDeprecated extends LinearOpMode {
 
             if (pictograph == '!') {
                 telemetry.addData("Pictograph", "Unreliable");
-                //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
+                //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for retractRelicSlide logical interpretation.
             } else if (pictograph == 'l') {
                 telemetry.addData("Pictograph", "Left");
             } else if (pictograph == 'r') {

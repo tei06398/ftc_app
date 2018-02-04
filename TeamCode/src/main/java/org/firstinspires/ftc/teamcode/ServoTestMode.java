@@ -59,7 +59,7 @@ public class ServoTestMode extends LinearOpMode {
             if (grabberposition > 1.0) {
                 grabberposition = 1;
             }
-            //if (gamepad1.a) pwmOutput.setPulseWidthOutputTime(1000);
+            //if (gamepad1.retractRelicSlide) pwmOutput.setPulseWidthOutputTime(1000);
             //if (gamepad2.b) pwmOutput.setPulseWidthOutputTime(2000);
             if (gamepad1.x) {
                 motor.setPower(.5);

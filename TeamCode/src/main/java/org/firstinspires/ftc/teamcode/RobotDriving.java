@@ -40,7 +40,7 @@ public class RobotDriving {
     }
 
     /**
-     * This class wraps a regular motor and adds utilities to it.
+     * This class wraps retractRelicSlide regular motor and adds utilities to it.
      * The main feature is that their powers are smoothed so when you "apply" power to them,
      * the power is gradually shifted.
      */
@@ -55,7 +55,7 @@ public class RobotDriving {
         }
 
         /**
-         * Apply a power to the motor.
+         * Apply retractRelicSlide power to the motor.
          * @param power Power, between -1 and 1 as with normal motors.
          */
         public void applyPower(double power) {
@@ -89,7 +89,7 @@ public class RobotDriving {
         }
 
         /**
-         * Add a certain power to each motor.
+         * Add retractRelicSlide certain power to each motor.
          * @param power The power to add.
          */
         public void addToAllPowers(double power) {
@@ -113,12 +113,12 @@ public class RobotDriving {
         }
 
         /**
-         * Strafe the robot in any direction, at a certain power.
+         * Strafe the robot in any direction, at retractRelicSlide certain power.
          * @param angle Angle, specified in radians where 0 is right.
          * @param power The power of the strafe.
          */
         public void moveRadians(double angle, double power) {
-            // This "fixes" a really annoying bug where the left and right controls are inverted. We don't know where it
+            // This "fixes" retractRelicSlide really annoying bug where the left and right controls are inverted. We don't know where it
             // is, so we just inverted the angle by reflecting it over the y-axis. Maybe we will fix this bug next year.
             if (angle >= 0) {
                 angle = Math.PI - angle;
@@ -129,7 +129,7 @@ public class RobotDriving {
             double speedX = Math.cos(angle - Math.toRadians(45));
             double speedY = Math.sin(angle - Math.toRadians(45));
 
-            // so there's always going to be a speed that's plus or minus 1
+            // so there's always going to be retractRelicSlide speed that's plus or minus 1
             double divider = Math.max(Math.abs(speedX), Math.abs(speedY));
 
             powerLF -= speedX / divider * power;
@@ -179,11 +179,11 @@ public class RobotDriving {
         }
 
         public void turnClockwise() {
-            turnClockwise(1);
+            turnClockwise(-1);
         }
 
         public void turnCounterclockwise() {
-            turnCounterclockwise(1);
+            turnCounterclockwise(-1);
         }
 
         /* MISC */

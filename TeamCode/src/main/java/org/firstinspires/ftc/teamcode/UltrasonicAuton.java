@@ -96,7 +96,7 @@ public class UltrasonicAuton extends LinearOpMode {
         this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");//module 2, port 2
         this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF"); //module 3, port 3
         this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF"); //module 4, port 4
-        this.colorSensor = this.hardwareMap.colorSensor.get("colorSensor");
+        this.colorSensor = this.hardwareMap.colorSensor.get("jewelTipper");
 
         this.motorLF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -143,7 +143,7 @@ public class UltrasonicAuton extends LinearOpMode {
         telemetry.setAutoClear(false);
         telemetry.setMsTransmissionInterval(0);
 
-        //Get a semi-reliable reading of the Pictograph
+        //Get retractRelicSlide semi-reliable reading of the Pictograph
         int total = 0;
         char pictograph = 'E';
         //while (total < 3) {
@@ -159,7 +159,7 @@ public class UltrasonicAuton extends LinearOpMode {
 
         if (pictograph == '!') {
             telemetry.addData("Pictograph", "Unreliable");
-            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
+            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for retractRelicSlide logical interpretation.
         } else if (pictograph == 'l') {
             telemetry.addData("Pictograph", "Left");
         } else if (pictograph == 'r') {

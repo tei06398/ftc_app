@@ -16,13 +16,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
  */
 @Autonomous(name = "RR Official Auton Mode")
 public class RRAuton extends LinearOpMode {
-    protected ColorSensor colorSensor;
+    protected ColorSensor jewelTipper;
 
     protected RobotDriving robotDriving;
     protected RobotDriving.Steering steering;
 
     protected UltrasonicFunction ultrasonicFunction;
-    protected GunnerFunctionDeprecated gunnerFunction;
+    protected GunnerFunction gunnerFunction;
     protected RobotLog log;
 
     SharedPreferences sharedPref;
@@ -42,7 +42,7 @@ public class RRAuton extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        this.colorSensor = this.hardwareMap.colorSensor.get("colorSensor");
+        this.jewelTipper = this.hardwareMap.colorSensor.get("jewelTipper");
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
         startPosition = sharedPref.getString("auton_start_position", "RED_RELIC");
@@ -52,7 +52,7 @@ public class RRAuton extends LinearOpMode {
 
         log = RobotLog.getRootInstance(telemetry);
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, log);
-        gunnerFunction = new GunnerFunctionDeprecated(hardwareMap, telemetry);
+        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         /* VUFORIA CODE */
 
@@ -90,7 +90,7 @@ public class RRAuton extends LinearOpMode {
 
         if (pictograph == '!') {
             telemetry.addData("Pictograph", "Unreliable");
-            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for a logical interpretation.
+            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for retractRelicSlide logical interpretation.
         } else if (pictograph == 'l') {
             telemetry.addData("Pictograph", "Left");
         } else if (pictograph == 'r') {
@@ -103,7 +103,6 @@ public class RRAuton extends LinearOpMode {
         }
 
         /* KNOCK JEWEL */
-
         telemetry.update();
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
         steering.moveDegrees(90);
@@ -232,7 +231,7 @@ public class RRAuton extends LinearOpMode {
     }
 
     /**
-     * Move along a wall.
+     * Move along retractRelicSlide wall.
      */
     public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
@@ -373,7 +372,7 @@ public class RRAuton extends LinearOpMode {
     }
 
     /**
-     * Align to a wall.
+     * Align to retractRelicSlide wall.
      */
     public void alignToWall() {
         steering.setSpeedRatio(TURN_SPEED_RATIO);
@@ -491,10 +490,10 @@ public class RRAuton extends LinearOpMode {
         telemetry.addData("knockJewel Method called", "");
         telemetry.update();
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
-        gunnerFunction.lowerJewelPusher();
+        gunnerFunction.extendJewelPusher();
         sleep(2000);
-        double red = colorSensor.red();
-        double blue = colorSensor.blue();
+        double red = jewelTipper.red();
+        double blue = jewelTipper.blue();
 
         boolean isRedTeam = startPosition.equals("RED_RELIC") || startPosition.equals("RED_MIDDLE");
 
@@ -514,7 +513,7 @@ public class RRAuton extends LinearOpMode {
                 pushJewel(JewelPosition.LEFT);
             }
         } else {
-            gunnerFunction.raiseJewelPusher();
+            gunnerFunction.retractJewelPusher();
             sleep(1000);
         }
         alignToWall();
@@ -529,7 +528,7 @@ public class RRAuton extends LinearOpMode {
             steering.finishSteering();
             sleep(200);
             steering.stopAllMotors();
-            gunnerFunction.raiseJewelPusher();
+            gunnerFunction.retractJewelPusher();
             sleep(1000);
             steering.turn(0.1);
             steering.finishSteering();
@@ -540,7 +539,7 @@ public class RRAuton extends LinearOpMode {
             steering.finishSteering();
             sleep(200);
             steering.stopAllMotors();
-            gunnerFunction.raiseJewelPusher();
+            gunnerFunction.retractJewelPusher();
             sleep(1000);
             steering.turn(-0.1);
             steering.finishSteering();

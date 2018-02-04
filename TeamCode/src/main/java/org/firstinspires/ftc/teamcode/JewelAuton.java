@@ -43,7 +43,7 @@ public class JewelAuton extends LinearOpMode {
         this.motorRF.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorLB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorRB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        this.colorSensor = this.hardwareMap.colorSensor.get("colorSensor");
+        this.colorSensor = this.hardwareMap.colorSensor.get("jewelTipper");
         this.jewelPusher = this.hardwareMap.servo.get("jewelPusher");
 
         this.motorWinch = this.hardwareMap.dcMotor.get("winchMotor");
@@ -151,7 +151,7 @@ public class JewelAuton extends LinearOpMode {
         }
     }
 
-    //Currently not working for some reason. Test at home at a later time.
+    //Currently not working for some reason. Test at home at retractRelicSlide later time.
     public void knockJewel(JewelPosition jewelPosition) {
         if (jewelPosition == JewelPosition.LEFT) telemetry.addData("Knocking", "left");
         if (jewelPosition == JewelPosition.RIGHT) telemetry.addData("Knocking", "right");

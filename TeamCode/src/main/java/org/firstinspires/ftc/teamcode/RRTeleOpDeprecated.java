@@ -34,7 +34,7 @@ public class RRTeleOpDeprecated extends OpMode {
     public void loop() {
         // TESTING
         /*
-        if (this.gamepad1.a) {
+        if (this.gamepad1.retractRelicSlide) {
             if (!disableA1) BLOCK_ROTATION_WEIGHT += 0.05;
             disableA1 = true;
         } else {
@@ -124,11 +124,11 @@ public class RRTeleOpDeprecated extends OpMode {
 
         // A: expand relic slide
         // Y: retract
-        if (this.gamepad2.a) {
-            gunnerFunction.expandRelicSlide();
+        if (this.gamepad2.retractRelicSlide) {
+            gunnerFunction.retractRelicSlide();
         }
         else if (this.gamepad2.y) {
-            gunnerFunction.retractRelicSlide();
+            gunnerFunction.extendRelicSlide();
         }
         else {
             gunnerFunction.stopRelicSlide();

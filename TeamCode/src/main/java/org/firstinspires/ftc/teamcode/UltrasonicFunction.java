@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 public class UltrasonicFunction {
     private SmoothUltrasonic ultrasonicLeft;
     private SmoothUltrasonic ultrasonicRight;
-    private SmoothUltrasonic ultrasonicRF;
-    private SmoothUltrasonic ultrasonicLF;
+    private SmoothUltrasonic ultrasonicRB;
+    private SmoothUltrasonic ultrasonicLB;
 
     private RobotLog log;
 
@@ -19,8 +19,8 @@ public class UltrasonicFunction {
 
         this.ultrasonicLeft = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLeft"), log.child("L")); //module 2, port 1
         this.ultrasonicRight = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRight"), log.child("R"));//module 2, port 2
-        this.ultrasonicLF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLF"), log.child("LF")); //module 3, port 3
-        this.ultrasonicRF = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRF"), log.child("RF")); //module 4, port 4
+        this.ultrasonicLB = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLB"), log.child("LB")); //module 3, port 3
+        this.ultrasonicRB = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRB"), log.child("RB")); //module 4, port 4
 
         hardwareMap.legacyModule.get("Legacy Module 2").enable9v(4, true);
         hardwareMap.legacyModule.get("Legacy Module 2").enable9v(5, true);
@@ -34,11 +34,11 @@ public class UltrasonicFunction {
         return ultrasonicRight.getDistance();
     }
     public double getLF() {
-        return ultrasonicLF.getDistance();
+        return ultrasonicLB.getDistance();
     }
 
     public double getRF() {
-        return ultrasonicRF.getDistance();
+        return ultrasonicRB.getDistance();
     }
 
     public void setLeft(double input) {
@@ -46,11 +46,11 @@ public class UltrasonicFunction {
     }
 
     public void setLF(double input) {
-        ultrasonicLF.setDistance(input);
+        ultrasonicLB.setDistance(input);
     }
 
     public void setRF(double input) {
-        ultrasonicRF.setDistance(input);
+        ultrasonicRB.setDistance(input);
     }
 
     public void setRight(double input) {

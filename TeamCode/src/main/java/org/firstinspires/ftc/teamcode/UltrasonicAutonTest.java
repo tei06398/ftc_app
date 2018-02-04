@@ -50,7 +50,7 @@ public class UltrasonicAutonTest extends LinearOpMode {
         this.ultrasonicRight = this.hardwareMap.ultrasonicSensor.get("ultrasonicRight");//module 2, port 2
         this.ultrasonicLF = this.hardwareMap.ultrasonicSensor.get("ultrasonicLF"); //module 3, port 3
         this.ultrasonicRF = this.hardwareMap.ultrasonicSensor.get("ultrasonicRF"); //module 4, port 4
-        this.colorSensor = this.hardwareMap.colorSensor.get("colorSensor");
+        this.colorSensor = this.hardwareMap.colorSensor.get("jewelTipper");
         //this.glyphterServoLeft = this.hardwareMap.servo.get("glyphterServoLeft");
         //this.glyphterServoRight = this.hardwareMap.servo.get("glyphterServoRight");
 

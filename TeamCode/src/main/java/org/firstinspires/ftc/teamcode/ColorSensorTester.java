@@ -17,7 +17,7 @@ public class ColorSensorTester extends OpMode {
         telemetry.update();
     }
     public void init(){
-        colorSensor =  this.hardwareMap.colorSensor.get("colorSensor");
+        colorSensor =  this.hardwareMap.colorSensor.get("jewelTipper");
     }
 
 }
