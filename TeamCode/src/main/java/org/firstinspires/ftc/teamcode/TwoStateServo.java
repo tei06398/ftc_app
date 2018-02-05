@@ -60,9 +60,9 @@ public class TwoStateServo {
     private void incrementTowards(double desiredValue) {
         double servoPos = servo.getPosition();
         if (servoPos > desiredValue) {
-            servo.setPosition(RobotUtil.clipRange(Math.min(passivePosition, activePosition), Math.max(passivePosition, activePosition), servoPos + incrementalSpeed));
+            servo.setPosition(RobotUtil.clipRange(passivePosition, activePosition, servoPos + incrementalSpeed));
         } else {
-            servo.setPosition(RobotUtil.clipRange(Math.min(passivePosition, activePosition), Math.max(passivePosition, activePosition), servoPos - incrementalSpeed));
+            servo.setPosition(RobotUtil.clipRange(passivePosition, activePosition, servoPos - incrementalSpeed));
         }
     }
 

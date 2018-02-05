@@ -105,7 +105,8 @@ public class GunnerFunction {
     public void openRelicGrabberIncremental() {
         relicGrabber.incrementTowardsActive();
         telemetry.log().add("Open Relic Grabber Incremental");
-        telemetry.log().add("eyo", relicGrabber.getServo().getPosition());
+        telemetry.addData("servo position", relicGrabber.getServo().getPosition());
+        telemetry.update();
     }
 
     public void closeRelicGrabberIncremental() {
