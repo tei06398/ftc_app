@@ -9,8 +9,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * A utility class that controls all the gunner functions (opening and closing the glyphter, rotating the glypter, etc).
  */
 public class GunnerFunction {
-    private static final double JEWELPUSHER_SERVO_RETRACTED_POS = 0;
-    private static final double JEWELPUSHER_SERVO_EXTENDED_POS = 1;
+    private static final double JEWELPUSHER_SERVO_RETRACT_POS = 0.2;
+    private static final double JEWELPUSHER_SERVO_EXTEND_POS = 0.8;
+    private static final double JEWELPUSHER_SERVO_STOPPED_POS = 0.5;
 
     private final DcMotor motorRelicSlide;
     private final DcMotor motorWinch;
@@ -26,16 +27,16 @@ public class GunnerFunction {
         // Load the needed devices from the hardware map
         this.motorWinch = hardwareMap.dcMotor.get("winchMotor");
         this.motorRelicSlide = hardwareMap.dcMotor.get("relicSlideMotor");
-        this.servoGlyphterLeft = new TwoStateServo(hardwareMap.servo.get("glyphterServoLeft"), 0.5, 0, 1, true);
-        this.servoGlyphterRight = new TwoStateServo(hardwareMap.servo.get("glyphterServoRight"), 0, 0.5, 1, true);
+        this.servoGlyphterLeft = new TwoStateServo(hardwareMap.servo.get("glyphterServoLeft"), 0, 0.5, 1, true);
+        this.servoGlyphterRight = new TwoStateServo(hardwareMap.servo.get("glyphterServoRight"), 0.9, 0.5, 1, true);
         this.servoJewelPusher = hardwareMap.servo.get("jewelPusher");
-        this.relicGrabber = new TwoStateServo(hardwareMap.servo.get("relicGrabber"), 0, 0.5, 0.01, false);
+        servoJewelPusher.setPosition(JEWELPUSHER_SERVO_STOPPED_POS);
+        this.relicGrabber = new TwoStateServo(hardwareMap.servo.get("relicGrabber"), 0, 0.7, 0.01, false);
         this.relicLifter = new TwoStateServo(hardwareMap.servo.get("relicLifter"), 0, 0.8);
-        this.autonGlyphter = new TwoStateServo(hardwareMap.servo.get("autonGlyphter"), 0, 0.85);
+        this.autonGlyphter = new TwoStateServo(hardwareMap.servo.get("autonGlyphter"), 0, 1);
 
         this.telemetry = telemetry;
 
-        servoJewelPusher.setPosition(JEWELPUSHER_SERVO_RETRACTED_POS);
     }
 
     public void upWinch() {
@@ -77,9 +78,11 @@ public class GunnerFunction {
         telemetry.log().add("Close Glyphter Incremental");
     }
 
-    public void extendJewelPusher() { servoJewelPusher.setPosition(JEWELPUSHER_SERVO_EXTENDED_POS);telemetry.log().add("Extend Jewel Pusher"); }
+    public void extendJewelPusher() { servoJewelPusher.setPosition(JEWELPUSHER_SERVO_EXTEND_POS);telemetry.log().add("Extend Jewel Pusher"); }
 
-    public void retractJewelPusher() { servoJewelPusher.setPosition(JEWELPUSHER_SERVO_RETRACTED_POS);telemetry.log().add("Retract Jewel Pusher"); }
+    public void retractJewelPusher() { servoJewelPusher.setPosition(JEWELPUSHER_SERVO_RETRACT_POS);telemetry.log().add("Retract Jewel Pusher"); }
+
+    public void stopJewelPusher() { servoJewelPusher.setPosition(JEWELPUSHER_SERVO_STOPPED_POS);telemetry.log().add("Stop Jewel Pusher");}
 
     public void retractRelicSlide() {
         // TODO: maybe make bigger
@@ -127,13 +130,19 @@ public class GunnerFunction {
         relicLifter.active();
     }
 
-    //TODO: Add Auton Glyphter
+    public void extendAutonGlyphter() {
+        autonGlyphter.active();
+    }
+
+    public void retractAutonGlyphter() {
+        autonGlyphter.passive();
+    }
 
     public void reset() {
         //closeGlyphter();
         relicGrabber.passive();
         relicLifter.passive();
-        servoJewelPusher.setPosition(JEWELPUSHER_SERVO_RETRACTED_POS);
+        servoJewelPusher.setPosition(JEWELPUSHER_SERVO_STOPPED_POS);
         telemetry.log().add("Reset");
     }
 }

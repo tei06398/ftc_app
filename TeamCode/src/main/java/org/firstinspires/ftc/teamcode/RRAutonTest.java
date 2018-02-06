@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
 /**
  * The official autonomous mode.
  */
-@Autonomous(name = "RR Official Auton Mode")
-public class RRAuton extends LinearOpMode {
+@Autonomous(name = "RR Test Auton Mode")
+public class RRAutonTest extends LinearOpMode {
     protected ColorSensor jewelTipper;
 
     protected RobotDriving robotDriving;
@@ -35,9 +35,9 @@ public class RRAuton extends LinearOpMode {
     protected double clockwiseTurnWeight = 0;
     protected double forwardWeight = 0;*/
 
-    protected final double MOVE_SPEED_RATIO = 0.2;
-    protected final double TURN_SPEED_RATIO = 0.1;
-    protected final int JEWELPUSHER_TIME = 3500;
+    protected final double MOVE_SPEED_RATIO = 0.3;
+    protected final double TURN_SPEED_RATIO = 0.15;
+    protected final int JEWELPUSHER_TIME = 4000;
 
     //protected VideoCapture camera = null;
 
@@ -111,95 +111,14 @@ public class RRAuton extends LinearOpMode {
         }
         telemetry.update();
 
-        /* KNOCK JEWEL */
         knockJewel();
-
-        /* DRIVE TO CRYPTOBOX */
-
-        if (startPosition.equals("RED_MIDDLE")) {
-            int sideDistance;
-            if (pictograph == 'l') {
-                sideDistance = 110;
-            } else if (pictograph == 'r') {
-                sideDistance = 70;
-            } else {
-                sideDistance = 90;
-            }
-            steering.moveDegrees(180);
-            steering.finishSteering();
-            sleep(1000);
-            steering.stopAllMotors();
-            moveAlongWall(false, false, 25, 50);
-            sleep(1000);
-            turnNinety(false);
-            sleep(1000);
-            moveAlongWall(false, true, sideDistance, 50);
-            sleep(1000);
-            approachCryptobox(true, sideDistance);
-
-        } else if (startPosition.equals("RED_RELIC")) {
-            int sideDistance;
-            if (pictograph == 'l') {
-                sideDistance = 152;
-            } else if (pictograph == 'r') {
-                sideDistance = 113;
-            } else {
-                sideDistance = 132;
-            }
-            steering.moveDegrees(180);
-            steering.finishSteering();
-            sleep(1000);
-            steering.stopAllMotors();
-            moveAlongWall(false, true, sideDistance, 50);
-            sleep(1000);
-            approachCryptobox(true, sideDistance);
-
-        } else if (startPosition.equals("BLUE_MIDDLE")) {
-            int sideDistance;
-            if (pictograph == 'l') {
-                sideDistance = 70;
-            } else if (pictograph == 'r') {
-                sideDistance = 110;
-            } else {
-                sideDistance = 90;
-            }
-            steering.moveDegrees(0);
-            steering.finishSteering();
-            sleep(1000);
-            steering.stopAllMotors();
-            moveAlongWall(true, true, 25, 50);
-            sleep(1000);
-            turnNinety(true);
-            sleep(1000);
-            moveAlongWall(true, false, sideDistance, 50);
-            sleep(1000);
-            approachCryptobox(false, sideDistance);
-
-        } else {
-            int sideDistance;
-            if (pictograph == 'l') {
-                sideDistance = 113;
-            } else if (pictograph == 'r') {
-                sideDistance = 152;
-            } else {
-                sideDistance = 132;
-            }
-            steering.moveDegrees(0);
-            steering.finishSteering();
-            sleep(1000);
-            steering.stopAllMotors();
-            moveAlongWall(true, false, sideDistance, 50);
-            sleep(1000);
-            approachCryptobox(false, sideDistance);
-        }
-
-        gunnerFunction.extendAutonGlyphter();
-        sleep(500);
-        gunnerFunction.retractAutonGlyphter();
-        steering.move(270);
+        /*steering.setSpeedRatio(0.5);
+        steering.moveDegrees(0);
         steering.finishSteering();
-        sleep(250);
+        sleep(3000);
         steering.stopAllMotors();
+        sleep(1000);
+        moveAlongWall(true, false, 130, 50);*/
     }
 
     /**

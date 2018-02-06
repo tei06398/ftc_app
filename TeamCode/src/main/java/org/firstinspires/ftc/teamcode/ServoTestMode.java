@@ -31,6 +31,9 @@ public class ServoTestMode extends LinearOpMode {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double lifterposition = 0;
         double grabberposition = 0;
+
+        //Open=0
+        //
         final double rate = 1.0 / 180;
 
         waitForStart();
