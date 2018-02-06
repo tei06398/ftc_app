@@ -198,7 +198,7 @@ public class RRAuton extends LinearOpMode {
         gunnerFunction.retractAutonGlyphter();
         steering.move(270);
         steering.finishSteering();
-        sleep(250);
+        sleep(500);
         steering.stopAllMotors();
     }
 

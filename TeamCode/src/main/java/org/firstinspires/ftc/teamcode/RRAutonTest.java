@@ -37,7 +37,7 @@ public class RRAutonTest extends LinearOpMode {
 
     protected final double MOVE_SPEED_RATIO = 0.3;
     protected final double TURN_SPEED_RATIO = 0.15;
-    protected final int JEWELPUSHER_TIME = 4000;
+    protected final int JEWELPUSHER_TIME = 3500;
 
     //protected VideoCapture camera = null;
 
@@ -112,6 +112,8 @@ public class RRAutonTest extends LinearOpMode {
         telemetry.update();
 
         knockJewel();
+        alignToWall();
+
         /*steering.setSpeedRatio(0.5);
         steering.moveDegrees(0);
         steering.finishSteering();
@@ -119,6 +121,14 @@ public class RRAutonTest extends LinearOpMode {
         steering.stopAllMotors();
         sleep(1000);
         moveAlongWall(true, false, 130, 50);*/
+
+        gunnerFunction.extendAutonGlyphter();
+        sleep(500);
+        gunnerFunction.retractAutonGlyphter();
+        steering.move(270);
+        steering.finishSteering();
+        sleep(500);
+        steering.stopAllMotors();
     }
 
     /**
