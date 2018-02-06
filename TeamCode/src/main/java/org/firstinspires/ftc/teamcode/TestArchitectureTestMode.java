@@ -12,6 +12,7 @@ public class TestArchitectureTestMode extends LinearOpMode {
         TEST_C ("Test C");
 
         private final String name;
+        private static final SubMode[] values = values();
 
         SubMode(String name) {
             this.name = name;
@@ -21,8 +22,8 @@ public class TestArchitectureTestMode extends LinearOpMode {
             return name;
         }
 
-        public static SubMode getDefault() {
-            return MAIN;
+        public static SubMode fromOrdinal(int ordinal) {
+            return values[ordinal % values.length];
         }
     }
 
@@ -68,12 +69,13 @@ public class TestArchitectureTestMode extends LinearOpMode {
     }
 
     private SubMode selectMode() {
-        SubMode subMode = SubMode.getDefault();
+        int modeIndex = 0;
         while (!isStarted() && opModeIsActive()) {
-            // TODO: actually allow selection of mode
-            telemetry.addData("Selected mode", subMode);
+            if (gamepad1.dpad_left) modeIndex--;
+            if (gamepad1.dpad_right) modeIndex++;
+            telemetry.addData("Selected mode", SubMode.fromOrdinal(modeIndex));
             telemetry.update();
         }
-        return subMode;
+        return SubMode.fromOrdinal(modeIndex);
     }
 }
