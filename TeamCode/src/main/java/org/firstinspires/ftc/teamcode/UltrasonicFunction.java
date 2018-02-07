@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
@@ -16,7 +17,6 @@ public class UltrasonicFunction {
 
     public UltrasonicFunction (HardwareMap hardwareMap, RobotLog log) {
         this.log = log;
-
         this.ultrasonicLeft = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLeft"), log.child("L")); //module 2, port 1
         this.ultrasonicRight = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicRight"), log.child("R"));//module 2, port 2
         this.ultrasonicLB = new SmoothUltrasonic(hardwareMap.ultrasonicSensor.get("ultrasonicLB"), log.child("LB")); //module 3, port 3
@@ -70,9 +70,9 @@ public class UltrasonicFunction {
         public SmoothUltrasonic (UltrasonicSensor ultrasonicSensor, RobotLog log) {
             this.ultrasonicSensor = ultrasonicSensor;
 
-            rawLog = log.child("raw").getNumberLog();
-            readingLog = log.child("readingLog").getNumberLog();
-            successLog = log.child("successLog").getNumberLog();
+            //rawLog = log.child("raw").getNumberLog();
+            //readingLog = log.child("readingLog").getNumberLog();
+            //successLog = log.child("successLog").getNumberLog();
 
             distance = 255;
             getDistance();
@@ -82,31 +82,31 @@ public class UltrasonicFunction {
             double outputValue;
             double sum = 0;
             double successes = 0;
-            for (int attempt = 0; attempt < 20; attempt++) {
+            long time;
+            int nonsense;
+            for (int attempt = 0; attempt < 4; attempt++) {
                 outputValue = ultrasonicSensor.getUltrasonicLevel();
-                if (attempt == 5 || attempt == 15) rawLog.addItem(outputValue); // only log 2 values out of every 20 because
                 // a LOT of data is produced if you log every reading
                 if (outputValue != 0 && outputValue != 255 && outputValue != 127) {
                     sum += outputValue;
                     successes++;
                 }
+                time = System.currentTimeMillis();
+                while (System.currentTimeMillis() - time < 1) {
+                    nonsense = (int)System.currentTimeMillis();
+                }
             }
-            successLog.addItem(successes);
+            //successLog.addItem(successes);
             if (successes > 0) {
                 distance = sum/successes;
             }
-            readingLog.addItem(distance);
+            //readingLog.addItem(distance);
             return distance;
         }
 
         public void setDistance (double input) {
             distance = input;
         }
-    }
-    
-    public void test() {
-        printTestData();
-        log.getTelemetry().update();
     }
 
     public void printTestData() {

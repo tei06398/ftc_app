@@ -112,10 +112,10 @@ public class RRAutonTest extends LinearOpMode {
         }
         telemetry.update();
 
-        knockJewel();
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
+        //knockJewel();
+        //steering.setSpeedRatio(MOVE_SPEED_RATIO);
 
-        testMoveAongWall(false, 130, 50);
+        testMoveAongWall(false, 110, 30);
 
         gunnerFunction.extendAutonGlyphter();
         sleep(1000);
@@ -294,15 +294,25 @@ public class RRAutonTest extends LinearOpMode {
             }
 
             robotMovementDistance = Math.sqrt(Math.pow(frontDistance - targetWallDistance, 2) + Math.pow(sideDistance - targetSideDistance, 2));
-            clockwiseTurnSpeed = -robotClockwiseRotation / (5 * Math.sqrt(Math.toRadians(100) + Math.pow(robotClockwiseRotation, 2)));
-            moveSpeed = robotMovementDistance / (3 * Math.sqrt(100 + Math.pow(robotMovementDistance, 2)));
+            clockwiseTurnSpeed = -robotClockwiseRotation / (5 * Math.sqrt(Math.toRadians(20) + Math.pow(robotClockwiseRotation, 2)));
+            moveSpeed = robotMovementDistance / (3 * Math.sqrt(30 + Math.pow(robotMovementDistance, 2)));
             steering.setSpeedRatio(Math.sqrt(Math.pow(clockwiseTurnSpeed, 2) + Math.pow(moveSpeed, 2)));
             steering.turn(clockwiseTurnSpeed);
             steering.moveRadians(robotMovementAngle + robotClockwiseRotation, moveSpeed);
             steering.finishSteering();
 
-            keepMoving = Math.abs(sensorDistanceLF - targetWallDistance) > 1 || Math.abs(sensorDistanceRF - targetWallDistance) > 1 || Math.abs(sensorDistanceSide - targetSideDistance) > 1;
-
+            keepMoving = Math.abs(sensorDistanceLF - targetWallDistance) > 2 || Math.abs(sensorDistanceRF - targetWallDistance) > 2 || Math.abs(sensorDistanceSide - targetSideDistance) > 2 || Math.abs(sensorDistanceLF - sensorDistanceRF) > 1;
+            telemetry.addData("sensorDistanceLF", sensorDistanceLF);
+            telemetry.addData("sensorDistanceRF", sensorDistanceRF);
+            telemetry.addData("sensorDistanceSide", sensorDistanceSide);
+            telemetry.addData("robotClockwiseRotation", robotClockwiseRotation);
+            telemetry.addData("frontDistance", frontDistance);
+            telemetry.addData("sideDistance", sideDistance);
+            telemetry.addData("robotMovementAngle", robotMovementAngle);
+            telemetry.addData("robotMovementDistance", robotMovementDistance);
+            telemetry.addData("clockwiseTurnSpeed", clockwiseTurnSpeed);
+            telemetry.addData("moveSpeed", moveSpeed);
+            telemetry.update();
         }
     }
 

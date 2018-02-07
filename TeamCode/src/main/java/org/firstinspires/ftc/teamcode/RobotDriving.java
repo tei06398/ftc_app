@@ -206,8 +206,6 @@ public class RobotDriving {
                 lb.applyPower(powerLB / maxRawPower * speedRatio);
                 rf.applyPower(powerRF / maxRawPower * speedRatio);
                 rb.applyPower(powerRB / maxRawPower * speedRatio);
-                telemetry.addData("powerlf", powerLF / maxRawPower * speedRatio);
-                telemetry.update();
             } else {
                 stopAllMotors();
             }
