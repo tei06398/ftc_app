@@ -21,8 +21,6 @@ public class AutonGlyphterTest extends OpMode {
             autonGlyphter.active();
         } else if (this.gamepad1.dpad_down) {
             autonGlyphter.passive();
-        } else {
-            autonGlyphter.getServo().setPosition(0.5);
         }
     }
 }

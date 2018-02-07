@@ -115,7 +115,7 @@ public class RRAutonTest extends LinearOpMode {
         knockJewel();
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
 
-        moveAlongWall(true, false, 130, 50);
+        testMoveAongWall(false, 130, 50);
 
         gunnerFunction.extendAutonGlyphter();
         sleep(1000);
@@ -296,10 +296,12 @@ public class RRAutonTest extends LinearOpMode {
             robotMovementDistance = Math.sqrt(Math.pow(frontDistance - targetWallDistance, 2) + Math.pow(sideDistance - targetSideDistance, 2));
             clockwiseTurnSpeed = -robotClockwiseRotation / (5 * Math.sqrt(Math.toRadians(100) + Math.pow(robotClockwiseRotation, 2)));
             moveSpeed = robotMovementDistance / (3 * Math.sqrt(100 + Math.pow(robotMovementDistance, 2)));
-            steering.setSpeedRatio(clockwiseTurnSpeed + moveSpeed);
+            steering.setSpeedRatio(Math.sqrt(Math.pow(clockwiseTurnSpeed, 2) + Math.pow(moveSpeed, 2)));
             steering.turn(clockwiseTurnSpeed);
             steering.moveRadians(robotMovementAngle + robotClockwiseRotation, moveSpeed);
-            //steering.
+            steering.finishSteering();
+
+            keepMoving = Math.abs(sensorDistanceLF - targetWallDistance) > 1 || Math.abs(sensorDistanceRF - targetWallDistance) > 1 || Math.abs(sensorDistanceSide - targetSideDistance) > 1;
 
         }
     }
