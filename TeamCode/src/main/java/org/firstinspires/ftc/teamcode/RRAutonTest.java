@@ -35,9 +35,10 @@ public class RRAutonTest extends LinearOpMode {
     protected double clockwiseTurnWeight = 0;
     protected double forwardWeight = 0;*/
 
-    protected final double MOVE_SPEED_RATIO = 0.3;
+    protected final double MOVE_SPEED_RATIO = 0.4;
     protected final double TURN_SPEED_RATIO = 0.15;
-    protected final int JEWELPUSHER_TIME = 3500;
+    protected final int JEWELPUSHER_TIME = 3300;
+    protected final int JEWEL_PUSH_TIME = 200;
 
     //protected VideoCapture camera = null;
 
@@ -112,18 +113,12 @@ public class RRAutonTest extends LinearOpMode {
         telemetry.update();
 
         knockJewel();
-        alignToWall();
+        steering.setSpeedRatio(MOVE_SPEED_RATIO);
 
-        /*steering.setSpeedRatio(0.5);
-        steering.moveDegrees(0);
-        steering.finishSteering();
-        sleep(3000);
-        steering.stopAllMotors();
-        sleep(1000);
-        moveAlongWall(true, false, 130, 50);*/
+        moveAlongWall(true, false, 130, 50);
 
         gunnerFunction.extendAutonGlyphter();
-        sleep(500);
+        sleep(1000);
         gunnerFunction.retractAutonGlyphter();
         steering.move(270);
         steering.finishSteering();
@@ -357,7 +352,7 @@ public class RRAutonTest extends LinearOpMode {
             telemetry.addData("getLF: ", ultrasonicFunction.getLF());
             telemetry.update();
             distanceLF = ultrasonicFunction.getLF();
-            distanceRF = ultrasonicFunction.getLF();
+            distanceRF = ultrasonicFunction.getRF();
             sideDistance = senseRight ? ultrasonicFunction.getRight() : ultrasonicFunction.getLeft();
             if (distanceLF > distanceRF + 1) {
                 if (clockwiseTurnWeight < 0) {
@@ -434,25 +429,32 @@ public class RRAutonTest extends LinearOpMode {
         gunnerFunction.extendJewelPusher();
         sleep(JEWELPUSHER_TIME);
         gunnerFunction.stopJewelPusher();
-        double red = jewelTipper.red();
-        double blue = jewelTipper.blue();
-
+        double red = 0;
+        double blue = 0;
+        for (int i = 0; i < 5; i++) {
+            red += jewelTipper.red();
+            blue += jewelTipper.blue();
+            sleep(100);
+        }
+        telemetry.addData("red", red);
+        telemetry.addData("blue", blue);
+        telemetry.update();
         boolean isRedTeam = startPosition.equals("RED_RELIC") || startPosition.equals("RED_MIDDLE");
 
         if(red > blue) {
-            if(isRedTeam){
-                pushJewel(JewelPosition.LEFT);
-            }
-            else{
+            if(isRedTeam) {
                 pushJewel(JewelPosition.RIGHT);
+            }
+            else {
+                pushJewel(JewelPosition.LEFT);
             }
         }
         else if (red < blue){
             if(isRedTeam){
-                pushJewel(JewelPosition.RIGHT);
+                pushJewel(JewelPosition.LEFT);
             }
             else{
-                pushJewel(JewelPosition.LEFT);
+                pushJewel(JewelPosition.RIGHT);
             }
         } else {
             gunnerFunction.retractJewelPusher();
@@ -466,28 +468,28 @@ public class RRAutonTest extends LinearOpMode {
      */
     public void pushJewel(JewelPosition jewelPosition) {
         if (jewelPosition == JewelPosition.LEFT) {
-            steering.turn(-0.1);
+            steering.moveDegrees(180);
             steering.finishSteering();
-            sleep(200);
+            sleep(JEWEL_PUSH_TIME);
             steering.stopAllMotors();
             gunnerFunction.retractJewelPusher();
             sleep(JEWELPUSHER_TIME);
             gunnerFunction.stopJewelPusher();
-            steering.turn(0.1);
+            steering.moveDegrees(0);
             steering.finishSteering();
-            sleep(200);
+            sleep(JEWEL_PUSH_TIME);
             steering.stopAllMotors();
         } else {
-            steering.turn(0.1);
+            steering.moveDegrees(0);
             steering.finishSteering();
-            sleep(200);
+            sleep(JEWEL_PUSH_TIME);
             steering.stopAllMotors();
             gunnerFunction.retractJewelPusher();
             sleep(JEWELPUSHER_TIME);
             gunnerFunction.stopJewelPusher();
-            steering.turn(-0.1);
+            steering.moveDegrees(180);
             steering.finishSteering();
-            sleep(200);
+            sleep(JEWEL_PUSH_TIME);
             steering.stopAllMotors();
         }
     }

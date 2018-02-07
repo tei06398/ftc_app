@@ -20,7 +20,7 @@ public class RobotDriving {
     public static final double NORMAL_SPEED_RATIO = 0.5;
     public static final double MIN_SPEED_RATIO = 0.3;
 
-    public static final double DEFAULT_SMOOTHNESS = 0.1;
+    public static final double DEFAULT_SMOOTHNESS = 2;
 
     public RobotDriving(HardwareMap hardwareMap, Telemetry telemetry) {
         this(hardwareMap, telemetry, DEFAULT_SMOOTHNESS);
@@ -118,13 +118,6 @@ public class RobotDriving {
          * @param power The power of the strafe.
          */
         public void moveRadians(double angle, double power) {
-            // This "fixes" retractRelicSlide really annoying bug where the left and right controls are inverted. We don't know where it
-            // is, so we just inverted the angle by reflecting it over the y-axis. Maybe we will fix this bug next year.
-            if (angle >= 0) {
-                angle = Math.PI - angle;
-            } else {
-                angle = -Math.PI - angle;
-            }
 
             double speedX = Math.cos(angle - Math.toRadians(45));
             double speedY = Math.sin(angle - Math.toRadians(45));
@@ -132,10 +125,10 @@ public class RobotDriving {
             // so there's always going to be retractRelicSlide speed that's plus or minus 1
             double divider = Math.max(Math.abs(speedX), Math.abs(speedY));
 
-            powerLF -= speedX / divider * power;
-            powerRB += speedX / divider * power;
-            powerLB -= speedY / divider * power;
-            powerRF += speedY / divider * power;
+            powerLF += speedX / divider * power;
+            powerRB -= speedX / divider * power;
+            powerLB += speedY / divider * power;
+            powerRF -= speedY / divider * power;
         }
 
         /**
@@ -179,11 +172,11 @@ public class RobotDriving {
         }
 
         public void turnClockwise() {
-            turnClockwise(-1);
+            turnClockwise(1);
         }
 
         public void turnCounterclockwise() {
-            turnCounterclockwise(-1);
+            turnCounterclockwise(1);
         }
 
         /* MISC */
@@ -213,6 +206,8 @@ public class RobotDriving {
                 lb.applyPower(powerLB / maxRawPower * speedRatio);
                 rf.applyPower(powerRF / maxRawPower * speedRatio);
                 rb.applyPower(powerRB / maxRawPower * speedRatio);
+                telemetry.addData("powerlf", powerLF / maxRawPower * speedRatio);
+                telemetry.update();
             } else {
                 stopAllMotors();
             }

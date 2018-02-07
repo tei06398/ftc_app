@@ -88,11 +88,21 @@ See https://developer.android.com/guide/topics/ui/settings.html
         android:targetClass="com.qualcomm.ftccommon.ViewLogsActivity" />
     </PreferenceScreen>
 
-    <ListPreference
-        android:key = "auton_start_position"
-        android:title = "Start Position"
-        android:entries = "@array/startPos"
-        android:entryValues = "@array/startPosAlias" />
+      <ListPreference
+              android:key="auton_start_position"
+              android:title="Start Position"
+              android:entries="@array/startPos"
+              android:entryValues="@array/startPosAlias"/>
+      <EditTextPreference
+              android:key="testing_number_value1"
+              android:title="Testing Value 1"
+              android:defaultValue="0"
+              />
+      <EditTextPreference
+              android:key="testing_number_value2"
+              android:title="Testing Value 2"
+              android:defaultValue="0"
+      />
 
   </PreferenceCategory>
 

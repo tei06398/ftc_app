@@ -138,6 +138,10 @@ public class GunnerFunction {
         autonGlyphter.passive();
     }
 
+    public void stopAutonGlyphter() {
+        autonGlyphter.getServo().setPosition(0.5);
+    }
+
     public void reset() {
         //closeGlyphter();
         relicGrabber.passive();

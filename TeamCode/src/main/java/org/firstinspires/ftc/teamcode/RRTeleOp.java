@@ -28,6 +28,8 @@ public class RRTeleOp extends OpMode {
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
 
         steering = robotDriving.getSteering();
+
+        gunnerFunction.stopAutonGlyphter();
     }
 
     public void loop() {
@@ -50,17 +52,18 @@ public class RRTeleOp extends OpMode {
         // GAMEPAD 1 (DRIVER)
         // Right Stick: Turn/Rotate
         if (this.gamepad1.right_stick_x > 0.1) {
-            steering.turnCounterclockwise();
-        } else if (this.gamepad1.right_stick_x < -0.1) {
             steering.turnClockwise();
+        } else if (this.gamepad1.right_stick_x < -0.1) {
+            steering.turnCounterclockwise();
+
         }
 
         // Left Stick: Driving
         if (Math.abs(this.gamepad1.left_stick_x) > 0.1 || Math.abs(this.gamepad1.left_stick_y) > 0.1) {
-            double angle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x);
+            double angle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x);
             telemetry.addData("angle: ", angle);
 
-            steering.moveRadians(-angle);
+            steering.moveRadians(angle);
         } else {
             telemetry.addData("angle: ", 0);
         }
@@ -95,10 +98,10 @@ public class RRTeleOp extends OpMode {
         }
 
         // Right Bumper: Move Around Block CCW
-        if (this.gamepad1.right_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
+        if (this.gamepad1.right_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT * 2);
 
         // Left Bumper: Move Around Block CW
-        if (this.gamepad1.left_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
+        if (this.gamepad1.left_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT * 2);
 
         // GAMEPAD 2 (GUNNER)
         if (this.gamepad2.dpad_up) {

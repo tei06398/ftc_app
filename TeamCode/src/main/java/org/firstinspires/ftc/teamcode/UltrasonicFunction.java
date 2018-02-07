@@ -84,7 +84,8 @@ public class UltrasonicFunction {
             double successes = 0;
             for (int attempt = 0; attempt < 20; attempt++) {
                 outputValue = ultrasonicSensor.getUltrasonicLevel();
-                rawLog.addItem(outputValue);
+                if (attempt == 5 || attempt == 15) rawLog.addItem(outputValue); // only log 2 values out of every 20 because
+                // a LOT of data is produced if you log every reading
                 if (outputValue != 0 && outputValue != 255 && outputValue != 127) {
                     sum += outputValue;
                     successes++;

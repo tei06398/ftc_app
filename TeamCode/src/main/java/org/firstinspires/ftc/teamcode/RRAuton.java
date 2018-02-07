@@ -98,7 +98,7 @@ public class RRAuton extends LinearOpMode {
 
         if (pictograph == '!') {
             telemetry.addData("Pictograph", "Unreliable");
-            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C,1R, not allowing for retractRelicSlide logical interpretation.
+            //Displays in the event that 3/3 times, the data returned by readVuMark() has been 1L,1C, 1R, not allowing for retractRelicSlide logical interpretation.
         } else if (pictograph == 'l') {
             telemetry.addData("Pictograph", "Left");
         } else if (pictograph == 'r') {
