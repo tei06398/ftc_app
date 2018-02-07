@@ -35,7 +35,7 @@ public class RRAutonTest extends LinearOpMode {
     protected double clockwiseTurnWeight = 0;
     protected double forwardWeight = 0;*/
 
-    protected final double MOVE_SPEED_RATIO = 0.4;
+    protected final double MOVE_SPEED_RATIO = 0.3;
     protected final double TURN_SPEED_RATIO = 0.15;
     protected final int JEWELPUSHER_TIME = 3300;
     protected final int JEWEL_PUSH_TIME = 200;
@@ -261,6 +261,47 @@ public class RRAutonTest extends LinearOpMode {
         }
         steering.stopAllMotors();
         alignToWall();
+    }
+
+    public void testMoveAongWall(boolean senseRight, int targetSideDistance, int targetWallDistance) {
+        double sensorDistanceLF;
+        double sensorDistanceRF;
+        double sensorDistanceSide;
+        double robotClockwiseRotation;
+        double frontDistance;
+        double sideDistance;
+        double robotMovementAngle;
+        double robotMovementDistance;
+        double clockwiseTurnSpeed;
+        double moveSpeed;
+
+        boolean keepMoving = true;
+        while (keepMoving && opModeIsActive()) {
+            sensorDistanceLF = ultrasonicFunction.getLF();
+            sensorDistanceRF = ultrasonicFunction.getRF();
+            if (senseRight) { sensorDistanceSide = ultrasonicFunction.getRight(); }
+            else { sensorDistanceSide = ultrasonicFunction.getLeft(); }
+
+            robotClockwiseRotation = Math.atan2(sensorDistanceLF - sensorDistanceRF, 20);
+            frontDistance = (sensorDistanceLF + sensorDistanceRF) * Math.cos(robotClockwiseRotation) / 2;
+            sideDistance = sensorDistanceSide * Math.cos(robotClockwiseRotation);
+
+            if (senseRight) {
+                robotMovementAngle = Math.atan2(frontDistance - targetWallDistance, sideDistance - targetSideDistance);
+            }
+            else {
+                robotMovementAngle = Math.atan2(frontDistance - targetWallDistance, targetSideDistance - sideDistance);
+            }
+
+            robotMovementDistance = Math.sqrt(Math.pow(frontDistance - targetWallDistance, 2) + Math.pow(sideDistance - targetSideDistance, 2));
+            clockwiseTurnSpeed = -robotClockwiseRotation / (5 * Math.sqrt(Math.toRadians(100) + Math.pow(robotClockwiseRotation, 2)));
+            moveSpeed = robotMovementDistance / (3 * Math.sqrt(100 + Math.pow(robotMovementDistance, 2)));
+            steering.setSpeedRatio(clockwiseTurnSpeed + moveSpeed);
+            steering.turn(clockwiseTurnSpeed);
+            steering.moveRadians(robotMovementAngle + robotClockwiseRotation, moveSpeed);
+            //steering.
+
+        }
     }
 
     /**
