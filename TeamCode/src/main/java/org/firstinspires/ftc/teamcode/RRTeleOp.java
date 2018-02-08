@@ -14,7 +14,7 @@ public class RRTeleOp extends OpMode {
     protected GunnerFunction gunnerFunction;
 
     // The weight given to rotation (as opposed to left/right strafe) during pivoting
-    private final static double BLOCK_ROTATION_WEIGHT = 0.5;
+    private final static double BLOCK_ROTATION_WEIGHT = 0.6;
 
     private boolean disable2A = false;
     private boolean disable2B = false;
@@ -70,18 +70,13 @@ public class RRTeleOp extends OpMode {
 
         // Arrow Keys: Compass Rose Drive
         if (this.gamepad1.dpad_right) {
-            //Turns out that around point code moves straighter than original code here
-            //steering.moveDegrees(180, MIN_SPEED_RATIO);
-            steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
+            steering.moveDegrees(180, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_up) {
             steering.moveDegrees(90, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_left) {
-            //Turns out that around point code moves straighter than original code here
-            //steering.moveDegrees(0, MIN_SPEED_RATIO);
-            steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
-
+            steering.moveDegrees(0, MIN_SPEED_RATIO);
         }
         if (this.gamepad1.dpad_down) {
             steering.moveDegrees(270, MIN_SPEED_RATIO);
@@ -98,52 +93,50 @@ public class RRTeleOp extends OpMode {
         }
 
         // Right Bumper: Move Around Block CCW
-        if (this.gamepad1.right_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT * 2);
+        if (this.gamepad1.right_bumper) steering.aroundPoint(false, BLOCK_ROTATION_WEIGHT);
 
         // Left Bumper: Move Around Block CW
-        if (this.gamepad1.left_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT * 2);
+        if (this.gamepad1.left_bumper) steering.aroundPoint(true, BLOCK_ROTATION_WEIGHT);
 
         // GAMEPAD 2 (GUNNER)
         if (this.gamepad2.dpad_up) {
-            // DPad Up: Raise Glyphter
-            gunnerFunction.upWinch();
-        } else if (this.gamepad2.dpad_down) {
-            // DPad Down: Lower Glyphter
-            gunnerFunction.downWinch();
-        } else {
-            gunnerFunction.stopWinch();
-        }
-
-        if (this.gamepad2.y) {
-            // Y Button: Extend Relic Slide
             gunnerFunction.extendRelicSlide();
-        } else if (this.gamepad2.a) {
-            // A Button: Retract Relic Slide
+        } else if (this.gamepad2.dpad_down) {
             gunnerFunction.retractRelicSlide();
         } else {
             gunnerFunction.stopRelicSlide();
         }
 
-        if (this.gamepad2.left_bumper) {
-            //Left Bumper: Open Glyphter
-            gunnerFunction.openGlyphter();
-        } else if (this.gamepad2.left_trigger>0.4) {
-            //Left Trigger: Close Glyphter
-            gunnerFunction.closeGlyphter();
+        if (this.gamepad2.y) {
+            gunnerFunction.upWinch();
+        } else if (this.gamepad2.a) {
+            gunnerFunction.downWinch();
+        } else {
+            gunnerFunction.stopWinch();
         }
 
         if (this.gamepad2.right_bumper) {
-            //Right Bumper: Open Grabber
-            gunnerFunction.openRelicGrabberIncremental();
+            gunnerFunction.openGlyphter();
         } else if (this.gamepad2.right_trigger>0.4) {
-            //Right Trigger: Close Grabber
+            gunnerFunction.closeGlyphter();
+        }
+
+        if (this.gamepad2.left_bumper) {
+            gunnerFunction.openRelicGrabberIncremental();
+        } else if (this.gamepad2.left_trigger>0.4) {
             gunnerFunction.closeRelicGrabberIncremental();
         }
 
-        if (this.gamepad2.b) {
+        if (this.gamepad2.dpad_right) {
             gunnerFunction.lowerRelicLifter();
-        } else if (this.gamepad2.x) {
+        } else if (this.gamepad2.dpad_left) {
             gunnerFunction.raiseRelicLifter();
+        }
+
+        if (this.gamepad2.left_stick_y > 0.1) {
+            gunnerFunction.releaseRelic();
+        } else if (this.gamepad2.left_stick_y < -0.1) {
+            gunnerFunction.grabRelic();
         }
 
         // Finish Steering, putting Power into Hardware

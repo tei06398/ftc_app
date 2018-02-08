@@ -92,7 +92,7 @@ public class UltrasonicFunction {
                     successes++;
                 }
                 time = System.currentTimeMillis();
-                while (System.currentTimeMillis() - time < 1) {
+                while (System.currentTimeMillis() - time < 0.5) {
                     nonsense = (int)System.currentTimeMillis();
                 }
             }

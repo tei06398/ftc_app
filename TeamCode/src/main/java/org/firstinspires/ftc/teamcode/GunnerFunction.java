@@ -31,8 +31,8 @@ public class GunnerFunction {
         this.servoGlyphterRight = new TwoStateServo(hardwareMap.servo.get("glyphterServoRight"), 0.9, 0.5, 1, true);
         this.servoJewelPusher = hardwareMap.servo.get("jewelPusher");
         servoJewelPusher.setPosition(JEWELPUSHER_SERVO_STOPPED_POS);
-        this.relicGrabber = new TwoStateServo(hardwareMap.servo.get("relicGrabber"), 0, 0.7, 0.01, false);
-        this.relicLifter = new TwoStateServo(hardwareMap.servo.get("relicLifter"), 0, 0.8);
+        this.relicGrabber = new TwoStateServo(hardwareMap.servo.get("relicGrabber"), 0, 0.6, 0.02, false);
+        this.relicLifter = new TwoStateServo(hardwareMap.servo.get("relicLifter"), 0, 1, 0.01);
         this.autonGlyphter = new TwoStateServo(hardwareMap.servo.get("autonGlyphter"), 0, 1);
 
         this.telemetry = telemetry;
@@ -108,8 +108,20 @@ public class GunnerFunction {
     public void openRelicGrabberIncremental() {
         relicGrabber.incrementTowardsActive();
         telemetry.log().add("Open Relic Grabber Incremental");
-        telemetry.addData("servo position", relicGrabber.getServo().getPosition());
-        telemetry.update();
+    }
+
+    public void releaseRelic() {
+        relicGrabber.incrementTowardsActive();
+        if (relicLifter.getServo().getPosition() > 0.7) {
+            relicLifter.incrementTowardsPassive();
+        }
+        telemetry.log().add("Release Relic");
+    }
+
+    public void grabRelic() {
+        relicGrabber.incrementTowardsPassive();
+        motorRelicSlide.setPower(-0.3);
+        telemetry.log().add("Grab Relic");
     }
 
     public void closeRelicGrabberIncremental() {

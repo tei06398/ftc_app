@@ -8,11 +8,14 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 public class AutonFunctionTester extends OpMode {
     protected UltrasonicFunction ultrasonicFunction;
     protected ColorSensor colorSensor;
+    protected GunnerFunction gunnerFunction;
 
     @Override
     public void init() {
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, RobotLog.getRootInstance(telemetry));
         colorSensor = hardwareMap.colorSensor.get("jewelTipper");
+        gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        gunnerFunction.reset();
     }
 
     @Override

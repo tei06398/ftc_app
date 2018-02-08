@@ -36,9 +36,9 @@ public class RRAutonTest extends LinearOpMode {
     protected double forwardWeight = 0;*/
 
     protected final double MOVE_SPEED_RATIO = 0.3;
-    protected final double TURN_SPEED_RATIO = 0.15;
-    protected final int JEWELPUSHER_TIME = 3300;
-    protected final int JEWEL_PUSH_TIME = 200;
+    protected final double TURN_SPEED_RATIO = 0.25;
+    protected final int JEWELPUSHER_EXTENSION_TIME = 3500;
+    protected final int JEWEL_PUSH_TIME = 400;
 
     //protected VideoCapture camera = null;
 
@@ -112,14 +112,19 @@ public class RRAutonTest extends LinearOpMode {
         }
         telemetry.update();
 
-        //knockJewel();
-        //steering.setSpeedRatio(MOVE_SPEED_RATIO);
-
-        testMoveAongWall(false, 110, 30);
-
+        knockJewel();
+        testMoveAlongWall(false, 135, 40, 5);
+        testMoveAlongWall(false, 135, 25, 2);
+        steering.setSpeedRatio(MOVE_SPEED_RATIO);
         gunnerFunction.extendAutonGlyphter();
-        sleep(1000);
+        sleep(1500);
         gunnerFunction.retractAutonGlyphter();
+        steering.move(270);
+        steering.finishSteering();
+        sleep(500);
+        steering.move(90);
+        steering.finishSteering();
+        sleep(700);
         steering.move(270);
         steering.finishSteering();
         sleep(500);
@@ -263,7 +268,7 @@ public class RRAutonTest extends LinearOpMode {
         alignToWall();
     }
 
-    public void testMoveAongWall(boolean senseRight, int targetSideDistance, int targetWallDistance) {
+    public void testMoveAlongWall(boolean senseRight, int targetSideDistance, int targetWallDistance, int tolerance) {
         double sensorDistanceLF;
         double sensorDistanceRF;
         double sensorDistanceSide;
@@ -301,7 +306,7 @@ public class RRAutonTest extends LinearOpMode {
             steering.moveRadians(robotMovementAngle + robotClockwiseRotation, moveSpeed);
             steering.finishSteering();
 
-            keepMoving = Math.abs(sensorDistanceLF - targetWallDistance) > 2 || Math.abs(sensorDistanceRF - targetWallDistance) > 2 || Math.abs(sensorDistanceSide - targetSideDistance) > 2 || Math.abs(sensorDistanceLF - sensorDistanceRF) > 1;
+            keepMoving = Math.abs(sensorDistanceLF - targetWallDistance) > tolerance || Math.abs(sensorDistanceRF - targetWallDistance) > tolerance || Math.abs(sensorDistanceSide - targetSideDistance) > tolerance;
             telemetry.addData("sensorDistanceLF", sensorDistanceLF);
             telemetry.addData("sensorDistanceRF", sensorDistanceRF);
             telemetry.addData("sensorDistanceSide", sensorDistanceSide);
@@ -314,6 +319,7 @@ public class RRAutonTest extends LinearOpMode {
             telemetry.addData("moveSpeed", moveSpeed);
             telemetry.update();
         }
+        steering.stopAllMotors();
     }
 
     /**
@@ -367,9 +373,9 @@ public class RRAutonTest extends LinearOpMode {
         steering.setSpeedRatio(TURN_SPEED_RATIO);
         while (Math.abs(ultrasonicFunction.getLF() - ultrasonicFunction.getRF()) >= 1) {
             if (ultrasonicFunction.getLF() < ultrasonicFunction.getRF()) {
-                steering.turn(-1);
-            } else if (ultrasonicFunction.getRF() < ultrasonicFunction.getLF()) {
                 steering.turn(1);
+            } else if (ultrasonicFunction.getRF() < ultrasonicFunction.getLF()) {
+                steering.turn(-1);
             }
             steering.finishSteering();
             if (ultrasonicFunction.getLF() == ultrasonicFunction.getRF()) {
@@ -478,9 +484,9 @@ public class RRAutonTest extends LinearOpMode {
     public void knockJewel() {
         telemetry.addData("knockJewel Method called", "");
         telemetry.update();
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
+        steering.setSpeedRatio(TURN_SPEED_RATIO);
         gunnerFunction.extendJewelPusher();
-        sleep(JEWELPUSHER_TIME);
+        sleep(JEWELPUSHER_EXTENSION_TIME);
         gunnerFunction.stopJewelPusher();
         double red = 0;
         double blue = 0;
@@ -511,7 +517,7 @@ public class RRAutonTest extends LinearOpMode {
             }
         } else {
             gunnerFunction.retractJewelPusher();
-            sleep(JEWELPUSHER_TIME);
+            sleep(JEWELPUSHER_EXTENSION_TIME);
             gunnerFunction.stopJewelPusher();
         }
     }
@@ -521,29 +527,27 @@ public class RRAutonTest extends LinearOpMode {
      */
     public void pushJewel(JewelPosition jewelPosition) {
         if (jewelPosition == JewelPosition.LEFT) {
-            steering.moveDegrees(180);
+            steering.turnCounterclockwise(1);
+            steering.move(270, 0.5);
             steering.finishSteering();
             sleep(JEWEL_PUSH_TIME);
             steering.stopAllMotors();
             gunnerFunction.retractJewelPusher();
-            sleep(JEWELPUSHER_TIME);
+            sleep(JEWELPUSHER_EXTENSION_TIME);
             gunnerFunction.stopJewelPusher();
-            steering.moveDegrees(0);
+            steering.turnClockwise(1);
+            steering.move(270, 0.5);
             steering.finishSteering();
-            sleep(JEWEL_PUSH_TIME);
+            sleep(JEWEL_PUSH_TIME + 100);
             steering.stopAllMotors();
         } else {
-            steering.moveDegrees(0);
+            steering.turnClockwise();
             steering.finishSteering();
             sleep(JEWEL_PUSH_TIME);
             steering.stopAllMotors();
             gunnerFunction.retractJewelPusher();
-            sleep(JEWELPUSHER_TIME);
+            sleep(JEWELPUSHER_EXTENSION_TIME);
             gunnerFunction.stopJewelPusher();
-            steering.moveDegrees(180);
-            steering.finishSteering();
-            sleep(JEWEL_PUSH_TIME);
-            steering.stopAllMotors();
         }
     }
 
