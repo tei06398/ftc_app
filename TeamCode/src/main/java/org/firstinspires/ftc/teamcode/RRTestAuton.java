@@ -14,12 +14,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
 /**
  * The official autonomous mode.
  */
-@Autonomous(name = "RR Official Auton Mode")
-public class RRNewAuton extends LinearOpMode {
+@Autonomous(name = "RR Test Auton Mode")
+public class RRTestAuton extends LinearOpMode {
     protected ColorSensor jewelTipper;
 
     protected RobotDriving robotDriving;
-    protected RobotDriving.Steering steering;
+    protected RobotDriving.Steering steering
+            ;
 
     protected UltrasonicFunction ultrasonicFunction;
     protected GunnerFunction gunnerFunction;
@@ -112,95 +113,20 @@ public class RRNewAuton extends LinearOpMode {
         }
         telemetry.update();
         sleep(1000);
-        knockJewel();
 
-        if (startPosition.equals("RED_MIDDLE")) {
-            int sideDistance;
-            if (pictograph == 'l') {
-                sideDistance = 110;
-            } else if (pictograph == 'r') {
-                sideDistance = 70;
-            } else {
-                sideDistance = 90;
+        while (true) {
+            if (gamepad1.dpad_left) {
+                turnNinety(false);
             }
-            moveAlongWall(false, 30, 30, 5);
-            turnNinety(false);
-            moveAlongWall(true, sideDistance, 40, 5);
-            moveAlongWall(true, sideDistance, 25, 2);
-            sleep(1000);
-            alignToWall();
-            steering.setSpeedRatio(MOVE_SPEED_RATIO);
-            gunnerFunction.extendAutonGlyphter();
-            sleep(1500);
-            gunnerFunction.retractAutonGlyphter();
-            moveTime(270, 500);
-            moveTime(90, 700);
-            moveTime(270, 500);
-
-        } else if (startPosition.equals("RED_RELIC")) {
-            int sideDistance;
-            if (pictograph == 'l') {
-                sideDistance = 155;
-            } else if (pictograph == 'r') {
-                sideDistance = 115;
-            } else {
-                sideDistance = 135;
+            if (gamepad1.dpad_right) {
+                turnNinety(true);
             }
-            moveAlongWall(true, sideDistance, 40, 5);
-            moveAlongWall(true, sideDistance, 25, 2);
-            sleep(1000);
-            alignToWall();
-            steering.setSpeedRatio(MOVE_SPEED_RATIO);
-            gunnerFunction.extendAutonGlyphter();
-            sleep(1500);
-            gunnerFunction.retractAutonGlyphter();
-            moveTime(270, 500);
-            moveTime(90, 700);
-            moveTime(270, 500);
-
-        } else if (startPosition.equals("BLUE_MIDDLE")) {
-            int sideDistance;
-            if (pictograph == 'l') {
-                sideDistance = 70;
-            } else if (pictograph == 'r') {
-                sideDistance = 110;
-            } else {
-                sideDistance = 90;
+            if (gamepad1.dpad_up) {
+                alignToWall();
             }
-            moveAlongWall(true, 30, 30, 5);
-            turnNinety(true);
-            moveAlongWall(false, sideDistance, 40, 5);
-            moveAlongWall(false, sideDistance, 25, 2);
-            sleep(1000);
-            alignToWall();
-            steering.setSpeedRatio(MOVE_SPEED_RATIO);
-            gunnerFunction.extendAutonGlyphter();
-            sleep(1500);
-            gunnerFunction.retractAutonGlyphter();
-            moveTime(270, 500);
-            moveTime(90, 700);
-            moveTime(270, 500);
-
-        } else {
-            int sideDistance;
-            if (pictograph == 'l') {
-                sideDistance = 118;
-            } else if (pictograph == 'r') {
-                sideDistance = 158;
-            } else {
-                sideDistance = 138;
+            if (gamepad1.dpad_down) {
+                break;
             }
-            moveAlongWall(false, sideDistance, 40, 5);
-            moveAlongWall(false, sideDistance, 25, 2);
-            sleep(1000);
-            alignToWall();
-            steering.setSpeedRatio(MOVE_SPEED_RATIO);
-            gunnerFunction.extendAutonGlyphter();
-            sleep(1500);
-            gunnerFunction.retractAutonGlyphter();
-            moveTime(270, 500);
-            moveTime(90, 700);
-            moveTime(270, 500);
         }
     }
 
