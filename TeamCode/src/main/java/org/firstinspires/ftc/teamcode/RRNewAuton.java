@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
 /**
  * The official autonomous mode.
  */
-@Autonomous(name = "RR Test Auton Mode")
-public class RRAutonTest extends LinearOpMode {
+@Autonomous(name = "RR Official Auton Mode")
+public class RRNewAuton extends LinearOpMode {
     protected ColorSensor jewelTipper;
 
     protected RobotDriving robotDriving;
@@ -36,7 +36,7 @@ public class RRAutonTest extends LinearOpMode {
     protected double forwardWeight = 0;*/
 
     protected final double MOVE_SPEED_RATIO = 0.3;
-    protected final double TURN_SPEED_RATIO = 0.25;
+    protected final double TURN_SPEED_RATIO = 0.3;
     protected final int JEWELPUSHER_EXTENSION_TIME = 3500;
     protected final int JEWEL_PUSH_TIME = 400;
 
@@ -111,24 +111,99 @@ public class RRAutonTest extends LinearOpMode {
             //Displays only if the initial value of pictograph remains unchanged, which shouldn't occur.
         }
         telemetry.update();
+        sleep(1000);
+        //knockJewel();
+        turnNinety(false);
+        turnNinety(true);
 
-        knockJewel();
-        testMoveAlongWall(false, 135, 40, 5);
-        testMoveAlongWall(false, 135, 25, 2);
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
-        gunnerFunction.extendAutonGlyphter();
-        sleep(1500);
-        gunnerFunction.retractAutonGlyphter();
-        steering.move(270);
-        steering.finishSteering();
-        sleep(500);
-        steering.move(90);
-        steering.finishSteering();
-        sleep(700);
-        steering.move(270);
-        steering.finishSteering();
-        sleep(500);
-        steering.stopAllMotors();
+        if (startPosition.equals("RED_MIDDLE")) {
+            int sideDistance;
+            if (pictograph == 'l') {
+                sideDistance = 110;
+            } else if (pictograph == 'r') {
+                sideDistance = 70;
+            } else {
+                sideDistance = 90;
+            }
+            moveAlongWall(false, 30, 30, 5);
+            turnNinety(false);
+            moveAlongWall(true, sideDistance, 40, 5);
+            moveAlongWall(true, sideDistance, 25, 2);
+            sleep(1000);
+            alignToWall();
+            steering.setSpeedRatio(MOVE_SPEED_RATIO);
+            gunnerFunction.extendAutonGlyphter();
+            sleep(1500);
+            gunnerFunction.retractAutonGlyphter();
+            moveTime(270, 500);
+            moveTime(90, 700);
+            moveTime(270, 500);
+
+        } else if (startPosition.equals("RED_RELIC")) {
+            int sideDistance;
+            if (pictograph == 'l') {
+                sideDistance = 155;
+            } else if (pictograph == 'r') {
+                sideDistance = 115;
+            } else {
+                sideDistance = 135;
+            }
+            moveAlongWall(true, sideDistance, 40, 5);
+            moveAlongWall(true, sideDistance, 25, 2);
+            sleep(1000);
+            alignToWall();
+            steering.setSpeedRatio(MOVE_SPEED_RATIO);
+            gunnerFunction.extendAutonGlyphter();
+            sleep(1500);
+            gunnerFunction.retractAutonGlyphter();
+            moveTime(270, 500);
+            moveTime(90, 700);
+            moveTime(270, 500);
+
+        } else if (startPosition.equals("BLUE_MIDDLE")) {
+            int sideDistance;
+            if (pictograph == 'l') {
+                sideDistance = 70;
+            } else if (pictograph == 'r') {
+                sideDistance = 110;
+            } else {
+                sideDistance = 90;
+            }
+            moveAlongWall(true, 30, 30, 5);
+            turnNinety(true);
+            moveAlongWall(false, sideDistance, 40, 5);
+            moveAlongWall(false, sideDistance, 25, 2);
+            sleep(1000);
+            alignToWall();
+            steering.setSpeedRatio(MOVE_SPEED_RATIO);
+            gunnerFunction.extendAutonGlyphter();
+            sleep(1500);
+            gunnerFunction.retractAutonGlyphter();
+            moveTime(270, 500);
+            moveTime(90, 700);
+            moveTime(270, 500);
+
+        } else {
+            int sideDistance;
+            if (pictograph == 'l') {
+                sideDistance = 118;
+            } else if (pictograph == 'r') {
+                sideDistance = 158;
+            } else {
+                sideDistance = 138;
+            }
+            moveAlongWall(false, sideDistance, 40, 5);
+            moveAlongWall(false, sideDistance, 25, 2);
+            sleep(1000);
+            alignToWall();
+            steering.setSpeedRatio(MOVE_SPEED_RATIO);
+            gunnerFunction.extendAutonGlyphter();
+            sleep(1500);
+            gunnerFunction.retractAutonGlyphter();
+            moveTime(270, 500);
+            moveTime(90, 700);
+            moveTime(270, 500);
+        }
     }
 
     /**
@@ -171,104 +246,7 @@ public class RRAutonTest extends LinearOpMode {
         return '!';
     }
 
-    /**
-     * Move along retractRelicSlide wall.
-     */
-    public void moveAlongWall(boolean moveRight, boolean senseRight, int sideDistance, int wallDistance) {
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
-        double clockwiseTurnWeight = 0;
-        double forwardWeight = 0;
-        final double MAX_TURN_WEIGHT = 0.2;
-        final double MAX_FORWARD_WEIGHT = 0.2;
-
-        //Rate of acceleration
-        final double INCREASE_RATE = 0.005;
-
-        //Rate of deceleration
-        final double NORMALIZE_RATE = 0.02;
-        double distanceLF;
-        double distanceRF;
-        boolean keepMoving = true;
-        if (moveRight && senseRight) ultrasonicFunction.setRight(255);
-        else if (moveRight && !senseRight) ultrasonicFunction.setLeft(0);
-        else if (!moveRight && senseRight) ultrasonicFunction.setRight(0);
-        else if (!moveRight && !senseRight) ultrasonicFunction.setLeft(255);
-        while (keepMoving && opModeIsActive()) {
-            //Set power in direction of motion
-            if (moveRight) {
-                steering.moveDegrees(0, 1);
-            } else {
-                steering.moveDegrees(180, 1);
-            }
-
-            //Sense distances to walls
-            distanceLF = ultrasonicFunction.getLF();
-            distanceRF = ultrasonicFunction.getRF();
-
-            //Determine robot turning off course
-            if (distanceLF + 1 < distanceRF) {
-                if (clockwiseTurnWeight > 0) {
-                    clockwiseTurnWeight = Math.max(clockwiseTurnWeight - NORMALIZE_RATE, -MAX_TURN_WEIGHT);
-                } else {
-                    clockwiseTurnWeight = Math.max(clockwiseTurnWeight - INCREASE_RATE, -MAX_TURN_WEIGHT);
-                }
-
-            } else if (distanceRF + 1 < distanceLF) {
-                if (clockwiseTurnWeight > 0) {
-                    clockwiseTurnWeight = Math.min(clockwiseTurnWeight + INCREASE_RATE, MAX_TURN_WEIGHT);
-                } else {
-                    clockwiseTurnWeight = Math.min(clockwiseTurnWeight + NORMALIZE_RATE, MAX_TURN_WEIGHT);
-                }
-            }
-
-            //Determine robot drifting off course
-            if ((distanceLF + distanceRF) / 2 + 1 < wallDistance) {
-                if (forwardWeight > 0) {
-                    forwardWeight = Math.max(forwardWeight - NORMALIZE_RATE, -MAX_FORWARD_WEIGHT);
-                } else {
-                    forwardWeight = Math.max(forwardWeight - INCREASE_RATE, -MAX_FORWARD_WEIGHT);
-                }
-            } else if ((distanceLF + distanceRF) / 2 - 1 > wallDistance) {
-                if (forwardWeight > 0) {
-                    forwardWeight = Math.min(forwardWeight + INCREASE_RATE, MAX_FORWARD_WEIGHT);
-                } else {
-                    forwardWeight = Math.min(forwardWeight + NORMALIZE_RATE, MAX_FORWARD_WEIGHT);
-                }
-            }
-
-            telemetry.addData("Forward weight", forwardWeight);
-            telemetry.addData("Clockwise turn weight", clockwiseTurnWeight);
-            telemetry.addData("Code RF", distanceRF);
-            telemetry.addData("Code LF", distanceLF);
-            ultrasonicFunction.printTestData();
-            telemetry.update();
-
-            if (forwardWeight > 0) {
-                steering.moveDegrees(90, forwardWeight);
-            } else {
-                steering.moveDegrees(270, -forwardWeight);
-            }
-
-            steering.turn(clockwiseTurnWeight);
-
-            steering.finishSteering();
-
-            //determine whether to keep moving
-            if (moveRight && senseRight) {
-                keepMoving = ultrasonicFunction.getRight() > sideDistance;
-            } else if (!moveRight && senseRight) {
-                keepMoving = ultrasonicFunction.getRight() < sideDistance;
-            } else if (moveRight) {
-                keepMoving = ultrasonicFunction.getLeft() < sideDistance;
-            } else {
-                keepMoving = ultrasonicFunction.getLeft() > sideDistance;
-            }
-        }
-        steering.stopAllMotors();
-        alignToWall();
-    }
-
-    public void testMoveAlongWall(boolean senseRight, int targetSideDistance, int targetWallDistance, int tolerance) {
+    public void moveAlongWall(boolean senseRight, int targetSideDistance, int targetWallDistance, int tolerance) {
         double sensorDistanceLF;
         double sensorDistanceRF;
         double sensorDistanceSide;
@@ -281,7 +259,7 @@ public class RRAutonTest extends LinearOpMode {
         double moveSpeed;
 
         boolean keepMoving = true;
-        while (keepMoving && opModeIsActive()) {
+        while (keepMoving && opModeIsActive() && !isStopRequested()) {
             sensorDistanceLF = ultrasonicFunction.getLF();
             sensorDistanceRF = ultrasonicFunction.getRF();
             if (senseRight) { sensorDistanceSide = ultrasonicFunction.getRight(); }
@@ -383,100 +361,8 @@ public class RRAutonTest extends LinearOpMode {
                 break;
             }
         }
-    }
-
-    /**
-     * Get closer to the crytobox once the robot is in front of it.
-     */
-    public void approachCryptobox(boolean senseRight, int goalSideDistance) {
-        double clockwiseTurnWeight = 0;
-        double rightWeight = 0;
-        final double MAX_TURN_WEIGHT = 0.2;
-        final double MAX_FORWARD_WEIGHT = 0.2;
-
-        //Rate of acceleration
-        final double INCREASE_RATE = 0.005;
-
-        //Rate of deceleration
-        final double NORMALIZE_RATE = 0.02;
-        double sideDistance;
-        double distanceLF;
-        double distanceRF;
-        boolean keepMoving = true;
-        final int wallDistance = 28;
-
-        steering.setSpeedRatio(MOVE_SPEED_RATIO);
-        while (ultrasonicFunction.getRF() + ultrasonicFunction.getLF() > wallDistance * 2) {
-            telemetry.addData("getRF: ", ultrasonicFunction.getRF());
-            telemetry.addData("getLF: ", ultrasonicFunction.getLF());
-            telemetry.update();
-            distanceLF = ultrasonicFunction.getLF();
-            distanceRF = ultrasonicFunction.getRF();
-            sideDistance = senseRight ? ultrasonicFunction.getRight() : ultrasonicFunction.getLeft();
-            if (distanceLF > distanceRF + 1) {
-                if (clockwiseTurnWeight < 0) {
-                    clockwiseTurnWeight = Math.min(clockwiseTurnWeight + NORMALIZE_RATE, MAX_TURN_WEIGHT);
-                } else {
-                    clockwiseTurnWeight = Math.min(clockwiseTurnWeight + INCREASE_RATE, MAX_TURN_WEIGHT);
-                }
-            }
-            else if (distanceRF > distanceLF + 1) {
-                if (clockwiseTurnWeight > 0) {
-                    clockwiseTurnWeight = Math.max(clockwiseTurnWeight - NORMALIZE_RATE, -MAX_TURN_WEIGHT);
-                } else {
-                    clockwiseTurnWeight = Math.max(clockwiseTurnWeight - INCREASE_RATE, -MAX_TURN_WEIGHT);
-                }
-            }
-
-            if (sideDistance > goalSideDistance + 1) {
-                if (senseRight) {
-                    if (rightWeight < 0) {
-                        rightWeight = Math.min(rightWeight + NORMALIZE_RATE, MAX_TURN_WEIGHT);
-                    } else {
-                        rightWeight = Math.min(rightWeight + INCREASE_RATE, MAX_TURN_WEIGHT);
-                    }
-                } else {
-                    if (rightWeight > 0) {
-                        rightWeight = Math.max(rightWeight - NORMALIZE_RATE, -MAX_TURN_WEIGHT);
-                    } else {
-                        rightWeight = Math.max(rightWeight - INCREASE_RATE, -MAX_TURN_WEIGHT);
-                    }
-                }
-            }
-            else if (sideDistance < goalSideDistance - 1) {
-                if (!senseRight) {
-                    if (rightWeight < 0) {
-                        rightWeight = Math.min(rightWeight + NORMALIZE_RATE, MAX_TURN_WEIGHT);
-                    } else {
-                        rightWeight = Math.min(rightWeight + INCREASE_RATE, MAX_TURN_WEIGHT);
-                    }
-                } else {
-                    if (rightWeight > 0) {
-                        rightWeight = Math.max(rightWeight - NORMALIZE_RATE, -MAX_TURN_WEIGHT);
-                    } else {
-                        rightWeight = Math.max(rightWeight - INCREASE_RATE, -MAX_TURN_WEIGHT);
-                    }
-                }
-            }
-            steering.moveDegrees(90, 1);
-            steering.turn(clockwiseTurnWeight);
-            steering.moveDegrees(0, rightWeight);
-            steering.finishSteering();
-        }
         steering.stopAllMotors();
     }
-
-    /*public void driveToCryptobox(CrypoboxPosition crypoboxPosition) {
-        if (startPosition.equals("RED_RELIC")) {
-            moveAlongWall(false, true, 150, 50);
-        } else if (startPosition.equals("RED_MIDDLE")) {
-            moveAlongWall(false, false, 60, 50);
-        } else if (startPosition.equals("BLUE_RELIC")) {
-            moveAlongWall(true, false, 150, 50);
-        } else {
-            moveAlongWall(true, true, 60, 50);
-        }
-    }*/
 
     /**
      * Knock the correct jewel down.
@@ -536,10 +422,11 @@ public class RRAutonTest extends LinearOpMode {
             sleep(JEWELPUSHER_EXTENSION_TIME);
             gunnerFunction.stopJewelPusher();
             steering.turnClockwise(1);
-            steering.move(270, 0.5);
+            steering.move(270, 0.3);
             steering.finishSteering();
-            sleep(JEWEL_PUSH_TIME + 100);
+            sleep(JEWEL_PUSH_TIME + 250);
             steering.stopAllMotors();
+            sleep(1000);
         } else {
             steering.turnClockwise();
             steering.finishSteering();
@@ -549,6 +436,20 @@ public class RRAutonTest extends LinearOpMode {
             sleep(JEWELPUSHER_EXTENSION_TIME);
             gunnerFunction.stopJewelPusher();
         }
+    }
+
+    public void moveTime(double degrees, long time) {
+        steering.moveDegrees(degrees);
+        steering.finishSteering();
+        sleep(time);
+        steering.stopAllMotors();
+    }
+
+    public void turnTime(boolean isClockwise, long time) {
+        steering.turn(isClockwise);
+        steering.finishSteering();
+        sleep(time);
+        steering.stopAllMotors();
     }
 
     public enum JewelPosition {

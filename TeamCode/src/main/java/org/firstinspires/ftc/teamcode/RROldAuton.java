@@ -14,8 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
 /**
  * The official autonomous mode.
  */
-@Autonomous(name = "RR Official Auton Mode")
-public class RRAuton extends LinearOpMode {
+@Autonomous(name = "RR Old Auton Mode")
+public class RROldAuton extends LinearOpMode {
     protected ColorSensor jewelTipper;
 
     protected RobotDriving robotDriving;
