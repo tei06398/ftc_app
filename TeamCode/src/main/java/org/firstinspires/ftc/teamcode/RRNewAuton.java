@@ -36,7 +36,8 @@ public class RRNewAuton extends LinearOpMode {
     protected double forwardWeight = 0;*/
 
     protected final double MOVE_SPEED_RATIO = 0.3;
-    protected final double TURN_SPEED_RATIO = 0.3;
+    protected final double PRECISE_TURN_SPEED_RATIO = 0.3;
+    protected final double FAST_TURN_SPEED_RATIO = 0.6;
     protected final int JEWELPUSHER_EXTENSION_TIME = 3500;
     protected final int JEWEL_PUSH_TIME = 400;
 
@@ -302,21 +303,21 @@ public class RRNewAuton extends LinearOpMode {
      * Turn ninety degrees.
      */
     public void turnNinety(boolean isClockwise) {
-        steering.setSpeedRatio(TURN_SPEED_RATIO);
+        steering.setSpeedRatio(FAST_TURN_SPEED_RATIO);
         if (isClockwise) {
             //leftDist is the distance detected from ultrasonicLeft in the previous tick
             double leftDist = 255;
 
             //Turn until left distance begins to increase (meaning that robot has passed the position that it should reach)
             while (ultrasonicFunction.getLeft() <= leftDist) {
-                steering.turn(1);
+                steering.turnClockwise();
                 steering.finishSteering();
                 leftDist = ultrasonicFunction.getLeft();
             }
             steering.stopAllMotors();
             //Return to position of minimum left distance
             while (ultrasonicFunction.getLeft() > leftDist) {
-                steering.turn(-1);
+                steering.turnCounterclockwise();
                 steering.finishSteering();
                 leftDist = ultrasonicFunction.getLeft();
             }
@@ -327,14 +328,14 @@ public class RRNewAuton extends LinearOpMode {
 
             //Turn until right distance begins to increase (meaning that robot has passed the position that it should reach)
             while (ultrasonicFunction.getRight() <= rightDist) {
-                steering.turn(-1);
+                steering.turnCounterclockwise();
                 steering.finishSteering();
                 rightDist = ultrasonicFunction.getRight();
             }
             steering.stopAllMotors();
             //Return to position of minimum right distance
             while (ultrasonicFunction.getRight() > rightDist) {
-                steering.turn(1);
+                steering.turnClockwise();
                 steering.finishSteering();
                 rightDist = ultrasonicFunction.getRight();
             }
@@ -346,18 +347,15 @@ public class RRNewAuton extends LinearOpMode {
      * Align to retractRelicSlide wall.
      */
     public void alignToWall() {
-        steering.setSpeedRatio(TURN_SPEED_RATIO);
-        while (Math.abs(ultrasonicFunction.getLF() - ultrasonicFunction.getRF()) >= 1) {
-            if (ultrasonicFunction.getLF() < ultrasonicFunction.getRF()) {
-                steering.turn(1);
-            } else if (ultrasonicFunction.getRF() < ultrasonicFunction.getLF()) {
-                steering.turn(-1);
-            }
+        steering.setSpeedRatio(PRECISE_TURN_SPEED_RATIO);
+        double lfDist = ultrasonicFunction.getLF();
+        double rfDist = ultrasonicFunction.getRF();
+        while (Math.abs(lfDist - rfDist) >= 1) {
+            if (lfDist < rfDist) { steering.turnClockwise(); }
+            else if (rfDist < lfDist) { steering.turnCounterclockwise(); }
             steering.finishSteering();
-            if (ultrasonicFunction.getLF() == ultrasonicFunction.getRF()) {
-                steering.stopAllMotors();
-                break;
-            }
+            lfDist = ultrasonicFunction.getLF();
+            rfDist = ultrasonicFunction.getRF();
         }
         steering.stopAllMotors();
     }
@@ -368,7 +366,7 @@ public class RRNewAuton extends LinearOpMode {
     public void knockJewel() {
         telemetry.addData("knockJewel Method called", "");
         telemetry.update();
-        steering.setSpeedRatio(TURN_SPEED_RATIO);
+        steering.setSpeedRatio(PRECISE_TURN_SPEED_RATIO);
         gunnerFunction.extendJewelPusher();
         sleep(JEWELPUSHER_EXTENSION_TIME);
         gunnerFunction.stopJewelPusher();
