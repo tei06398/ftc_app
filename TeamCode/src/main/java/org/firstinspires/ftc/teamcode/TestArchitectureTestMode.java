@@ -6,21 +6,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Autonomous(name = "Test Architecture Test")
 public class TestArchitectureTestMode extends LinearOpMode {
     enum SubMode {
-        MAIN ("Main"),
-        TEST_A ("Test A"),
-        TEST_B ("Test B"),
-        TEST_C ("Test C");
+        MAIN,
+        TEST_A,
+        TEST_B,
+        TEST_C;
 
-        private final String name;
         private static final SubMode[] values = values();
-
-        SubMode(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
 
         public static SubMode fromOrdinal(int ordinal) {
             return values[ordinal % values.length];
@@ -30,11 +21,28 @@ public class TestArchitectureTestMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.setAutoClear(false);
-        SubMode subMode = selectMode();
-        waitForStart(); // just for safety; not strictly needed
+        int modeIndex = 0;
+        SubMode subMode;
+        while (opModeIsActive()) {
+            if (gamepad1.dpad_left) modeIndex--;
+            if (gamepad1.dpad_right) modeIndex++;
+            telemetry.addData("Sub mode", SubMode.fromOrdinal(modeIndex).toString());
+            telemetry.update();
+            if (gamepad1.x) {
+                subMode = SubMode.fromOrdinal(modeIndex);
+                waitForStart();
+                runSubMode(subMode);
+            }
+            if (gamepad1.y) {
+                requestOpModeStop();
+            }
+        }
+    }
+
+    private void runSubMode(SubMode subMode) {
         switch (subMode) {
             case MAIN:
-                runMainSubOpMode();
+                runMain();
                 break;
             case TEST_A:
                 runTestA();
@@ -63,19 +71,8 @@ public class TestArchitectureTestMode extends LinearOpMode {
         telemetry.update();
     }
 
-    private void runMainSubOpMode() {
+    private void runMain() {
         telemetry.addData("Running", "MAIN");
         telemetry.update();
-    }
-
-    private SubMode selectMode() {
-        int modeIndex = 0;
-        while (!isStarted() && opModeIsActive()) {
-            if (gamepad1.dpad_left) modeIndex--;
-            if (gamepad1.dpad_right) modeIndex++;
-            telemetry.addData("Selected mode", SubMode.fromOrdinal(modeIndex));
-            telemetry.update();
-        }
-        return SubMode.fromOrdinal(modeIndex);
     }
 }
