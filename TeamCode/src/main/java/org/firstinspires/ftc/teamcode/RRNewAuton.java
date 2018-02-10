@@ -133,13 +133,13 @@ public class RRNewAuton extends LinearOpMode {
         if (startPosition.equals("RED_MIDDLE")) {
             int sideDistance;
             if (pictograph == 'l') {
-                sideDistance = 110;
+                sideDistance = 88;
             } else if (pictograph == 'r') {
-                sideDistance = 70;
+                sideDistance = 49;
             } else {
-                sideDistance = 90;
+                sideDistance = 69;
             }
-            moveAlongWall(false, 30, 30, 5);
+            moveAlongWall(false, 30, 40, 5);
             turnNinety(false);
             moveAlongWall(true, sideDistance, 40, 5);
             moveAlongWall(true, sideDistance, 25, 2);
@@ -183,7 +183,7 @@ public class RRNewAuton extends LinearOpMode {
             } else {
                 sideDistance = 77;
             }
-            moveAlongWall(true, 30, 30, 5);
+            moveAlongWall(true, 30, 40, 5);
             turnNinety(true);
             moveAlongWall(false, sideDistance, 40, 5);
             moveAlongWall(false, sideDistance, 25, 2);
@@ -326,7 +326,7 @@ public class RRNewAuton extends LinearOpMode {
             steering.turnCounterclockwise();
         }
         steering.finishSteering();
-        sleep(1000);
+        sleep(1250);
         steering.stopAllMotors();
         alignToWall();
     }
