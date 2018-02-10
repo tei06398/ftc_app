@@ -159,12 +159,13 @@ public class RRNewAuton extends LinearOpMode {
         } else if (startPosition.equals("RED_RELIC")) {
             int sideDistance;
             if (pictograph == 'l') {
-                sideDistance = 158;
+                sideDistance = 151;
             } else if (pictograph == 'r') {
-                sideDistance = 118;
+                sideDistance = 110;
             } else {
-                sideDistance = 138;
+                sideDistance = 131;
             }
+            moveTime(180, 1000);
             moveAlongWall(true, sideDistance, 40, 5);
             moveAlongWall(true, sideDistance, 25, 2);
             sleep(1000);
@@ -203,12 +204,13 @@ public class RRNewAuton extends LinearOpMode {
         } else {
             int sideDistance;
             if (pictograph == 'l') {
-                sideDistance = 118;
+                sideDistance = 115;
             } else if (pictograph == 'r') {
-                sideDistance = 158;
+                sideDistance = 154;
             } else {
-                sideDistance = 138;
+                sideDistance = 136;
             }
+            moveTime(0, 1000);
             moveAlongWall(false, sideDistance, 40, 5);
             moveAlongWall(false, sideDistance, 25, 2);
             sleep(1000);

@@ -80,11 +80,11 @@ public class RRTeleOp extends OpMode {
 
         //Set Speed Ratio depending on the triggers pressed
         if (this.gamepad1.right_trigger > 0.5) {
-            // Right Trigger: Minimum Speed Ratio
-            steering.setSpeedRatio(MIN_SPEED_RATIO);
-        } else if (this.gamepad1.left_trigger > 0.5) {
-            // Left Trigger: Maximum Speed
+            // Left Trigger: Minimum Speed Ratio
             steering.setSpeedRatio(MAX_SPEED_RATIO);
+        } else if (this.gamepad1.left_trigger > 0.5) {
+            // Right Trigger: Maximum Speed
+            steering.setSpeedRatio(MIN_SPEED_RATIO);
         } else {
             steering.setSpeedRatio(NORMAL_SPEED_RATIO);
         }
