@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
@@ -25,6 +26,8 @@ public class GunnerFunction {
 
     GunnerFunction(HardwareMap hardwareMap, Telemetry telemetry) {
         // Load the needed devices from the hardware map
+        ServoController servoController = hardwareMap.servoController.get("Servo Controller 1");
+        servoController.pwmDisable();
         this.motorWinch = hardwareMap.dcMotor.get("winchMotor");
         this.motorRelicSlide = hardwareMap.dcMotor.get("relicSlideMotor");
         this.servoGlyphterLeft = new TwoStateServo(hardwareMap.servo.get("glyphterServoLeft"), 0, 0.5, 1, true);
@@ -165,5 +168,15 @@ public class GunnerFunction {
         relicLifter.passive();
         servoJewelPusher.setPosition(JEWELPUSHER_SERVO_STOPPED_POS);
         telemetry.log().add("Reset");
+    }
+
+    public void disablePwm(HardwareMap hardwareMap) {
+        ServoController servoController = hardwareMap.servoController.get("Servo Controller 1");
+        servoController.pwmDisable();
+    }
+
+    public void enablePwm(HardwareMap hardwareMap) {
+        ServoController servoController = hardwareMap.servoController.get("Servo Controller 1");
+        servoController.pwmEnable();
     }
 }

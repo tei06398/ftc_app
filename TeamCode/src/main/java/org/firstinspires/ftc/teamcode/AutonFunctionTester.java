@@ -15,6 +15,7 @@ public class AutonFunctionTester extends OpMode {
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, RobotLog.getRootInstance(telemetry));
         colorSensor = hardwareMap.colorSensor.get("jewelTipper");
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        gunnerFunction.disablePwm(hardwareMap);
         gunnerFunction.reset();
     }
 

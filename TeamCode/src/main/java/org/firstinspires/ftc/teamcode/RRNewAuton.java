@@ -47,6 +47,8 @@ public class RRNewAuton extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+
         this.jewelTipper = this.hardwareMap.colorSensor.get("jewelTipper");
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this.hardwareMap.appContext);
@@ -61,6 +63,7 @@ public class RRNewAuton extends LinearOpMode {
         log = RobotLog.getRootInstance(telemetry);
         ultrasonicFunction = new UltrasonicFunction(hardwareMap, log);
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
+        gunnerFunction.disablePwm(hardwareMap);
 
         /* VUFORIA CODE */
 
@@ -93,7 +96,7 @@ public class RRNewAuton extends LinearOpMode {
          *
          *
          */
-
+        gunnerFunction.enablePwm(hardwareMap);
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
 
         gunnerFunction.upWinch();
