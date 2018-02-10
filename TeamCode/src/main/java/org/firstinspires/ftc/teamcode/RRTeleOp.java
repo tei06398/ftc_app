@@ -36,7 +36,7 @@ public class RRTeleOp extends OpMode {
     }
 
     public void loop() {
-
+        gunnerFunction.stopAutonGlyphter();
         if (extendRelicSlide) {
             if (extendRelicSlideStartTime == 0) {
                 extendRelicSlideStartTime = System.currentTimeMillis();
