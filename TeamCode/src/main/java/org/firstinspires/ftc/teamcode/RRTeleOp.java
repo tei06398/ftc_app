@@ -15,9 +15,12 @@ public class RRTeleOp extends OpMode {
 
     // The weight given to rotation (as opposed to left/right strafe) during pivoting
     private final static double BLOCK_ROTATION_WEIGHT = 0.6;
+    private final static double TURNING_SPEED_BOOST = 0.3;
 
     private boolean disable2A = false;
     private boolean disable2B = false;
+    private boolean extendRelicSlide = true;
+    private long extendRelicSlideStartTime = 0;
 
     public void init() {
         // No motors/servos are instantiated here because everything is done in the RobotDriving, GunnerFunction, etc.
@@ -33,6 +36,16 @@ public class RRTeleOp extends OpMode {
     }
 
     public void loop() {
+
+        if (extendRelicSlide) {
+            if (extendRelicSlideStartTime == 0) {
+                extendRelicSlideStartTime = System.currentTimeMillis();
+                gunnerFunction.extendRelicSlide();
+            } else if (System.currentTimeMillis() - extendRelicSlideStartTime > 200) {
+                gunnerFunction.stopRelicSlide();
+                extendRelicSlide = false;
+            }
+        }
         // TESTING
         /*
         if (this.gamepad1.retractRelicSlide) {
@@ -50,12 +63,39 @@ public class RRTeleOp extends OpMode {
         telemetry.addData("block rotation weight: ", BLOCK_ROTATION_WEIGHT);*/
 
         // GAMEPAD 1 (DRIVER)
+
+        // Arrow Keys: Compass Rose Drive
+        if (this.gamepad1.dpad_right) {
+            steering.moveDegrees(0, MIN_SPEED_RATIO);
+        }
+        if (this.gamepad1.dpad_up) {
+            steering.moveDegrees(90, MIN_SPEED_RATIO);
+        }
+        if (this.gamepad1.dpad_left) {
+            steering.moveDegrees(180, MIN_SPEED_RATIO);
+        }
+        if (this.gamepad1.dpad_down) {
+            steering.moveDegrees(270, MIN_SPEED_RATIO);
+        }
+
+        //Set Speed Ratio depending on the triggers pressed
+        if (this.gamepad1.right_trigger > 0.5) {
+            // Right Trigger: Minimum Speed Ratio
+            steering.setSpeedRatio(MIN_SPEED_RATIO);
+        } else if (this.gamepad1.left_trigger > 0.5) {
+            // Left Trigger: Maximum Speed
+            steering.setSpeedRatio(MAX_SPEED_RATIO);
+        } else {
+            steering.setSpeedRatio(NORMAL_SPEED_RATIO);
+        }
+
         // Right Stick: Turn/Rotate
         if (this.gamepad1.right_stick_x > 0.1) {
             steering.turnClockwise();
+            steering.setSpeedRatio(Math.min(1, steering.getSpeedRatio() + TURNING_SPEED_BOOST));
         } else if (this.gamepad1.right_stick_x < -0.1) {
             steering.turnCounterclockwise();
-
+            steering.setSpeedRatio(Math.min(1, steering.getSpeedRatio() + TURNING_SPEED_BOOST));
         }
 
         // Left Stick: Driving
@@ -66,30 +106,6 @@ public class RRTeleOp extends OpMode {
             steering.moveRadians(angle);
         } else {
             telemetry.addData("angle: ", 0);
-        }
-
-        // Arrow Keys: Compass Rose Drive
-        if (this.gamepad1.dpad_right) {
-            steering.moveDegrees(180, MIN_SPEED_RATIO);
-        }
-        if (this.gamepad1.dpad_up) {
-            steering.moveDegrees(90, MIN_SPEED_RATIO);
-        }
-        if (this.gamepad1.dpad_left) {
-            steering.moveDegrees(0, MIN_SPEED_RATIO);
-        }
-        if (this.gamepad1.dpad_down) {
-            steering.moveDegrees(270, MIN_SPEED_RATIO);
-        }
-
-        if (this.gamepad1.right_trigger > 0.5) {
-            // Right Trigger: Minimum Speed Ratio
-            steering.setSpeedRatio(MIN_SPEED_RATIO);
-        } else if (this.gamepad1.left_trigger > 0.5) {
-            // Left Trigger: Maximum Speed
-            steering.setSpeedRatio(MAX_SPEED_RATIO);
-        } else {
-            steering.setSpeedRatio(NORMAL_SPEED_RATIO);
         }
 
         // Right Bumper: Move Around Block CCW
@@ -103,7 +119,7 @@ public class RRTeleOp extends OpMode {
             gunnerFunction.extendRelicSlide();
         } else if (this.gamepad2.dpad_down) {
             gunnerFunction.retractRelicSlide();
-        } else {
+        } else if (!extendRelicSlide){
             gunnerFunction.stopRelicSlide();
         }
 

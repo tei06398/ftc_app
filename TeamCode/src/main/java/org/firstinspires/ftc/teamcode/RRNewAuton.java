@@ -39,7 +39,7 @@ public class RRNewAuton extends LinearOpMode {
     protected final double PRECISE_TURN_SPEED_RATIO = 0.3;
     protected final double FAST_TURN_SPEED_RATIO = 0.6;
     protected final int JEWELPUSHER_EXTENSION_TIME = 3500;
-    protected final int JEWEL_PUSH_TIME = 400;
+    protected final int JEWEL_PUSH_TIME = 600;
 
     //protected VideoCapture camera = null;
 
@@ -84,13 +84,27 @@ public class RRNewAuton extends LinearOpMode {
         //Wait for OpMode Init Button to be Pressed
         waitForStart();
 
+        /**
+         *
+         *
+         *
+        START ACTUALLY DOING STUFF
+         *
+         *
+         *
+         */
+
         steering.setSpeedRatio(MOVE_SPEED_RATIO);
+
+        gunnerFunction.upWinch();
+        sleep(250);
+        gunnerFunction.stopWinch();
 
         //Activate the VuMark Dataset as Current Tracked Object
         relicTrackables.activate();
 
         telemetry.setMsTransmissionInterval(0);
-
+        sleep(500);
         /* GET PICTOGRAPH */
 
         char pictograph = readVuMark(relicTemplate);
@@ -113,6 +127,7 @@ public class RRNewAuton extends LinearOpMode {
         }
         telemetry.update();
         sleep(1000);
+        gunnerFunction.openGlyphterFully();
         knockJewel();
 
         if (startPosition.equals("RED_MIDDLE")) {
@@ -136,16 +151,16 @@ public class RRNewAuton extends LinearOpMode {
             gunnerFunction.retractAutonGlyphter();
             moveTime(270, 500);
             moveTime(90, 700);
-            moveTime(270, 500);
+            moveTime(270, 300);
 
         } else if (startPosition.equals("RED_RELIC")) {
             int sideDistance;
             if (pictograph == 'l') {
-                sideDistance = 155;
+                sideDistance = 158;
             } else if (pictograph == 'r') {
-                sideDistance = 115;
+                sideDistance = 118;
             } else {
-                sideDistance = 135;
+                sideDistance = 138;
             }
             moveAlongWall(true, sideDistance, 40, 5);
             moveAlongWall(true, sideDistance, 25, 2);
@@ -157,16 +172,16 @@ public class RRNewAuton extends LinearOpMode {
             gunnerFunction.retractAutonGlyphter();
             moveTime(270, 500);
             moveTime(90, 700);
-            moveTime(270, 500);
+            moveTime(270, 300);
 
         } else if (startPosition.equals("BLUE_MIDDLE")) {
             int sideDistance;
             if (pictograph == 'l') {
-                sideDistance = 70;
+                sideDistance = 58;
             } else if (pictograph == 'r') {
-                sideDistance = 110;
+                sideDistance = 98;
             } else {
-                sideDistance = 90;
+                sideDistance = 77;
             }
             moveAlongWall(true, 30, 30, 5);
             turnNinety(true);
@@ -180,7 +195,7 @@ public class RRNewAuton extends LinearOpMode {
             gunnerFunction.retractAutonGlyphter();
             moveTime(270, 500);
             moveTime(90, 700);
-            moveTime(270, 500);
+            moveTime(270, 300);
 
         } else {
             int sideDistance;
@@ -201,7 +216,7 @@ public class RRNewAuton extends LinearOpMode {
             gunnerFunction.retractAutonGlyphter();
             moveTime(270, 500);
             moveTime(90, 700);
-            moveTime(270, 500);
+            moveTime(270, 300);
         }
     }
 
@@ -284,16 +299,17 @@ public class RRNewAuton extends LinearOpMode {
             steering.finishSteering();
 
             keepMoving = Math.abs(sensorDistanceLF - targetWallDistance) > tolerance || Math.abs(sensorDistanceRF - targetWallDistance) > tolerance || Math.abs(sensorDistanceSide - targetSideDistance) > tolerance;
+            telemetry.addData("Desired position: ", targetSideDistance + ", " + targetWallDistance);
+            telemetry.addData("frontDistance", frontDistance);
+            telemetry.addData("sideDistance", sideDistance);
+            telemetry.addData("robotMovementAngle", robotMovementAngle * 180 / Math.PI);
+            telemetry.addData("robotMovementDistance", robotMovementDistance);
+            telemetry.addData("clockwiseTurnSpeed", clockwiseTurnSpeed);
+            telemetry.addData("moveSpeed", moveSpeed);
             telemetry.addData("sensorDistanceLF", sensorDistanceLF);
             telemetry.addData("sensorDistanceRF", sensorDistanceRF);
             telemetry.addData("sensorDistanceSide", sensorDistanceSide);
             telemetry.addData("robotClockwiseRotation", robotClockwiseRotation);
-            telemetry.addData("frontDistance", frontDistance);
-            telemetry.addData("sideDistance", sideDistance);
-            telemetry.addData("robotMovementAngle", robotMovementAngle);
-            telemetry.addData("robotMovementDistance", robotMovementDistance);
-            telemetry.addData("clockwiseTurnSpeed", clockwiseTurnSpeed);
-            telemetry.addData("moveSpeed", moveSpeed);
             telemetry.update();
         }
         steering.stopAllMotors();
@@ -322,7 +338,7 @@ public class RRNewAuton extends LinearOpMode {
         steering.setSpeedRatio(PRECISE_TURN_SPEED_RATIO);
         double lfDist = ultrasonicFunction.getLF();
         double rfDist = ultrasonicFunction.getRF();
-        while (Math.abs(lfDist - rfDist) >= 1) {
+        while (Math.abs(lfDist - rfDist) >= 1 && opModeIsActive()) {
             if (lfDist > rfDist) { steering.turnClockwise(); telemetry.addData("Turning clockwise",""); }
             else if (rfDist > lfDist) { steering.turnCounterclockwise(); telemetry.addData("Turning counterclockwise","");}
             steering.finishSteering();

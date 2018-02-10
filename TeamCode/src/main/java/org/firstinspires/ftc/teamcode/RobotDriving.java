@@ -81,6 +81,10 @@ public class RobotDriving {
             this.speedRatio = speedRatio;
         }
 
+        public double getSpeedRatio() {
+            return speedRatio;
+        }
+
         public void setAllPowers(double power) {
             powerLF = power;
             powerLB = power;

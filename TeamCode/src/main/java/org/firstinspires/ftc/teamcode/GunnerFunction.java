@@ -28,7 +28,7 @@ public class GunnerFunction {
         this.motorWinch = hardwareMap.dcMotor.get("winchMotor");
         this.motorRelicSlide = hardwareMap.dcMotor.get("relicSlideMotor");
         this.servoGlyphterLeft = new TwoStateServo(hardwareMap.servo.get("glyphterServoLeft"), 0, 0.5, 1, true);
-        this.servoGlyphterRight = new TwoStateServo(hardwareMap.servo.get("glyphterServoRight"), 0.9, 0.5, 1, true);
+        this.servoGlyphterRight = new TwoStateServo(hardwareMap.servo.get("glyphterServoRight"), 1, 0.5, 1, true);
         this.servoJewelPusher = hardwareMap.servo.get("jewelPusher");
         servoJewelPusher.setPosition(JEWELPUSHER_SERVO_STOPPED_POS);
         this.relicGrabber = new TwoStateServo(hardwareMap.servo.get("relicGrabber"), 0, 0.6, 0.02, false);
@@ -64,6 +64,11 @@ public class GunnerFunction {
         servoGlyphterLeft.active();
         servoGlyphterRight.active();
         telemetry.log().add("Close Glyphter");
+    }
+
+    public void openGlyphterFully() {
+        servoGlyphterLeft.getServo().setPosition(0);
+        servoGlyphterRight.getServo().setPosition(1);
     }
 
     public void openGlyphterIncremental() {
