@@ -305,42 +305,14 @@ public class RRNewAuton extends LinearOpMode {
     public void turnNinety(boolean isClockwise) {
         steering.setSpeedRatio(FAST_TURN_SPEED_RATIO);
         if (isClockwise) {
-            //leftDist is the distance detected from ultrasonicLeft in the previous tick
-            double leftDist = 255;
-
-            //Turn until left distance begins to increase (meaning that robot has passed the position that it should reach)
-            while (ultrasonicFunction.getLeft() <= leftDist) {
-                steering.turnClockwise();
-                steering.finishSteering();
-                leftDist = ultrasonicFunction.getLeft();
-            }
-            steering.stopAllMotors();
-            //Return to position of minimum left distance
-            while (ultrasonicFunction.getLeft() > leftDist) {
-                steering.turnCounterclockwise();
-                steering.finishSteering();
-                leftDist = ultrasonicFunction.getLeft();
-            }
-            alignToWall();
+            steering.turnClockwise();
         } else {
-            //rightDist is the distance detected from ultrasonicRight in the previous tick
-            double rightDist = 255;
-
-            //Turn until right distance begins to increase (meaning that robot has passed the position that it should reach)
-            while (ultrasonicFunction.getRight() <= rightDist) {
-                steering.turnCounterclockwise();
-                steering.finishSteering();
-                rightDist = ultrasonicFunction.getRight();
-            }
-            steering.stopAllMotors();
-            //Return to position of minimum right distance
-            while (ultrasonicFunction.getRight() > rightDist) {
-                steering.turnClockwise();
-                steering.finishSteering();
-                rightDist = ultrasonicFunction.getRight();
-            }
-            alignToWall();
+            steering.turnCounterclockwise();
         }
+        steering.finishSteering();
+        sleep(1000);
+        steering.stopAllMotors();
+        alignToWall();
     }
 
     /**
@@ -351,11 +323,14 @@ public class RRNewAuton extends LinearOpMode {
         double lfDist = ultrasonicFunction.getLF();
         double rfDist = ultrasonicFunction.getRF();
         while (Math.abs(lfDist - rfDist) >= 1) {
-            if (lfDist < rfDist) { steering.turnClockwise(); }
-            else if (rfDist < lfDist) { steering.turnCounterclockwise(); }
+            if (lfDist > rfDist) { steering.turnClockwise(); telemetry.addData("Turning clockwise",""); }
+            else if (rfDist > lfDist) { steering.turnCounterclockwise(); telemetry.addData("Turning counterclockwise","");}
             steering.finishSteering();
             lfDist = ultrasonicFunction.getLF();
             rfDist = ultrasonicFunction.getRF();
+            telemetry.addData("Left Sensor Reading", lfDist);
+            telemetry.addData("Right Sensor Reading", rfDist);
+            telemetry.update();
         }
         steering.stopAllMotors();
     }

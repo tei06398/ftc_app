@@ -249,8 +249,8 @@ public class RRTestAuton extends LinearOpMode {
         double lfDist = ultrasonicFunction.getLF();
         double rfDist = ultrasonicFunction.getRF();
         while (Math.abs(lfDist - rfDist) >= 1) {
-            if (lfDist < rfDist) { steering.turnClockwise(); telemetry.addData("Turning clockwise",""); }
-            else if (rfDist < lfDist) { steering.turnCounterclockwise(); telemetry.addData("Turning counterclockwise","");}
+            if (lfDist > rfDist) { steering.turnClockwise(); telemetry.addData("Turning clockwise",""); }
+            else if (rfDist > lfDist) { steering.turnCounterclockwise(); telemetry.addData("Turning counterclockwise","");}
             steering.finishSteering();
             lfDist = ultrasonicFunction.getLF();
             rfDist = ultrasonicFunction.getRF();
