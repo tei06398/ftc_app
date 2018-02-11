@@ -16,7 +16,6 @@ public class AutonFunctionTester extends OpMode {
         colorSensor = hardwareMap.colorSensor.get("jewelTipper");
         gunnerFunction = new GunnerFunction(hardwareMap, telemetry);
         gunnerFunction.disablePwm(hardwareMap);
-        gunnerFunction.reset();
     }
 
     @Override
