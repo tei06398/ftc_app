@@ -94,12 +94,12 @@ public class GunnerFunction {
 
     public void retractRelicSlide() {
         // TODO: maybe make bigger
-        motorRelicSlide.setPower(0.75);
+        motorRelicSlide.setPower(0.6);
         telemetry.log().add("Expand Relic Slide");
     }
 
     public void extendRelicSlide() {
-        motorRelicSlide.setPower(-0.75);
+        motorRelicSlide.setPower(-0.6);
         telemetry.log().add("Retract Relic Slide");
     }
 
